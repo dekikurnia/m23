@@ -319,7 +319,7 @@
                 if (data.error) {
                     //toastr.error(data.error);
                 } else {
-                    //window.location.href = data.route
+                    window.location.href = data.route
                 }
             },
             error: function (err) {
