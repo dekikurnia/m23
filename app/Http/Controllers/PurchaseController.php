@@ -76,7 +76,6 @@ class PurchaseController extends Controller
      */
     public function store(Request $request)
     {
-
         $purchase = Purchase::create([
             'invoice' => $request->invoice,
             'tanggal' => $request->tanggal,
@@ -84,12 +83,12 @@ class PurchaseController extends Controller
             'cara_bayar' => $request->cara_bayar,
             'pajak' => $request->pajak,
             'jatuh_tempo' => $request->jatuh_tempo,
-            'total' => $request->total_pembelian,
             'keterangan' => $request->keterangan,
             'user_id' => $request->user()->id,
         ]);
 
-        foreach ($request->input('purchase_id', []) as $row) {
+        $items = $request->item_id;
+        foreach ($items as $row => $key) {
             $new_purchase_detail = new PurchaseDetail;
             $new_purchase_detail->purchase_id = $purchase->id;
             $new_purchase_detail->item_id = $request->item_id[$row];

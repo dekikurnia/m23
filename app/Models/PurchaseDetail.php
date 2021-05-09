@@ -10,7 +10,7 @@ class PurchaseDetail extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tanggal', 'provider_id', 'item_id', 'kuantitas', 'harga', 'sub_total', 'purchase_id'
+        'tanggal', 'provider_id', 'item_id', 'kuantitas', 'harga', 'purchase_id'
     ];
 
     public function purchase()

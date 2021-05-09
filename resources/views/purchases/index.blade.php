@@ -59,67 +59,69 @@
                             <textarea class="form-control" rows="3" name="keterangan"></textarea>
                         </div>
                     </div>
+                </form>
             </div>
             <hr class="my-3">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#itemsModal">
                 Tambah
             </button>
             <p>
-                <table class="table borderless table-sm" id="purchases-table">
-                    <thead class="thead-light">
-                        <tr>
-                            <th style="width: 15%"><b>Provider</b></th>
-                            <th style="width: 30%"><b>Nama Barang</b></th>
-                            <th style="width: 15%"><b>Kuantitas</b></th>
-                            <th style="width: 15"><b>Harga Beli</b></th>
-                            <th style="text-align: right; width: 15%"><b>Sub Total</b></th>
-                            <th style="width: 5%"><b></b></th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr class="PPN box-ppn">
-                            <td style="width: 15%"></td>
-                            <td style="width: 30%"></td>
-                            <td style="width: 15%"></td>
-                            <td style="width: 15%"></td>
-                            <td style="text-align: right;font-weight: bold; width: 15%">Total :</td>
+                <form id="purchase-detail">
+                    <table class="table borderless table-sm" id="purchases-table">
+                        <thead class="thead-light">
+                            <tr>
+                                <th style="width: 15%"><b>Provider</b></th>
+                                <th style="width: 30%"><b>Nama Barang</b></th>
+                                <th style="width: 15%"><b>Kuantitas</b></th>
+                                <th style="width: 15"><b>Harga Beli</b></th>
+                                <th style="text-align: right; width: 15%"><b>Sub Total</b></th>
+                                <th style="width: 5%"><b></b></th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr class="PPN box-ppn">
+                                <td style="width: 15%"></td>
+                                <td style="width: 30%"></td>
+                                <td style="width: 15%"></td>
+                                <td style="width: 15%"></td>
+                                <td style="text-align: right;font-weight: bold; width: 15%">Total :</td>
 
-                            <td style="text-align: right;font-weight: bold; width: 5%">
-                                <span id="total">0 </span>
-                            </td>
-                            <!--<td></td>-->
+                                <td style="text-align: right;font-weight: bold; width: 5%">
+                                    <span id="total">0 </span>
+                                </td>
+                                <!--<td></td>-->
 
-                        </tr>
-                        <tr class="PPN box-ppn">
-                            <td style="width: 15%"></td>
-                            <td style="width: 30%"></td>
-                            <td style="width: 15%"></td>
-                            <td style="width: 15%"></td>
-                            <td style="text-align: right;font-weight: bold; width: 15%">PPN 10% :</td>
+                            </tr>
+                            <tr class="PPN box-ppn">
+                                <td style="width: 15%"></td>
+                                <td style="width: 30%"></td>
+                                <td style="width: 15%"></td>
+                                <td style="width: 15%"></td>
+                                <td style="text-align: right;font-weight: bold; width: 15%">PPN 10% :</td>
 
-                            <td style="text-align: right;font-weight: bold; width: 5%">
-                                <span id="ppn">0 </span>
-                            </td>
-                            <!--<td></td>-->
+                                <td style="text-align: right;font-weight: bold; width: 5%">
+                                    <span id="ppn">0 </span>
+                                </td>
+                                <!--<td></td>-->
 
-                        </tr>
-                        <tr>
-                            <td style="width: 15%"></td>
-                            <td style="width: 30%"></td>
-                            <td style="width: 15%"></td>
-                            <td style="width: 15%"></td>
-                            <td style="text-align: right;font-weight: bold; width: 15%">Grand Total :</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 15%"></td>
+                                <td style="width: 30%"></td>
+                                <td style="width: 15%"></td>
+                                <td style="width: 15%"></td>
+                                <td style="text-align: right;font-weight: bold; width: 15%">Grand Total :</td>
 
-                            <td style="text-align: right;font-weight: bold; width: 5%">
-                                <span id="grandTotal">0 </span>
-                                <input id="total_pembelian" name="total_pembelian" type="hidden">
-                            </td>
-                            <!--<td></td>-->
+                                <td style="text-align: right;font-weight: bold; width: 5%">
+                                    <span id="grandTotal">0 </span>
+                                    <input id="total_pembelian" name="total_pembelian" type="hidden">
+                                </td>
+                                <!--<td></td>-->
 
-                        </tr>
-                    </tfoot>
-                </table>
-                <input class="btn btn-primary" id="save" type="submit" value="Proses Transaksi Pembelian" />
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <input class="btn btn-primary" id="save" type="submit" value="Proses Transaksi Pembelian" />
                 </form>
         </div>
     </div>
@@ -236,7 +238,7 @@
 
                 var newRow = $("<tr class='txtMult'>");
                 var cols = "";
-                cols += '<td style="display:none;"><input type="hidden" name="item_id[]">' + data['id']  + '</td>';
+                cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id']  + '">' + data['id']  + '</td>';
                 cols += '<td>' + data['nama_provider']  + '</td>';
                 cols += '<td>' + data['nama']  + '</td>';
                 cols += '<td><input type="number" class="form-control val1" name="kuantitas[]"/></td>'
@@ -308,7 +310,7 @@
 
     $('#save').on('click', function (e) {
         e.preventDefault();
-        var dataString = $("#form-purchase-detail").serialize();
+        var dataString = $("#form-purchase-detail, #purchase-detail").serialize();
         $.ajax({
             type: 'POST',
             url: `{{ route('purchases.store') }}`,
@@ -317,7 +319,7 @@
                 if (data.error) {
                     //toastr.error(data.error);
                 } else {
-                    window.location.href = data.route
+                    //window.location.href = data.route
                 }
             },
             error: function (err) {

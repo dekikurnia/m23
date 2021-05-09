@@ -15,7 +15,6 @@ class Purchase extends Model
         'supplier_id',
         'cara_bayar',
         'jatuh_tempo',
-        'total',
         'keterangan',
         'user_id'
     ];
