@@ -126,7 +126,7 @@ class PriceController extends Controller
     {
         $item = Item::findOrFail($id);
         $harga = $request->get('harga');
-        $item->harga = str_replace(".", "", $harga);;
+        $item->harga = str_replace(".", "", $harga);
         $item->save();
         return redirect()->route('price.index')->with('status-edit', 'Harga jual berhasil diperbarui');
     }

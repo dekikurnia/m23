@@ -9,7 +9,7 @@ class Provider extends Model
 {
     use HasFactory;
 
-    public function item() {
+    public function items() {
         return $this->hasMany(Item::class,'provider_id');
     }
 }

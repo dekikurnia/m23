@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class CreatePurchaseRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class CreatePurchaseRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return Auth::check();
     }
 
     /**
@@ -24,7 +25,18 @@ class CreatePurchaseRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'tanggal'          => 'required',
+            'supplier_id'   => 'required',
+            'cara_bayar'   => 'required',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'tanggal.required'       => 'Tanggal pembelian wajib diisi.',
+            'supplier_id.required'   => 'Supplier wajib diisi.',
+            'cara_bayar.required'   => 'Cara bayar wajib diisi.',
         ];
     }
 }

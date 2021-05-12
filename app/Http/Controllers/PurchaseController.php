@@ -8,7 +8,8 @@ use App\Models\PurchaseDetail;
 use App\Models\Supplier;
 use Auth;
 use Illuminate\Support\Facades\DB;
-use App\Http\Requests\CreatePurchaseRequest;
+use App\Models\Stock;
+use App\Models\Item;
 
 class PurchaseController extends Controller
 {
@@ -76,6 +77,30 @@ class PurchaseController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = \Validator::make(
+            $request->all(),
+            [
+                'tanggal'          => 'required',
+                'supplier_id'   => 'required',
+                'cara_bayar'   => 'required|in:Kas,Kredit,Transfer',
+                'item_id'   => 'required',
+                'kuantitas'   => 'required',
+                'harga'   => 'required'
+            ],
+            [
+                'tanggal.required'       => 'Tanggal pembelian wajib diisi.',
+                'supplier_id.required'   => 'Supplier wajib diisi.',
+                'cara_bayar.in'   => 'Cara bayar wajib diisi.',
+                'item_id.required'   => 'Barang belum dipilih.',
+                'kuantitas.required'   => 'Kuantitas wajib diisi.',
+                'harga.required'   => 'Harga beli wajib diisi.'
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(array('status'=>'error', 'msg'=>$validator->errors()->all()), 500);
+        }
+
         $purchase = Purchase::create([
             'invoice' => $request->invoice,
             'tanggal' => $request->tanggal,
@@ -90,16 +115,24 @@ class PurchaseController extends Controller
         $items = $request->item_id;
         foreach ($items as $row => $key) {
             $new_purchase_detail = new PurchaseDetail;
+            $update_item = new Item;
+
             $new_purchase_detail->purchase_id = $purchase->id;
             $new_purchase_detail->item_id = $request->item_id[$row];
             $new_purchase_detail->kuantitas = $request->kuantitas[$row];
             $new_purchase_detail->harga = $request->harga[$row];
-            $new_purchase_detail->save();
-        }
 
-        return response()->json([
-            'route' => route('purchases.index')
-        ]);
+            $new_stock = Stock::where('item_id', $new_purchase_detail->item_id)->first();
+            $new_stock->stok_gudang = $new_stock->stok_gudang + $new_purchase_detail->kuantitas;
+            $update_item->id = $new_purchase_detail->item_id;
+
+            DB::transaction(function() use ($new_purchase_detail, $new_stock, $update_item) {
+                $new_purchase_detail->save();
+                $update_item->stock()->save($new_stock);
+            });
+        }
+        
+        return response()->json(array('status'=>'success', 'msg'=>'Entry pembelian berhasil ditambahkan.'), 200);
     }
 
     /**

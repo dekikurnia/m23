@@ -17,4 +17,14 @@ class PurchaseDetail extends Model
     {
         return $this->belongsTo(Purchase::class);
     }
+
+    public function stock()
+    {
+        return $this->hasOne(Stock::class, 'item_id');
+    }
+
+    public function items()
+    {
+        return $this->hasMany(Item::class, 'item_id');
+    }
 }

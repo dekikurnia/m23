@@ -12,6 +12,18 @@
                 </button>
             </div>
             @endif
+            <div class="alert alert-danger" style="display:none"></div>
+            <div class="alert alert-success print-success-msg" style="display:none">
+                <ul></ul>
+            </div>
+            @if(session('status-create'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{session('status-create')}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @endif
             <div class="card">
                 <div class="card-header">{{ __('Entry Pembelian') }}</div>
                 <form enctype="multipart/form-data" class="bg-white shadow-sm p-3" action="{{route('purchases.store')}}"
@@ -25,6 +37,11 @@
                         <div class="form-group col-md-10">
                             <label for="tanggal">Tanggal</label>
                             <input type="text" class="form-control datepicker" name="tanggal" autocomplete="off">
+                           @error('tanggal')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
                         </div>
                         <div class="form-group col-md-10">
                             <label for="tanggal">Supplier</label>
@@ -35,8 +52,8 @@
                     </div>
                     <div class="column" style="background-color:#ffffff;">
                         <div class="form-group col-md-10">
-                            <label for="invoice">Cara Bayar</label>
-                            <select class="form-control" name="cara_bayar">
+                            <label for="cara_bayar">Cara Bayar</label>
+                            <select class="form-control" name="cara_bayar" id="select-bayar">
                                 <option>--Pilih--</option>
                                 <option value="Kas">Kas</option>
                                 <option value="Kredit">Kredit</option>
@@ -49,8 +66,8 @@
                         </div>
                         <div class="form-group col-md-10">
                             <label for="pajak">PPN / Non PPN</label>
-                            <select class="form-control" id="select-ppn" name="pajak">
-                                <option value="">Non PPN</option>
+                            <select class="form-control" name="pajak" id="select-ppn">
+                                <option value="Non PPN">Non PPN</option>
                                 <option value="PPN">PPN</option>
                             </select>
                         </div>
@@ -79,7 +96,7 @@
                             </tr>
                         </thead>
                         <tfoot>
-                            <tr class="PPN box-ppn">
+                            <tr class="Non-PPN box-non">
                                 <td style="width: 15%"></td>
                                 <td style="width: 30%"></td>
                                 <td style="width: 15%"></td>
@@ -114,7 +131,6 @@
 
                                 <td style="text-align: right;font-weight: bold; width: 5%">
                                     <span id="grandTotal">0 </span>
-                                    <input id="total_pembelian" name="total_pembelian" type="hidden">
                                 </td>
                                 <!--<td></td>-->
 
@@ -181,8 +197,7 @@
             }
         });
 
-
-        $("select").change(function () {
+        $("#select-bayar").change(function () {
             $(this).find("option:selected").each(function () {
                 var optionValue = $(this).attr("value");
                 if (optionValue) {
@@ -196,7 +211,7 @@
 
         $("#select-ppn").change(function () {
             $(this).find("option:selected").each(function () {
-                var optionValue = $(this).attr("value");
+                var optionValue = $(this).attr("value") == "PPN";
                 if (optionValue) {
                     $(".box-ppn").show();
                 } else {
@@ -273,22 +288,21 @@
 
                     $("#total").text(mult.toLocaleString("id-ID"));
                     $("#grandTotal").text(mult.toLocaleString("id-ID"));
-                    document.getElementById('total_pembelian').value = document.getElementById('grandTotal').innerText;
 
                     $("#select-ppn").change(function () {
                         $(this).find("option:selected").each(function () {
-                            var optionValue = $(this).attr("value");
+                            var optionValue = $(this).attr("value") == "PPN";
                             if (optionValue) {
                                 $(".box-ppn").show();
                                 var ppn = mult * 0.1;
                                 var grandTotal = mult + ppn;
                                 $("#ppn").text(ppn.toLocaleString("id-ID"));
                                 $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
-                                document.getElementById('total_pembelian').value = document.getElementById('grandTotal').innerText;
+                               
                             } else {
                                 $(".box-ppn").hide();
                                 $("#grandTotal").text(mult.toLocaleString("id-ID"));
-                                document.getElementById('total_pembelian').value = document.getElementById('grandTotal').innerText;
+                               
                             }
                         });
                     }).change();
@@ -312,18 +326,20 @@
         e.preventDefault();
         var dataString = $("#form-purchase-detail, #purchase-detail").serialize();
         $.ajax({
-            type: 'POST',
+            type: 'json',
+            method: 'POST',
             url: `{{ route('purchases.store') }}`,
             data: dataString,
             success: function (data) {
-                if (data.error) {
-                    //toastr.error(data.error);
-                } else {
-                    window.location.href = data.route
-                }
+                alert(data.msg)
+                location.reload();
             },
-            error: function (err) {
-                //toastr(data.error);
+            error: function (data) {
+                $('.alert-danger').empty();
+                $.each(data.responseJSON.msg, function (key, value) {
+                    $('.alert-danger').show();
+                    $('.alert-danger').append('<p>' + value + '</p>');
+                });
             }
         });
     });

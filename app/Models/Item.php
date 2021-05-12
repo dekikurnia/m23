@@ -24,4 +24,9 @@ class Item extends Model
     {
         return $this->belongsTo(Provider::class);
     }
+
+    public function purchaseDetail()
+    {
+        return $this->belongsTo(PurchaseDetail::class);
+    }
 }

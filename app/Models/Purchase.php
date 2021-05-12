@@ -14,12 +14,13 @@ class Purchase extends Model
         'tanggal',
         'supplier_id',
         'cara_bayar',
+        'pajak',
         'jatuh_tempo',
         'keterangan',
         'user_id'
     ];
 
-    public function purchaseDetail()
+    public function purchaseDetails()
     {
         return $this->hasMany(PurchaseDetail::class, 'purchase_id');
     }
