@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title') Entry Pembelian @endsection
+@section('title') UpdatePembelian @endsection
 @section('content')
 <div class="container">
     <div class="row">
@@ -9,18 +9,20 @@
                 <ul></ul>
             </div>
             <div class="card">
-                <div class="card-header">{{ __('Entry Pembelian') }}</div>
-                <form enctype="multipart/form-data" class="bg-white shadow-sm p-3" action="{{route('purchases.store')}}"
-                    method="POST" id="form-purchase-detail">
+                <div class="card-header">{{ __('Ubah Pembelian') }}</div>
+                <form enctype="multipart/form-data" class="bg-white shadow-sm p-3"
+                    action="{{route('purchases.update', [$purchase->id])}}" method="PUT" id="form-purchase-detail">
                     @csrf
                     <div class="column" style="background-color:#ffffff;">
                         <div class="form-group col-md-10">
                             <label for="invoice">No. Invoice</label>
-                            <input value="{{ $noInvoice }}" class="form-control" type="text" name="invoice" readonly />
+                            <input value="{{ $purchase->invoice }}" class="form-control" type="text" name="invoice"
+                                readonly />
                         </div>
                         <div class="form-group col-md-10">
                             <label for="tanggal">Tanggal</label>
-                            <input type="text" class="form-control datepicker" name="tanggal" autocomplete="off">
+                            <input value="{{ $purchase->tanggal }}" type="text" class="form-control datepicker"
+                                name="tanggal" autocomplete="off">
                             @error('tanggal')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -31,6 +33,11 @@
                             <label for="tanggal">Supplier</label>
                             <select style="min-width:300px" name="supplier_id" multiple id="suppliers"
                                 class="form-control">
+                                @foreach($supplier as $row)
+                                <option value="{{ $row->id }}"
+                                    {{ $row->id == $purchase->supplier_id ? 'selected' : '' }}>
+                                    {{ $row->nama }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -39,25 +46,36 @@
                             <label for="cara_bayar">Cara Bayar</label>
                             <select class="form-control" name="cara_bayar" id="select-bayar">
                                 <option>--Pilih--</option>
-                                <option value="Kas">Kas</option>
-                                <option value="Kredit">Kredit</option>
-                                <option value="Transfer">Transfer</option>
+                                <option value="Kas"
+                                    {{ old('cara_bayar', $purchase->cara_bayar) == "Kas" ? 'selected' : '' }}>
+                                    Kas</option>
+                                <option value="Kredit"
+                                    {{ old('cara_bayar', $purchase->cara_bayar) == "Kredit" ? 'selected' : '' }}>
+                                    Kredit</option>
+                                <option value="Transfer"
+                                    {{ old('cara_bayar', $purchase->cara_bayar) == "Transfer" ? 'selected' : '' }}>
+                                    Transfer</option>
                             </select>
                         </div>
                         <div class="form-group col-md-10 Kredit box">
                             <label for="jatuh_tempo">Jatuh Tempo</label>
-                            <input type="text" class="form-control datepicker" name="jatuh_tempo">
+                            <input value="{{ $purchase->jatuh_tempo }}" type="text" class="form-control datepicker"
+                                name="jatuh_tempo">
                         </div>
                         <div class="form-group col-md-10">
                             <label for="pajak">PPN / Non PPN</label>
                             <select class="form-control" name="pajak" id="select-ppn">
-                                <option value="Non PPN">Non PPN</option>
-                                <option value="PPN">PPN</option>
+                                <option value="Non PPN"
+                                    {{ old('pajak', $purchase->pajak) == "Non PPN" ? 'selected' : '' }}>
+                                    Non PPN</option>
+                                <option value="PPN" {{ old('pajak', $purchase->pajak) == "PPN" ? 'selected' : '' }}>
+                                    PPN</option>
                             </select>
                         </div>
                         <div class="form-group col-md-10">
                             <label for="tanggal">Keterangan</label>
-                            <textarea class="form-control" rows="3" name="keterangan"></textarea>
+                            <textarea value="{{ $purchase->keterangan }}" class="form-control" rows="3"
+                                name="keterangan"></textarea>
                         </div>
                     </div>
                 </form>
@@ -80,18 +98,37 @@
                             </tr>
                         </thead>
                         <tfoot>
-                            <tr class="Non-PPN row-non">
+                            <div style="display: none">
+                                {{ $total = 0 }}
+                            </div>
+                            @foreach ($purchaseDetails as $purchaseDetail)
+                            <tr class='txtMult'>
+                                <td style="width: 15%">{{$purchaseDetail->nama_provider}}</td>
+                                <td style="width: 30%">{{ $purchaseDetail->nama }}</td>
+                                <td style="width: 15%; display:none;"><input value="{{ $purchaseDetail->item_id }}" type="number"
+                                    class="form-control" name="item_id[]" /></td>
+                                <td style="width: 15%"><input value="{{ $purchaseDetail->kuantitas }}" type="number" onkeyup="calcTotal() "
+                                        class="form-control val1" name="kuantitas[]" /></td>
+                                <td style="width: 15%"><input
+                                        value="{{ floor($purchaseDetail->harga) }}" type="number" onkeyup="calcTotal() "
+                                        class="form-control val2" name="harga[]" /></td>
+                                <td style="text-align: right; width: 10%; font-weight: bold;" class="multTotal">
+                                    {{ number_format($purchaseDetail->sub_total, 0, ',', '.') }}</td>
+                                <div style="display: none">{{$total += $purchaseDetail->sub_total}}</div>
+                                <td><input id="btn-delete" type="button" class="btnDel btn btn-sm btn-danger"
+                                        value="Delete" style="float: right;"></td>
+                            </tr>
+                            @endforeach
+                            <tr>
                                 <td style="width: 15%"></td>
                                 <td style="width: 30%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
-                                <td style="text-align: right;font-weight: bold; width: 15%">Total :</td>
-
+                                <td style="text-align: right;font-weight: bold; width: 10%">Total :</td>
                                 <td style="text-align: right;font-weight: bold; width: 5%">
-                                    <span id="total">0 </span>
+                                    <span id="total">{{ number_format($total, 0, ',', '.') }}</span>
                                 </td>
                                 <!--<td></td>-->
-
                             </tr>
                             <tr class="PPN row-ppn">
                                 <td style="width: 15%"></td>
@@ -104,7 +141,6 @@
                                     <span id="ppn">0 </span>
                                 </td>
                                 <!--<td></td>-->
-
                             </tr>
                             <tr>
                                 <td style="width: 15%"></td>
@@ -114,14 +150,15 @@
                                 <td style="text-align: right;font-weight: bold; width: 15%">Grand Total :</td>
 
                                 <td style="text-align: right;font-weight: bold; width: 5%">
-                                    <span id="grandTotal">0 </span>
+                                    <span id="grand-total">0 </span>
                                 </td>
                                 <!--<td></td>-->
 
                             </tr>
                         </tfoot>
                     </table>
-                    <input class="btn btn-primary" id="save" type="submit" value="Proses Transaksi Pembelian" />
+                    <input class="btn btn-primary" id="save" type="submit" value="Simpan" />
+                    <a class="btn btn-success text-white" href="/purchases-data">Batal</a>
                 </form>
         </div>
     </div>
@@ -155,15 +192,73 @@
 @endsection
 
 @section('js')
-<script type="text/javascript">
+<script type = "text/javascript">
+
+    function calcTotal() {
+        var mult = 0;
+        $("tr.txtMult").each(function () {
+            var $val1 = $('.val1', this).val();
+            var $val2 = $('.val2', this).val();
+            var $total = $val1 * (reverseFormatNumber($val2, 'id-ID'));
+
+            $('.multTotal', this).text($total.toLocaleString("id-ID"));
+            mult += $total;
+        });
+
+        $("#total").text(mult.toLocaleString("id-ID"));
+        $("#grand-total").text(mult.toLocaleString("id-ID"));
+
+        $("#select-ppn").change(function () {
+            $(this).find("option:selected").each(function () {
+                var optionValue = $(this).attr("value") == "PPN";
+                if (optionValue) {
+                    $(".row-ppn").show();
+                    var ppn = mult * 0.1;
+                    var grandTotal = mult + ppn;
+                    $("#ppn").text(ppn.toLocaleString("id-ID"));
+                    $("#grand-total").text(grandTotal.toLocaleString("id-ID"));
+
+                } else {
+                    $(".row-ppn").hide();
+                    $("#grand-total").text(mult.toLocaleString("id-ID"));
+
+                }
+            });
+        }).change();
+    }
+
+    function reverseFormatNumber(val, locale) {
+        var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
+        var decimal = new Intl.NumberFormat(locale).format(1.1).replace(/1/g, '');
+        var reversedVal = val.replace(new RegExp('\\' + group, 'g'), '');
+        reversedVal = reversedVal.replace(new RegExp('\\' + decimal, 'g'), '.');
+        return Number.isNaN(reversedVal) ? 0 : reversedVal;
+    }
+
     $(document).ready(function () {
+        $("#select-ppn").change(function () {
+            $(this).find("option:selected").each(function () {
+                var optionValue = $(this).attr("value") == "PPN";
+                var total = $("#total").text();
+
+                if (optionValue) {
+                    var ppn = (reverseFormatNumber(total, 'id-ID')) * 0.1;
+                    $("#ppn").text(ppn.toLocaleString("id-ID"));
+
+                    var grandTotal = ppn + parseInt(reverseFormatNumber(total, 'id-ID'));
+                    $("#grand-total").text(grandTotal.toLocaleString("id-ID"));
+                } else {
+                    $("#grand-total").text(total);
+                }
+            });
+        }).change();
+
         $(".datepicker").datepicker({
             format: 'yyyy-mm-dd',
             autoclose: true,
             todayHighlight: true,
             orientation: 'bottom'
         });
-
 
         $('#suppliers').select2({
             ajax: {
@@ -209,11 +304,10 @@
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('items.list') }}",
-                columns: [
-                    {
+                columns: [{
                         data: 'id',
                         name: 'id',
-                        visible : false
+                        visible: false
                     },
                     {
                         data: 'nama_provider',
@@ -237,14 +331,15 @@
 
                 var newRow = $("<tr class='txtMult'>");
                 var cols = "";
-                cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id']  + '">' + data['id']  + '</td>';
-                cols += '<td>' + data['nama_provider']  + '</td>';
-                cols += '<td>' + data['nama']  + '</td>';
-                cols += '<td><input type="number" class="form-control val1" name="kuantitas[]" value="" /></td>'
-                cols += '<td><input type="number" class="form-control val2" name="harga[]"value="" /></td>';
+                cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id'] + '">' + data['id'] + '</td>';
+                cols += '<td>' + data['nama_provider'] + '</td>';
+                cols += '<td>' + data['nama'] + '</td>';
+                cols += '<td><input type="number" class="form-control val1" name="kuantitas[]"/></td>'
+                cols += '<td><input type="number" class="form-control val2" name="harga[]"/></td>';
                 cols += '<td id="sub_total" style="text-align: right;font-weight: bold" class="multTotal"></td>';
                 cols += '<td><input type="button" class="btnDel btn btn-sm btn-danger" value="Delete" style="float: right;"></td>';
                 newRow.append(cols);
+                var tablePurchaseDetails = document.getElementById('purchases-table');
                 $("#purchases-table").append(newRow);
                 counter++;
 
@@ -258,38 +353,7 @@
                 $(".txtMult input").keyup(multInputs);
 
                 function multInputs() {
-                    var mult = 0;
-                    // for each row:
-                    $("tr.txtMult").each(function () {
-                        // get the values from this row:
-                        var $val1 = $('.val1', this).val();
-                        var $val2 = $('.val2', this).val();
-                        var $total = ($val1 * 1) * ($val2 * 1)
-
-                        $('.multTotal', this).text($total.toLocaleString("id-ID"));
-                        mult += $total;
-                    });
-
-                    $("#total").text(mult.toLocaleString("id-ID"));
-                    $("#grandTotal").text(mult.toLocaleString("id-ID"));
-
-                    $("#select-ppn").change(function () {
-                        $(this).find("option:selected").each(function () {
-                            var optionValue = $(this).attr("value") == "PPN";
-                            if (optionValue) {
-                                $(".row-ppn").show();
-                                var ppn = mult * 0.1;
-                                var grandTotal = mult + ppn;
-                                $("#ppn").text(ppn.toLocaleString("id-ID"));
-                                $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
-                               
-                            } else {
-                                $(".row-ppn").hide();
-                                $("#grandTotal").text(mult.toLocaleString("id-ID"));
-                               
-                            }
-                        });
-                    }).change();
+                    calcTotal();
                 }
 
                 $("#purchases-table").on("click", ".btnDel", function (event) {
@@ -298,8 +362,14 @@
                     multInputs();
                 });
             }
+
+            $("#purchases-table").on("click", "#btn-delete", function () {
+                $(this).closest("tr").remove();
+                calcTotal();
+            });
         });
     });
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -311,8 +381,8 @@
         var dataString = $("#form-purchase-detail, #purchase-detail").serialize();
         $.ajax({
             type: 'json',
-            method: 'POST',
-            url: `{{ route('purchases.store') }}`,
+            method: 'PUT',
+            url: `{{ route('purchases.update', [$purchase->id]) }}`,
             data: dataString,
             success: function (data) {
                 Swal.fire({
@@ -320,16 +390,17 @@
                     title: "Sukses",
                     text: data.msg
                 }).then(function () {
-                    location.reload();
+                    window.location.href = "/purchases-data";
                 });
             },
+
             error: function (data) {
                 $('.alert-danger').empty();
                 $.each(data.responseJSON.msg, function (key, value) {
                     $('.alert-danger').show();
                     $('.alert-danger').append('<p>' + value + '</p>');
                     $(window).scrollTop(0);
-                    
+
                     $('.alert-danger').delay(4000).slideUp(200, function () {
                         $(this).alert('');
                     });

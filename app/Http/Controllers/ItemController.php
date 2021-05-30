@@ -47,13 +47,8 @@ class ItemController extends Controller
                 ->make(true);
         }
 
-        $category = DB::table('categories')
-            ->select("*")
-            ->get();
-
-        $provider = DB::table('providers')
-            ->select("*")
-            ->get();
+        $category = Category::all();
+        $provider = Provider::all();
         return view('items.index', compact('category', 'provider'));
     }
     /**
@@ -63,13 +58,8 @@ class ItemController extends Controller
      */
     public function create()
     {
-        $category = DB::table('categories')
-            ->select("*")
-            ->get();
-
-        $provider = DB::table('providers')
-            ->select("*")
-            ->get();
+        $category = Category::all();
+        $provider = Provider::all();
         return view('items.create', compact('category', 'provider'));
     }
 

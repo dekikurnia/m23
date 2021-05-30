@@ -31,10 +31,19 @@ Route::resource("customers", CustomerController::class);
 Route::resource("items", ItemController::class);
 Route::resource("price", PriceController::class);
 
-Route::get('/harga-perdana', [PriceController::class, 'getHargaPerdana']);
-Route::get('/harga-voucher', [PriceController::class, 'getHargaVoucher']);
+Route::get('/harga-perdana', [PriceController::class, 'getHargaPerdana'])->name('price.perdana');
+Route::get('/harga-voucher', [PriceController::class, 'getHargaVoucher'])->name('price.voucher');
 
-Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases');
-Route::get('/ajax/suppliers/search', [PurchaseController::class, 'searchSuppliers'])->name('search-suppliers');
-Route::get('/ajax/list-items', [PurchaseController::class, 'listItems'])->name('list-items');
-Route::resource("purchases", PurchaseController::class);
+Route::get('/ajax/suppliers/search', [PurchaseController::class, 'suppliersSearch'])->name('suppliers.search');
+Route::get('/ajax/items/list', [PurchaseController::class, 'itemsList'])->name('items.list');
+
+Route::group(['prefix'=>'purchases'],function(){
+    Route::get('data', [PurchaseController::class, 'getPurchasesData'])->name('purchases.data');
+    Route::get('debt', [PurchaseController::class, 'getPurchasesDebt'])->name('purchases.debt');
+    Route::get('debt/{purchase}/edit', [PurchaseController::class, 'editDebt']);
+    Route::put('debt/update/{purchase}', [PurchaseController::class, 'updateDebt'])->name('purchases.update-debt');;
+    Route::get('report', [PurchaseController::class, 'getPurchasesReport'])->name('purchases.report');
+    Route::get('export', [PurchaseController::class, 'export']);
+});
+
+Route::resource( 'purchases', PurchaseController::class);

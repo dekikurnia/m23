@@ -103,7 +103,7 @@ $(function() {
         pageLength : 25,
         processing: true,
         serverSide: true,
-        ajax: '/harga-perdana',
+        ajax: `{{ route('price.perdana') }}`,
         columns: [
             { data: 'nama_provider', name: 'providers.nama' },
             { data: 'nama', name: 'nama' },
@@ -120,7 +120,7 @@ $(function() {
         processing: true,
         serverSide: true,
         responsive: true,
-        ajax: '/harga-voucher',
+        ajax: `{{ route('price.voucher') }}`,
         columns: [
             { data: 'nama_provider', name: 'providers.nama' },
             { data: 'nama', name: 'nama' },

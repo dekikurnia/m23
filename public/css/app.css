@@ -10981,19 +10981,12 @@ select {
     /* Should be removed. Only for demonstration */
 }
 
-.box {
-    display: none;
-}
-
-.box-ppn {
-    display: none;
-}
-
-.box-total {
-    display: none;
-}
-
 .borderless td,
 .borderless th {
     border: none;
+}
+
+table {
+    border-collapse:separate; 
+    border-spacing: 0 5px;
 }

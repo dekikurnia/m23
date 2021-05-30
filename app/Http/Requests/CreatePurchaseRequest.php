@@ -28,6 +28,7 @@ class CreatePurchaseRequest extends FormRequest
             'tanggal'          => 'required',
             'supplier_id'   => 'required',
             'cara_bayar'   => 'required',
+            'tanggal_lunas'   => 'required',
         ];
     }
 
@@ -37,6 +38,7 @@ class CreatePurchaseRequest extends FormRequest
             'tanggal.required'       => 'Tanggal pembelian wajib diisi.',
             'supplier_id.required'   => 'Supplier wajib diisi.',
             'cara_bayar.required'   => 'Cara bayar wajib diisi.',
+            'tanggal_lunas.required'   => 'Tanggal pelunasan wajib diisi.',
         ];
     }
 }

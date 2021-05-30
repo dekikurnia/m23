@@ -23,8 +23,8 @@ class PurchaseDetail extends Model
         return $this->hasOne(Stock::class, 'item_id');
     }
 
-    public function items()
+    public function item()
     {
-        return $this->hasMany(Item::class, 'item_id');
+        return $this->belongsTo(Item::class);
     }
 }

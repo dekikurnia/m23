@@ -21,6 +21,8 @@ class CreatePurchasesTable extends Migration
             $table->enum('cara_bayar',['Kas', 'Kredit', 'Transfer']);
             $table->enum('pajak',['Non PPN', 'PPN']);
             $table->date('jatuh_tempo')->nullable();
+            $table->date('tanggal_lunas')->nullable();
+            $table->boolean('is_lunas')->default(false);
             $table->string('keterangan')->nullable();
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');

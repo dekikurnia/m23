@@ -25,8 +25,8 @@ class Item extends Model
         return $this->belongsTo(Provider::class);
     }
 
-    public function purchaseDetail()
+    public function purchaseDetails()
     {
-        return $this->belongsTo(PurchaseDetail::class);
+        return $this->hasMany(PurchaseDetail::class, 'item_id');
     }
 }
