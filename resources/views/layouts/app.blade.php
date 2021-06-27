@@ -62,7 +62,7 @@
                             </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Pindah Barang<span class="sr-only">(current)</span></a>
+                            <a class="nav-link" href="{{ route('move-items.index') }}">Pindah Barang</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -83,12 +83,12 @@
                                 Penjualan
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Entry Penjualan Retail</a>
-                                <a class="dropdown-item" href="#">Entry Penjualan Grosir</a>
-                                <a class="dropdown-item" href="#">Entry Penjualan Gudang</a>
+                                <a class="dropdown-item" href="{{ route('retail-sales.index') }}">Entry Penjualan Retail</a>
+                                <a class="dropdown-item" href="{{ route('wholesales.index') }}">Entry Penjualan Grosir</a>
+                                <a class="dropdown-item" href="{{ route('warehouses.index') }}">Entry Penjualan Gudang</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Data Penjualan</a>
-                                <a class="dropdown-item" href="#">Piutang Penjualan</a>
+                                <a class="dropdown-item" href="{{ route('sales.index') }}">Data Penjualan</a>
+                                <a class="dropdown-item" href="{{ route('sales.debt') }}">Piutang Penjualan</a>
                             </div>
                         </li>
 
@@ -99,9 +99,10 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="#">Laporan Stok Gudang</a>
-                                <a class="dropdown-item" href="#">Laporan Stok Toko</a>
+                                <a class="dropdown-item" href="{{ route('reports.store-stock') }}">Laporan Stok Toko</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Laporan Penjualan (Summary)</a>
+                                <a class="dropdown-item" href="#">Laporan Penjualan Retail (Summary)</a>
+                                <a class="dropdown-item" href="#">Laporan Penjualan Grosir (Summary)</a>
                                 <a class="dropdown-item" href="#">Laporan Penjualan Gudang</a>
                                 <a class="dropdown-item" href="#">Laporan Penjualan Toko</a>
                             </div>

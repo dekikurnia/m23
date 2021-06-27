@@ -10977,7 +10977,6 @@ select {
 .column {
     float: left;
     width: 50%;
-    height: 380px;
     /* Should be removed. Only for demonstration */
 }
 
@@ -10987,6 +10986,10 @@ select {
 }
 
 table {
-    border-collapse:separate; 
+    border-collapse: separate;
     border-spacing: 0 5px;
+}
+
+.modal-dialog {
+    max-width: 60%;
 }

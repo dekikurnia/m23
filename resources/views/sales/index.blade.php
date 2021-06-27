@@ -1,9 +1,9 @@
 @extends('layouts.app')
-@section('title') Data Pembelian @endsection
+@section('title') Data Penjualan @endsection
 @section('content')
 <div class="container-fluid">
     <h2 align="center">
-        DATA PEMBELIAN<br>
+        DATA PENJUALAN<br>
     </h2>
     <hr class="my-3">
     <div class="row justify-content-center">
@@ -21,9 +21,9 @@
         </div>
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">{{ __('Data Pembelian') }}</div>
+                <div class="card-header">{{ __('Data Penjualan') }}</div>
                 <div class="card-body">
-                    <table class="table table-striped table-sm" id="purchases-table">
+                    <table class="table table-striped table-sm" id="sales-table">
                         <thead>
                             <tr>
                                 <th style="width: 10%; vertical-align: middle;">
@@ -31,12 +31,15 @@
                                 <th style="width: 20%; vertical-align: middle;">
                                     <b>Invoice</b></th>
                                 <th style="width: 15%; vertical-align: middle;">
-                                    <b>Supplier</b></th>
+                                    <b>Tipe Penjualan</b></th>
+                                <th style="width: 15%"><b>Customer</b></th>
                                 <th style="width: 10%"><b>Pajak</b></th>
                                 <th style="width: 10%; vertical-align: middle;">
                                     <b>Total</b></th>
                                 <th style="width: 25%; vertical-align: middle;" class="text-center">
                                     <b>Keterangan</b></th>
+                                    <th style="width: 10%; vertical-align: middle;" class="text-center">
+                                        <b>User</b></th>
                                 <th style="width: 2%"><b></b></th>
                             </tr>
                         </thead>
@@ -62,14 +65,14 @@
     fetch_data();
 
     function fetch_data(tanggal_mulai = '', tanggal_akhir = '') {
-        $('#purchases-table').DataTable({
+        $('#sales-table').DataTable({
             pageLength: 25,
             processing: true,
             serverSide: true,
             ordering : false,
             searching : false,
             ajax: {
-                url: "{{ route('purchases.data') }}",
+                url: "{{ route('sales.index') }}",
                 data: {
                     tanggal_mulai: tanggal_mulai,
                     tanggal_akhir: tanggal_akhir
@@ -84,8 +87,12 @@
                     name: 'invoice'
                 },
                 {
-                    data: 'nama_supplier',
-                    name: 'suppliers.nama'
+                    data: 'jenis',
+                    name: 'jenis'
+                },
+                {
+                    data: 'nama_customer',
+                    name: 'customers.nama'
                 },
                 {
                     data: 'pajak',
@@ -101,6 +108,10 @@
                     name: 'keterangan'
                 },
                 {
+                    data: 'nama_pengguna',
+                    name: 'users.username'
+                },
+                {
                     data: 'action',
                     name: 'action'
                 }
@@ -112,7 +123,7 @@
         var tanggal_mulai = $('#tanggal_mulai').val();
         var tanggal_akhir = $('#tanggal_akhir').val();
         if (tanggal_mulai != '' && tanggal_akhir  != '') {
-            $('#purchases-table').DataTable().destroy();
+            $('#sales-table').DataTable().destroy();
             fetch_data(tanggal_mulai, tanggal_akhir);
         } else {
             alert('Isi kedua filter tanggal mulai dan tanggal akhir');
@@ -122,7 +133,7 @@
     $('#refresh').click(function () {
         $('#tanggal_mulai').val('');
         $('#tanggal_akhir').val('');
-        $('#purchases-table').DataTable().destroy();
+        $('#sales-table').DataTable().destroy();
         fetch_data();
     });
 

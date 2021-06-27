@@ -1,9 +1,9 @@
 @extends('layouts.app')
-@section('title') Data Pembelian @endsection
+@section('title') Daftar Pindah Barang @endsection
 @section('content')
 <div class="container-fluid">
     <h2 align="center">
-        DATA PEMBELIAN<br>
+        DAFTAR PINDAH BARANG<br>
     </h2>
     <hr class="my-3">
     <div class="row justify-content-center">
@@ -21,22 +21,17 @@
         </div>
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">{{ __('Data Pembelian') }}</div>
+                <div class="card-header">{{ __('Daftar Pindah Barang') }}</div>
                 <div class="card-body">
-                    <table class="table table-striped table-sm" id="purchases-table">
+                    <a href="{{route('move-items.create')}}" class="btn btn-primary">Tambah</a>
+                    <p>
+                    <table class="table table-striped table-sm" id="move-items-table">
                         <thead>
                             <tr>
-                                <th style="width: 10%; vertical-align: middle;">
+                                <th style="vertical-align: middle;">
                                     <b>Tanggal</b></th>
-                                <th style="width: 20%; vertical-align: middle;">
-                                    <b>Invoice</b></th>
-                                <th style="width: 15%; vertical-align: middle;">
-                                    <b>Supplier</b></th>
-                                <th style="width: 10%"><b>Pajak</b></th>
-                                <th style="width: 10%; vertical-align: middle;">
-                                    <b>Total</b></th>
-                                <th style="width: 25%; vertical-align: middle;" class="text-center">
-                                    <b>Keterangan</b></th>
+                                <th style="vertical-align: middle;">
+                                    <b>Nomor</b></th>
                                 <th style="width: 2%"><b></b></th>
                             </tr>
                         </thead>
@@ -62,14 +57,14 @@
     fetch_data();
 
     function fetch_data(tanggal_mulai = '', tanggal_akhir = '') {
-        $('#purchases-table').DataTable({
+        $('#move-items-table').DataTable({
             pageLength: 25,
             processing: true,
             serverSide: true,
             ordering : false,
             searching : false,
             ajax: {
-                url: "{{ route('purchases.data') }}",
+                url: "{{ route('move-items.index') }}",
                 data: {
                     tanggal_mulai: tanggal_mulai,
                     tanggal_akhir: tanggal_akhir
@@ -80,25 +75,8 @@
                     name: 'tanggal'
                 },
                 {
-                    data: 'invoice',
-                    name: 'invoice'
-                },
-                {
-                    data: 'nama_supplier',
-                    name: 'suppliers.nama'
-                },
-                {
-                    data: 'pajak',
-                    name: 'pajak'
-                },
-                {
-                    data: 'total',
-                    name: 'total',
-                    className: "text-right"
-                },
-                {
-                    data: 'keterangan',
-                    name: 'keterangan'
+                    data: 'nomor',
+                    name: 'nomor'
                 },
                 {
                     data: 'action',
@@ -112,7 +90,7 @@
         var tanggal_mulai = $('#tanggal_mulai').val();
         var tanggal_akhir = $('#tanggal_akhir').val();
         if (tanggal_mulai != '' && tanggal_akhir  != '') {
-            $('#purchases-table').DataTable().destroy();
+            $('#move-items-table').DataTable().destroy();
             fetch_data(tanggal_mulai, tanggal_akhir);
         } else {
             alert('Isi kedua filter tanggal mulai dan tanggal akhir');
@@ -122,7 +100,7 @@
     $('#refresh').click(function () {
         $('#tanggal_mulai').val('');
         $('#tanggal_akhir').val('');
-        $('#purchases-table').DataTable().destroy();
+        $('#move-items-table').DataTable().destroy();
         fetch_data();
     });
 

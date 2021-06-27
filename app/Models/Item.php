@@ -29,4 +29,9 @@ class Item extends Model
     {
         return $this->hasMany(PurchaseDetail::class, 'item_id');
     }
+
+    public function moveItemDetails()
+    {
+        return $this->hasMany(MoveItemDetail::class, 'item_id');
+    }
 }

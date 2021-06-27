@@ -57,7 +57,7 @@ class PriceController extends Controller
 
             return datatables()->of($data)
                 ->addColumn('action', function ($data) {
-                    return '<a href="/price' . $data->id . '/edit" class="btn btn-primary btn-sm">Ubah</a>';
+                    return '<a href="/price/' . $data->id . '/edit" class="btn btn-primary btn-sm">Ubah</a>';
                 })
                 ->editColumn('harga', function ($data) {
                     return  number_format($data->harga, 0, ',', '.');

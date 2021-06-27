@@ -1,37 +1,30 @@
 @extends('layouts.app')
-@section('title') Update Pembelian @endsection
+@section('title') Update Penjualan Gudang @endsection
 @section('content')
 <div class="container">
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">{{ __('Ubah Pembelian') }}</div>
+                <div class="card-header">{{ __('Update Penjualan Gudang') }}</div>
                 <form enctype="multipart/form-data" class="bg-white shadow-sm p-3"
-                    action="{{route('purchases.update', [$purchase->id])}}" method="PUT" id="form-purchases">
+                    action="{{route('warehouses.update', [$sale->id])}}" method="PUT" id="form-warehouses">
                     @csrf
                     <div class="column" style="background-color:#ffffff;">
                         <div class="form-group col-md-10">
                             <label for="invoice">No. Invoice</label>
-                            <input value="{{ $purchase->invoice }}" class="form-control" type="text" name="invoice"
-                                readonly />
+                            <input value="{{ $sale->invoice }}" class="form-control" type="text" name="invoice" />
                         </div>
                         <div class="form-group col-md-10">
                             <label for="tanggal">Tanggal</label>
-                            <input value="{{ $purchase->tanggal }}" type="text" class="form-control datepicker"
-                                name="tanggal" autocomplete="off">
-                            @error('tanggal')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                            @enderror
+                            <input value="{{ $sale->tanggal }}" type="text" class="form-control datepicker" name="tanggal" autocomplete="off">
                         </div>
                         <div class="form-group col-md-10">
-                            <label for="supplier">Supplier</label>
-                            <select style="min-width:300px" name="supplier_id" multiple id="suppliers"
+                            <label for="customer">Customer</label>
+                            <select style="min-width:300px" name="customer_id" multiple id="customers"
                                 class="form-control">
-                                @foreach($supplier as $row)
+                                @foreach($customer as $row)
                                 <option value="{{ $row->id }}"
-                                    {{ $row->id == $purchase->supplier_id ? 'selected' : '' }}>
+                                    {{ $row->id == $sale->customer_id ? 'selected' : '' }}>
                                     {{ $row->nama }}</option>
                                 @endforeach
                             </select>
@@ -43,35 +36,34 @@
                             <select class="form-control" name="cara_bayar" id="select-bayar">
                                 <option>--Pilih--</option>
                                 <option value="Kas"
-                                    {{ old('cara_bayar', $purchase->cara_bayar) == "Kas" ? 'selected' : '' }}>
+                                    {{ old('cara_bayar', $sale->cara_bayar) == "Kas" ? 'selected' : '' }}>
                                     Kas</option>
                                 <option value="Kredit"
-                                    {{ old('cara_bayar', $purchase->cara_bayar) == "Kredit" ? 'selected' : '' }}>
+                                    {{ old('cara_bayar', $sale->cara_bayar) == "Kredit" ? 'selected' : '' }}>
                                     Kredit</option>
                                 <option value="Transfer"
-                                    {{ old('cara_bayar', $purchase->cara_bayar) == "Transfer" ? 'selected' : '' }}>
+                                    {{ old('cara_bayar', $sale->cara_bayar) == "Transfer" ? 'selected' : '' }}>
                                     Transfer</option>
                             </select>
                         </div>
                         <div class="form-group col-md-10 Kredit box">
                             <label for="jatuh_tempo">Jatuh Tempo</label>
-                            <input value="{{ $purchase->jatuh_tempo }}" type="text" class="form-control datepicker"
+                            <input value="{{ $sale->jatuh_tempo }}" type="text" class="form-control datepicker"
                                 name="jatuh_tempo">
                         </div>
                         <div class="form-group col-md-10">
                             <label for="pajak">PPN / Non PPN</label>
                             <select class="form-control" name="pajak" id="select-ppn">
                                 <option value="Non PPN"
-                                    {{ old('pajak', $purchase->pajak) == "Non PPN" ? 'selected' : '' }}>
+                                    {{ old('pajak', $sale->pajak) == "Non PPN" ? 'selected' : '' }}>
                                     Non PPN</option>
-                                <option value="PPN" {{ old('pajak', $purchase->pajak) == "PPN" ? 'selected' : '' }}>
+                                <option value="PPN" {{ old('pajak', $sale->pajak) == "PPN" ? 'selected' : '' }}>
                                     PPN</option>
                             </select>
                         </div>
                         <div class="form-group col-md-10">
                             <label for="keterangan">Keterangan</label>
-                            <textarea value="{{ $purchase->keterangan }}" class="form-control" rows="3"
-                                name="keterangan"></textarea>
+                            <textarea value="{{ $sale->keterangan }}" class="form-control" rows="3" name="keterangan"></textarea>
                         </div>
                     </div>
                 </form>
@@ -81,14 +73,14 @@
                 Tambah
             </button>
             <p>
-                <form id="form-purchase-details">
-                    <table class="table borderless table-sm" id="purchases-table">
+                <form id="form-warehouses-details">
+                    <table class="table borderless table-sm" id="warehouses-table">
                         <thead class="thead-light">
                             <tr>
                                 <th style="width: 15%"><b>Provider</b></th>
                                 <th style="width: 30%"><b>Nama Barang</b></th>
                                 <th style="width: 15%"><b>Kuantitas</b></th>
-                                <th style="width: 15"><b>Harga Beli</b></th>
+                                <th style="width: 15"><b>Harga Jual</b></th>
                                 <th style="text-align: right; width: 15%"><b>Sub Total</b></th>
                                 <th style="width: 5%"><b></b></th>
                             </tr>
@@ -97,20 +89,20 @@
                             <div style="display: none">
                                 {{ $total = 0 }}
                             </div>
-                            @foreach ($purchaseDetails as $purchaseDetail)
-                            <tr class='row-purchase'>
-                                <td style="width: 15%">{{$purchaseDetail->nama_provider}}</td>
-                                <td style="width: 30%">{{ $purchaseDetail->nama }}</td>
-                                <td style="width: 15%; display:none;"><input value="{{ $purchaseDetail->item_id }}" type="number"
+                            @foreach ($saleDetails as $saleDetail)
+                            <tr class='row-warehouses'>
+                                <td style="width: 15%">{{$saleDetail->nama_provider}}</td>
+                                <td style="width: 30%">{{ $saleDetail->nama }}</td>
+                                <td style="width: 15%; display:none;"><input value="{{ $saleDetail->item_id }}" type="number"
                                     class="form-control" name="item_id[]" /></td>
-                                <td style="width: 15%"><input value="{{ $purchaseDetail->kuantitas }}" type="number" onkeyup="calcTotal() "
-                                        class="form-control kuantitas" name="kuantitas[]" /></td>
+                                <td style="width: 15%"><input value="{{ $saleDetail->kuantitas }}" type="number" onkeyup="calcTotal() "
+                                        class="form-control form-control-sm w-50 kuantitas" name="kuantitas[]" /></td>
                                 <td style="width: 15%"><input
-                                        value="{{ floor($purchaseDetail->harga) }}" type="number" onkeyup="calcTotal() "
-                                        class="form-control harga" name="harga[]" /></td>
+                                        value="{{ floor($saleDetail->harga) }}" type="number"
+                                        class="form-control form-control-sm harga" name="harga[]"/></td>
                                 <td style="text-align: right; width: 10%; font-weight: bold;" class="multTotal">
-                                    {{ number_format($purchaseDetail->sub_total, 0, ',', '.') }}</td>
-                                <div style="display: none">{{$total += $purchaseDetail->sub_total}}</div>
+                                    {{ number_format($saleDetail->sub_total, 0, ',', '.') }}</td>
+                                <div style="display: none">{{$total += $saleDetail->sub_total}}</div>
                                 <td><input id="btn-delete" type="button" class="btnDel btn btn-sm btn-danger"
                                         value="Delete" style="float: right;"></td>
                             </tr>
@@ -120,11 +112,13 @@
                                 <td style="width: 30%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
-                                <td style="text-align: right;font-weight: bold; width: 10%">Total :</td>
+                                <td style="text-align: right;font-weight: bold; width: 15%">Total :</td>
+
                                 <td style="text-align: right;font-weight: bold; width: 5%">
                                     <span id="total">{{ number_format($total, 0, ',', '.') }}</span>
                                 </td>
                                 <!--<td></td>-->
+
                             </tr>
                             <tr class="PPN row-ppn">
                                 <td style="width: 15%"></td>
@@ -137,6 +131,7 @@
                                     <span id="ppn">0 </span>
                                 </td>
                                 <!--<td></td>-->
+
                             </tr>
                             <tr>
                                 <td style="width: 15%"></td>
@@ -154,7 +149,7 @@
                         </tfoot>
                     </table>
                     <input class="btn btn-primary" id="save" type="submit" value="Simpan" />
-                    <a class="btn btn-success text-white" href="/purchases/data">Batal</a>
+                    <a class="btn btn-dark text-white" href="{{ route('sales.index') }}">Batal</a>
                 </form>
         </div>
     </div>
@@ -178,6 +173,7 @@
                             <th><b>Provider</b></th>
                             <th><b>Nama Barang</b></th>
                             <th><b>Kategori</b></th>
+                            <th><b>Stok Gudang</b></th>
                         </tr>
                     </thead>
                 </table>
@@ -188,11 +184,11 @@
 @endsection
 
 @section('js')
-<script type = "text/javascript">
+<script type="text/javascript">
 
-    function calcTotal() {
+function calcTotal() {
         var mult = 0;
-        $("tr.row-purchases").each(function () {
+        $("tr.row-warehouses").each(function () {
             var $kuantitas = $('.kuantitas', this).val();
             var $harga = $('.harga', this).val();
             var $total = $kuantitas * (reverseFormatNumber($harga, 'id-ID'));
@@ -232,6 +228,13 @@
     }
 
     $(document).ready(function () {
+        $(".datepicker").datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true,
+            orientation: 'bottom'
+        });
+
         $("#select-ppn").change(function () {
             $(this).find("option:selected").each(function () {
                 var optionValue = $(this).attr("value") == "PPN";
@@ -249,16 +252,9 @@
             });
         }).change();
 
-        $(".datepicker").datepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true,
-            todayHighlight: true,
-            orientation: 'bottom'
-        });
-
-        $('#suppliers').select2({
+        $('#customers').select2({
             ajax: {
-                url: "{{ route('suppliers.search') }}",
+                url: "{{ route('customers.search') }}",
                 processResults: function (data) {
                     return {
                         results: data.map(function (item) {
@@ -299,11 +295,12 @@
             var table = $('#items-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('purchases.items-list') }}",
-                columns: [{
+                ajax: "{{ route('moves.items-list') }}",
+                columns: [
+                    {
                         data: 'id',
                         name: 'id',
-                        visible: false
+                        visible : false
                     },
                     {
                         data: 'nama_provider',
@@ -316,7 +313,11 @@
                     {
                         data: 'nama_kategori',
                         name: 'categories.nama'
-                    }
+                    },
+                    {
+                        data: 'stok_gudang',
+                        name: 'stocks.stok_gudang'
+                    },
                 ]
             });
 
@@ -325,46 +326,81 @@
             $('#items-table tbody').on('click', 'tr', function () {
                 var data = table.row(this).data();
 
-                var newRow = $("<tr class='row-purchases'>");
+                var newRow = $("<tr class='row-warehouses'>");
                 var cols = "";
-                cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id'] + '">' + data['id'] + '</td>';
-                cols += '<td>' + data['nama_provider'] + '</td>';
-                cols += '<td>' + data['nama'] + '</td>';
-                cols += '<td><input type="number" class="form-control form-control-sm kuantitas" name="kuantitas[]"/></td>'
+                cols += '<td style="display:none;"><input type="number" class="form-control form-control-sm stok-gudang" name="stok_gudang[]" value="' + data['stok_gudang']  + '"></td>';
+                cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id']  + '"></td>';
+                cols += '<td>' + data['nama_provider']  + '</td>';
+                cols += '<td>' + data['nama']  + '</td>';
+                cols += '<td><input type="number" class="form-control form-control-sm w-50 kuantitas" name="kuantitas[]"/></td>'
                 cols += '<td><input type="number" class="form-control form-control-sm harga" name="harga[]"/></td>';
                 cols += '<td id="sub_total" style="text-align: right;font-weight: bold" class="multTotal"></td>';
                 cols += '<td><input type="button" class="btnDel btn btn-sm btn-danger" value="Delete" style="float: right;"></td>';
                 newRow.append(cols);
-                $("#purchases-table").append(newRow);
+                $("#warehouses-table").append(newRow);
                 counter++;
 
                 $('#itemsModal').modal('hide');
 
                 hitungTotal();
-
+                cekStokToko();
+                compareStokKuantitas();
             });
+            
+            /*fungsi ini untuk membandingkan kuantitas dan stok gudang yang tersedia,
+            jika kuantitas melebihi stok gudang, maka beri pesan
+            */
+            function compareStokKuantitas() {
+                $(".row-warehouses input").keyup(cekStok);
+
+                function cekStok() {
+                    $("tr.row-warehouses").each(function () {
+                        var $kuantitas = parseFloat($('.kuantitas', this).val());
+                        var $stokToko = parseFloat($('.stok-gudang', this).val());
+
+                        if ($kuantitas > $stokToko) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Kuantitas melebihi stok gudang',
+                            })
+                        }
+                    });
+                }
+            }
+
+            //fungsi ini untuk mengecek jumlah stok gudang, beri pesan jika stok gudang bernilai 0
+            function cekStokToko() {
+                $("tr.row-warehouses").each(function () {
+                    if ($('.stok-gudang', this).val()== 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Stok gudang tidak tersedia',
+                        })
+                    }
+                });
+            }
 
             function hitungTotal() {
-                $(".row-purchases input").keyup(multInputs);
+                $(".row-warehouses input").keyup(multInputs);
 
                 function multInputs() {
                     calcTotal();
                 }
 
-                $("#purchases-table").on("click", ".btnDel", function (event) {
+                $("#warehouses-table").on("click", ".btnDel", function (event) {
                     $(this).closest("tr").remove();
                     counter -= 1
                     multInputs();
                 });
             }
-
-            $("#purchases-table").on("click", "#btn-delete", function () {
+            $("#warehouses-table").on("click", ".btnDel", function (event) {
                 $(this).closest("tr").remove();
                 calcTotal();
             });
         });
     });
-
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -373,11 +409,11 @@
 
     $('#save').on('click', function (e) {
         e.preventDefault();
-        var dataString = $("#form-purchases, #form-purchase-details").serialize();
+        var dataString = $("#form-warehouses, #form-warehouses-details").serialize();
         $.ajax({
             type: 'json',
             method: 'PUT',
-            url: `{{ route('purchases.update', [$purchase->id]) }}`,
+            url: `{{ route('warehouses.update', [$sale->id]) }}`,
             data: dataString,
             success: function (data) {
                 Swal.fire({
@@ -385,10 +421,9 @@
                     title: "Sukses",
                     text: data.msg
                 }).then(function () {
-                    window.location.href = "/purchases/data";
+                    window.location.href = "/sales";
                 });
             },
-
             error: function (data) {
                 var values = '';
                 $.each(data.responseJSON.msg, function (key, value) {

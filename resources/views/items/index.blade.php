@@ -32,7 +32,7 @@
                 <div class="card-body">
                     <a href="{{route('items.create')}}" class="btn btn-primary">Tambah Barang</a>
                     <p>
-                        <table class="table-striped" id="items_table">
+                        <table class="table table-striped table-sm" id="items_table">
                             <thead class="thead-light">
                                 <tr>
                                     <th style="width: 20%"><b>Provider</b></th>
@@ -69,6 +69,7 @@ $(document).ready(function () {
             pageLength: 25,
             processing: true,
             serverSide: true,
+            ordering: false,
             ajax: {
                 url: "{{ route('items.index') }}",
                 data: {

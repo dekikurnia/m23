@@ -29,7 +29,7 @@
                 <div class="tab-pane fade show active" id="nav-perdana" role="tabpanel"
                     aria-labelledby="nav-perdana-tab">
                     <p>
-                        <table class="table-striped" id="tabel_perdana">
+                        <table class="table table-striped table-sm" id="tabel_perdana">
                             <thead class="thead-light">
                                 <tr>
                                     <th style="width: 20%"><b>Provider</b></th>
@@ -43,7 +43,7 @@
                 </div>
                 <div class="tab-pane fade" id="nav-voucher" role="tabpanel" aria-labelledby="nav-voucher-tab">
                     <p>
-                        <table class="table-striped" id="tabel_voucher">
+                        <table class="table table-striped table-sm" id="tabel_voucher">
                             <thead class="thead-light">
                                 <tr>
                                     <th style="width: 20%"><b>Provider</b></th>
@@ -103,6 +103,7 @@ $(function() {
         pageLength : 25,
         processing: true,
         serverSide: true,
+        ordering : false,
         ajax: `{{ route('price.perdana') }}`,
         columns: [
             { data: 'nama_provider', name: 'providers.nama' },

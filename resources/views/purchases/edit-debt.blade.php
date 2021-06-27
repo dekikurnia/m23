@@ -161,7 +161,7 @@
                 </div>
                 <br>
                 <input class="btn btn-primary" id="save" type="submit" value="Simpan" />
-                <a href="/purchases-debt" class="btn btn-dark">Kembali</a>
+                <a href="/purchases/debt" class="btn btn-dark">Kembali</a>
             </form>
         </div>
     </div>
@@ -219,7 +219,7 @@ $('#save').on('click', function (e) {
                 title: "Sukses",
                 text: data.msg
             }).then(function () {
-                window.location.href = "/purchases-debt";
+                window.location.href = "/purchases/debt";
             });
         },
 

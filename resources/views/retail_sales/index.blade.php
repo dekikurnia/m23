@@ -1,13 +1,13 @@
 @extends('layouts.app')
-@section('title') Entry Pembelian @endsection
+@section('title') Entry Penjualan Retail @endsection
 @section('content')
 <div class="container">
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">{{ __('Entry Pembelian') }}</div>
-                <form enctype="multipart/form-data" class="bg-white shadow-sm p-3" action="{{route('purchases.store')}}"
-                    method="POST" id="form-purchases">
+                <div class="card-header">{{ __('Entry Penjualan Retail') }}</div>
+                <form enctype="multipart/form-data" class="bg-white shadow-sm p-3"
+                    action="{{route('retail-sales.store')}}" method="POST" id="form-retail-sales">
                     @csrf
                     <div class="column" style="background-color:#ffffff;">
                         <div class="form-group col-md-10">
@@ -17,17 +17,6 @@
                         <div class="form-group col-md-10">
                             <label for="tanggal">Tanggal</label>
                             <input type="text" class="form-control datepicker" name="tanggal" autocomplete="off">
-                            @error('tanggal')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-10">
-                            <label for="supplier">Supplier</label>
-                            <select style="min-width:300px" name="supplier_id" multiple id="suppliers"
-                                class="form-control">
-                            </select>
                         </div>
                     </div>
                     <div class="column" style="background-color:#ffffff;">
@@ -37,19 +26,6 @@
                                 <option value="Non PPN">Non PPN</option>
                                 <option value="PPN">PPN</option>
                             </select>
-                        </div>
-                        <div class="form-group col-md-10">
-                            <label for="cara_bayar">Cara Bayar</label>
-                            <select class="form-control" name="cara_bayar" id="select-bayar">
-                                <option>--Pilih--</option>
-                                <option value="Kas">Kas</option>
-                                <option value="Kredit">Kredit</option>
-                                <option value="Transfer">Transfer</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-10 Kredit box">
-                            <label for="jatuh_tempo">Jatuh Tempo</label>
-                            <input type="text" class="form-control datepicker" name="jatuh_tempo">
                         </div>
                         <div class="form-group col-md-10">
                             <label for="keterangan">Keterangan</label>
@@ -63,14 +39,14 @@
                 Tambah
             </button>
             <p>
-                <form id="form-purchase-details">
-                    <table class="table borderless table-sm" id="purchases-table">
+                <form id="form-retail-sales-details">
+                    <table class="table borderless table-sm" id="retail-sales-table">
                         <thead class="thead-light">
                             <tr>
                                 <th style="width: 15%"><b>Provider</b></th>
                                 <th style="width: 30%"><b>Nama Barang</b></th>
                                 <th style="width: 15%"><b>Kuantitas</b></th>
-                                <th style="width: 15"><b>Harga Beli</b></th>
+                                <th style="width: 15"><b>Harga Jual</b></th>
                                 <th style="text-align: right; width: 15%"><b>Sub Total</b></th>
                                 <th style="width: 5%"><b></b></th>
                             </tr>
@@ -117,7 +93,8 @@
                             </tr>
                         </tfoot>
                     </table>
-                    <input class="btn btn-primary" id="save" type="submit" value="Proses Transaksi Pembelian" />
+                    <input class="btn btn-primary" id="save" type="submit" value="Simpan" />
+                    <a class="btn btn-dark text-white" href="{{ route('sales.index') }}">Batal</a>
                 </form>
         </div>
     </div>
@@ -141,6 +118,8 @@
                             <th><b>Provider</b></th>
                             <th><b>Nama Barang</b></th>
                             <th><b>Kategori</b></th>
+                            <th><b>Stok Toko</b></th>
+                            <th><b>Harga</b></th>
                         </tr>
                     </thead>
                 </table>
@@ -160,35 +139,6 @@
             orientation: 'bottom'
         });
 
-
-        $('#suppliers').select2({
-            ajax: {
-                url: "{{ route('suppliers.search') }}",
-                processResults: function (data) {
-                    return {
-                        results: data.map(function (item) {
-                            return {
-                                id: item.id,
-                                text: item.nama
-                            }
-                        })
-                    }
-                }
-            }
-        });
-
-        $("#select-bayar").change(function () {
-            $(this).find("option:selected").each(function () {
-                var optionValue = $(this).attr("value");
-                if (optionValue) {
-                    $(".box").not("." + optionValue).hide();
-                    $("." + optionValue).show();
-                } else {
-                    $(".box").hide();
-                }
-            });
-        }).change();
-
         $("#select-ppn").change(function () {
             $(this).find("option:selected").each(function () {
                 var optionValue = $(this).attr("value") == "PPN";
@@ -204,7 +154,7 @@
             var table = $('#items-table').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('purchases.items-list') }}",
+                ajax: "{{ route('retail.items-list') }}",
                 columns: [
                     {
                         data: 'id',
@@ -222,6 +172,14 @@
                     {
                         data: 'nama_kategori',
                         name: 'categories.nama'
+                    },
+                    {
+                        data: 'stok_toko',
+                        name: 'stocks.stok_toko'
+                    },
+                    {
+                        data: 'harga',
+                        name: 'harga'
                     }
                 ]
             });
@@ -231,33 +189,69 @@
             $('#items-table tbody').on('click', 'tr', function () {
                 var data = table.row(this).data();
 
-                var newRow = $("<tr class='row-purchases'>");
+                var newRow = $("<tr class='row-retails'>");
                 var cols = "";
-                cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id']  + '">' + data['id']  + '</td>';
+                cols += '<td style="display:none;"><input type="number" class="form-control form-control-sm stok-toko" name="stok_toko[]" value="' + data['stok_toko']  + '"></td>';
+                cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id']  + '"></td>';
                 cols += '<td>' + data['nama_provider']  + '</td>';
                 cols += '<td>' + data['nama']  + '</td>';
-                cols += '<td><input type="number" class="form-control form-control-sm kuantitas" name="kuantitas[]" value="" /></td>'
-                cols += '<td><input type="number" class="form-control form-control-sm harga" name="harga[]"value="" /></td>';
+                cols += '<td><input type="number" class="form-control form-control-sm w-50 kuantitas" name="kuantitas[]"/></td>'
+                cols += '<td><input type="number" class="form-control form-control-sm harga" name="harga[]" value=' + data['harga'].replace(/\./g, "")  + ' readonly/></td>';
                 cols += '<td id="sub_total" style="text-align: right;font-weight: bold" class="multTotal"></td>';
                 cols += '<td><input type="button" class="btnDel btn btn-sm btn-danger" value="Delete" style="float: right;"></td>';
                 newRow.append(cols);
-                $("#purchases-table").append(newRow);
+                $("#retail-sales-table").append(newRow);
                 counter++;
 
                 $('#itemsModal').modal('hide');
 
                 hitungTotal();
-
+                cekStokToko();
+                compareStokKuantitas();
             });
+            
+            /*fungsi ini untuk membandingkan kuantitas dan stok toko yang tersedia,
+            jika kuantitas melebihi stok toko, maka beri pesan
+            */
+            function compareStokKuantitas() {
+                $(".row-retails input").keyup(cekStok);
+
+                function cekStok() {
+                    $("tr.row-retails").each(function () {
+                        var $kuantitas = parseFloat($('.kuantitas', this).val());
+                        var $stokToko = parseFloat($('.stok-toko', this).val());
+
+                        if ($kuantitas > $stokToko) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Kuantitas melebihi stok toko',
+                            })
+                        }
+                    });
+                }
+            }
+
+            //fungsi ini untuk mengecek jumlah stok toko, beri pesan jika stok toko bernilai 0
+            function cekStokToko() {
+                $("tr.row-retails").each(function () {
+                    if ($('.stok-toko', this).val()== 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Stok toko tidak tersedia',
+                        })
+                    }
+                });
+            }
 
             function hitungTotal() {
-                $(".row-purchases input").keyup(multInputs);
+                $(".row-retails input").keyup(multInputs);
 
                 function multInputs() {
                     var mult = 0;
                     // for each row:
-                    $("tr.row-purchases").each(function () {
-                        // get the values from this row:
+                    $("tr.row-retails").each(function () {
                         var $kuantitas = $('.kuantitas', this).val();
                         var $harga = $('.harga', this).val();
                         var $total = ($kuantitas * 1) * ($harga * 1)
@@ -287,8 +281,7 @@
                         });
                     }).change();
                 }
-
-                $("#purchases-table").on("click", ".btnDel", function (event) {
+                $("#retail-sales-table").on("click", ".btnDel", function (event) {
                     $(this).closest("tr").remove();
                     counter -= 1
                     multInputs();
@@ -304,11 +297,11 @@
 
     $('#save').on('click', function (e) {
         e.preventDefault();
-        var dataString = $("#form-purchases, #form-purchase-details").serialize();
+        var dataString = $("#form-retail-sales, #form-retail-sales-details").serialize();
         $.ajax({
             type: 'json',
             method: 'POST',
-            url: `{{ route('purchases.store') }}`,
+            url: `{{ route('retail-sales.store') }}`,
             data: dataString,
             success: function (data) {
                 Swal.fire({

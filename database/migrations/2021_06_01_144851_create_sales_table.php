@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePurchasesTable extends Migration
+class CreateSalesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,20 @@ class CreatePurchasesTable extends Migration
      */
     public function up()
     {
-        Schema::create('purchases', function (Blueprint $table) {
+        Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->char('invoice', 24);
+            $table->string('invoice');
             $table->date('tanggal');
-            $table->bigInteger('supplier_id')->unsigned();
-            $table->enum('cara_bayar',['Kas', 'Kredit', 'Transfer']);
+            $table->bigInteger('customer_id')->unsigned()->nullable();
+            $table->enum('cara_bayar',['Kas', 'Kredit', 'Transfer'])->nullable();
+            $table->enum('jenis',['Retail', 'Grosir', 'Gudang']);
             $table->enum('pajak',['Non PPN', 'PPN']);
             $table->date('jatuh_tempo')->nullable();
             $table->date('tanggal_lunas')->nullable();
             $table->boolean('is_lunas')->default(false);
             $table->string('keterangan')->nullable();
             $table->bigInteger('user_id')->unsigned();
-            $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
@@ -38,6 +39,6 @@ class CreatePurchasesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('purchases');
+        Schema::dropIfExists('sales');
     }
 }

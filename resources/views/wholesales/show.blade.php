@@ -1,46 +1,46 @@
 @extends('layouts.app')
-@section('title') Detail Pembelian @endsection
+@section('title') Detail Penjualan Grosir @endsection
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">{{ __('Detail Pembelian') }}</div>
+                <div class="card-header">{{ __('Detail Penjualan Grosir') }}</div>
                 <div class="card-body">
                     <table class="table borderless table-sm">
                         <tr>
                             <th style="width: 15%">Nomor Invoice</th>
                             <td style="width: 2%">:</td>
-                            <td>{{$purchase->invoice}}</td>
+                            <td>{{$sale->invoice}}</td>
                         </tr>
                         <tr>
                             <th style="width: 15%">Tanggal</th>
                             <td style="width: 2%">:</td>
-                            <td>{{ \Carbon\Carbon::parse($purchase->tanggal)->translatedFormat('d-m-Y')}}</td>
+                            <td>{{ \Carbon\Carbon::parse($sale->tanggal)->translatedFormat('d-m-Y')}}</td>
                         </tr>
                         <tr>
-                            <th style="width: 15%">Supplier</th>
+                            <th style="width: 15%">Customerr</th>
                             <td style="width: 2%">:</td>
-                            <td>{{$purchase->supplier->nama}}</td>
+                            <td>{{$sale->customer->nama}}</td>
                         </tr>
                         <tr>
                             <th style="width: 15%">Cara Bayar</th>
                             <td style="width: 2%">:</td>
-                            <td>{{$purchase->cara_bayar}}</td>
+                            <td>{{$sale->cara_bayar}}</td>
                         </tr>
                         <tr>
                             <th style="width: 15%">Pajak</th>
                             <td style="width: 2%">:</td>
-                            <td id="row-pajak">{{$purchase->pajak}}</td>
+                            <td id="row-pajak">{{$sale->pajak}}</td>
                         </tr>
                         <tr>
                             <th style="width: 15%">Jatuh Tempo</th>
                             <td style="width: 2%">:</td>
                             <td>
-                                @if (is_null($purchase->jatuh_tempo))
+                                @if (is_null($sale->jatuh_tempo))
                                 -
                                 @else
-                                {{ \Carbon\Carbon::parse($purchase->jatuh_tempo)->format('d-m-Y')}}
+                                {{ \Carbon\Carbon::parse($sale->jatuh_tempo)->format('d-m-Y')}}
                                 @endif
                             </td>
                         </tr>
@@ -48,10 +48,10 @@
                             <th style="width: 15%">Tanggal Lunas</th>
                             <td style="width: 2%">:</td>
                             <td>
-                                @if (is_null($purchase->tanggal_lunas))
+                                @if (is_null($sale->tanggal_lunas))
                                 -
                                 @else
-                                {{ \Carbon\Carbon::parse($purchase->tanggal_lunas)->format('d-m-Y')}}
+                                {{ \Carbon\Carbon::parse($sale->tanggal_lunas)->format('d-m-Y')}}
                                 @endif
                             </td>
                         </tr>
@@ -59,10 +59,10 @@
                             <th style="width: 15%">Keterangan</th>
                             <td style="width: 2%">:</td>
                             <td>
-                                @if (is_null($purchase->keterangan))
+                                @if (is_null($sale->keterangan))
                                 -
                                 @else
-                                {{ $purchase->keterangan }}
+                                {{ $sale->keterangan }}
                                 @endif
                             </td>
                         </tr>
@@ -70,7 +70,7 @@
                 </div>
             </div>
             <hr class="my-3">
-            <table class="table borderless table-sm" id="purchases-table">
+            <table class="table borderless table-sm" id="sales-table">
                 <thead class="thead-light">
                     <tr class="titlerow">
                         <th style="text-align: center; width: 15%"><b>Provider</b></th>
@@ -84,17 +84,17 @@
                     <div style="display: none">
                         {{ $total = 0 }}
                     </div>
-                    @foreach ($purchaseDetails as $purchaseDetail)
+                    @foreach ($saleDetails as $saleDetail)
                     <tr style="background-color:#FFFFFF">
-                        <td style="width: 15%">{{$purchaseDetail->nama_provider}}</td>
-                        <td style="width: 30%">{{ $purchaseDetail->nama }}</td>
-                        <td style="text-align: right; width: 10%">{{ $purchaseDetail->kuantitas }}</td>
+                        <td style="width: 15%">{{$saleDetail->nama_provider}}</td>
+                        <td style="width: 30%">{{ $saleDetail->nama }}</td>
+                        <td style="text-align: right; width: 10%">{{ $saleDetail->kuantitas }}</td>
                         <td style="text-align: right; width: 10%">
-                            {{ number_format($purchaseDetail->harga, 0, ',', '.') }}</td>
+                            {{ number_format($saleDetail->harga, 0, ',', '.') }}</td>
                         <td style="text-align: right; width: 10%" class="sub_total">
-                            {{ number_format($purchaseDetail->sub_total, 0, ',', '.') }}</td>
+                            {{ number_format($saleDetail->sub_total, 0, ',', '.') }}</td>
                         <!--<td></td>-->
-                        <div style="display: none">{{$total += $purchaseDetail->sub_total}}</div>
+                        <div style="display: none">{{$total += $saleDetail->sub_total}}</div>
                     </tr>
                     @endforeach
                     <tr>
@@ -117,7 +117,7 @@
                         </td>
                         <!--<td></td>-->
                     </tr>
-                    @if($purchase->pajak == 'PPN')
+                    @if($sale->pajak == 'PPN')
                     <tr>
                         <td style="width: 15%"></td>
                         <td style="width: 30%"></td>
@@ -143,9 +143,9 @@
                     </tr>
                 </tfoot>
             </table>
-            <a href="/purchases/data" class="btn btn-dark">Kembali</a>
-            <a class="btn btn-info text-white" href="{{route('purchases.edit',
-            [$purchase->id])}}">Ubah</a>
+            <a href="{{route('sales.index')}}" class="btn btn-dark">Kembali</a>
+            <a class="btn btn-info text-white" href="{{route('wholesales.edit',
+            [$sale->id])}}">Ubah</a>
         </div>
     </div>
 </div>

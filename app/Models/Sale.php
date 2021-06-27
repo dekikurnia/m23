@@ -5,21 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Purchase extends Model
+class Sale extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
-        'invoice',
-        'tanggal',
-        'supplier_id',
-        'cara_bayar',
-        'pajak',
-        'jatuh_tempo',
-        'is_lunas',
-        'keterangan',
-        'user_id'
-    ];
 
     protected $casts = [
         'is_lunas' => 'boolean',
@@ -27,7 +15,7 @@ class Purchase extends Model
 
     const STATUS_COLOR = [
         0  => '#ffc107',
-        1   => '#32CD32',
+        1   => '#5cb85c',
     ];
 
     public function purchaseDetails()
@@ -35,8 +23,8 @@ class Purchase extends Model
         return $this->hasMany(PurchaseDetail::class, 'purchase_id');
     }
 
-    public function supplier()
+    public function customer()
     {
-        return $this->belongsTo(Supplier::class);
+        return $this->belongsTo(Customer::class);
     }
 }

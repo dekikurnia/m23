@@ -6,6 +6,12 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\MoveItemController;
+use App\Http\Controllers\RetailSaleController;
+use App\Http\Controllers\WholesaleController;
+use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\SaleController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +41,10 @@ Route::get('/harga-perdana', [PriceController::class, 'getHargaPerdana'])->name(
 Route::get('/harga-voucher', [PriceController::class, 'getHargaVoucher'])->name('price.voucher');
 
 Route::get('/ajax/suppliers/search', [PurchaseController::class, 'suppliersSearch'])->name('suppliers.search');
-Route::get('/ajax/items/list', [PurchaseController::class, 'itemsList'])->name('items.list');
+Route::get('/ajax/wholesales/search', [WholesaleController::class, 'customersSearch'])->name('customers.search');
+Route::get('/purchases/items/list', [PurchaseController::class, 'itemsList'])->name('purchases.items-list');
+Route::get('/moves/items/list', [MoveItemController::class, 'itemsList'])->name('moves.items-list');
+Route::get('/retail/items/list', [RetailSaleController::class, 'itemsList'])->name('retail.items-list');
 
 Route::group(['prefix'=>'purchases'],function(){
     Route::get('data', [PurchaseController::class, 'getPurchasesData'])->name('purchases.data');
@@ -46,4 +55,21 @@ Route::group(['prefix'=>'purchases'],function(){
     Route::get('export', [PurchaseController::class, 'export']);
 });
 
-Route::resource( 'purchases', PurchaseController::class);
+Route::group(['prefix'=>'sales'],function(){
+    Route::get('debt', [SaleController::class, 'getSalesDebt'])->name('sales.debt');
+    Route::get('debt/{sale}/edit', [SaleController::class, 'editDebt']);
+    Route::put('debt/update/{sale}', [SaleController::class, 'updateDebt'])->name('sales.update-debt');
+});
+
+Route::group(['prefix'=>'reports'],function(){
+    Route::get('store-stock', [ReportController::class, 'getStoreStockReport'])->name('reports.store-stock');
+    Route::get('wholesale-summary', [ReportController::class, 'getWholesaleSummaryReport'])->name('reports.wholesale-summary');
+});
+
+Route::resource('purchases', PurchaseController::class);
+Route::resource('move-items', MoveItemController::class);
+Route::resource('retail-sales', RetailSaleController::class);
+Route::resource('wholesales', WholesaleController::class);
+Route::resource('warehouses', WarehouseController::class);
+Route::resource('sales', SaleController::class);
+

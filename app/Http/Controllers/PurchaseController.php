@@ -21,14 +21,14 @@ class PurchaseController extends Controller
      */
     public function index()
     {
-        $AWAL = 'M23';
+        $AWAL = 'PCH';
         $bulanRomawi = array("", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII");
         $noUrutAkhir = Purchase::max('id');
         $no = 1;
         if ($noUrutAkhir) {
-            $noInvoice = sprintf("%09s", abs($noUrutAkhir + 1)) . '/' . $AWAL . '/' . $bulanRomawi[date('n')] . '/' . date('Y');
+            $noInvoice = sprintf("%012s", abs($noUrutAkhir + 1)) . '/' . $AWAL . '/' . $bulanRomawi[date('n')] . '/' . date('Y');
         } else {
-            $noInvoice = sprintf("%09s", $no) . '/' . $AWAL . '/' . $bulanRomawi[date('n')] . '/' . date('Y');
+            $noInvoice = sprintf("%012s", $no) . '/' . $AWAL . '/' . $bulanRomawi[date('n')] . '/' . date('Y');
         }
         return view('purchases.index', ['noInvoice' => $noInvoice]);
     }
@@ -44,14 +44,14 @@ class PurchaseController extends Controller
         return $suppliers;
     }
 
-    public function itemsList(Request $request)
+    public function itemsList()
     {
         if (request()->ajax()) {
             $data = DB::table('items')
                 ->join('categories', 'categories.id', '=', 'items.category_id')
                 ->join('providers', 'providers.id', '=', 'items.provider_id')
                 ->join('stocks', 'items.id', '=', 'stocks.item_id')
-                ->select('items.id', 'providers.id as provider_id', 'providers.nama as nama_provider', 'items.nama', 'categories.nama as nama_kategori')
+                ->select('items.id', 'providers.id as provider_id', 'providers.nama as nama_provider', 'items.nama', 'categories.nama as nama_kategori', 'stocks.stok_gudang')
                 ->orderBy('nama_provider', 'asc')
                 ->orderBy('items.nama', 'asc');
 
@@ -173,7 +173,6 @@ class PurchaseController extends Controller
     public function edit($id)
     {
         $purchase = Purchase::with('supplier')->findOrFail($id);
-        $supplier = Supplier::all();
 
         $purchaseDetails = DB::table('purchase_details')
             ->join('items', 'purchase_details.item_id', '=', 'items.id')
@@ -182,10 +181,11 @@ class PurchaseController extends Controller
             ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.keterangan', 'purchase_details.*', 'items.nama', 'providers.nama as nama_provider')
             ->selectRaw('purchase_details.kuantitas * purchase_details.harga as sub_total')
             // ->selectRaw('((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga)) as total_ppn')
+            ->orderBy('items.nama', 'asc')
             ->where('purchase_id', $id)
             ->get();
 
-        return view('purchases.edit', compact('purchase', 'supplier', 'purchaseDetails'));
+        return view('purchases.edit', compact('purchase', 'purchaseDetails'));
     }
 
     /**
@@ -268,7 +268,7 @@ class PurchaseController extends Controller
             $updateStocks->stok_gudang = $updateStocks->stok_gudang + $updatePurchaseDetails->kuantitas;
             $updateItems->id = $updatePurchaseDetails->item_id;
 
-            DB::transaction(function () use ($updatePurchaseDetails, $updateStocks, $updateItems) {
+            DB::transaction(function() use ($updatePurchaseDetails, $updateStocks, $updateItems) {
                 $updatePurchaseDetails->save();
                 $updateItems->stock()->save($updateStocks);
             });
@@ -354,7 +354,7 @@ class PurchaseController extends Controller
             }
             return datatables()->of($purchases)
                 ->addColumn('action', function ($purchases) {
-                    return '<a href="/purchases-debt-edit/' . $purchases->idPurchase . '/edit" class="btn btn-sm"
+                    return '<a href="debt/' . $purchases->idPurchase . '/edit" class="btn btn-sm"
                 style="background-color:transparent;">
                 <i class="fa fa-eye"></i></a>';
                 })
@@ -368,7 +368,7 @@ class PurchaseController extends Controller
                     if ($purchases->pajak == "Non PPN") return number_format($purchases->total_non_ppn, 0, ',', '.');
                 })
                 ->editColumn('status_color', function ($purchases) {
-                    if (Carbon::today() >= $purchases->jatuh_tempo) return 'red';
+                    if ($purchases->is_lunas == 0 && Carbon::today() >= $purchases->jatuh_tempo) return 'red';
                     return $purchases->is_lunas && Purchase::STATUS_COLOR[$purchases->is_lunas] ? Purchase::STATUS_COLOR[$purchases->is_lunas] : Purchase::STATUS_COLOR[$purchases->is_lunas];
                 })
                 ->editColumn('tanggal', function ($purchases) {
@@ -390,7 +390,6 @@ class PurchaseController extends Controller
     public function editDebt($id)
     {
         $purchase = Purchase::with('supplier')->findOrFail($id);
-        $supplier = Supplier::all();
 
         $purchaseDetails = DB::table('purchase_details')
             ->join('items', 'purchase_details.item_id', '=', 'items.id')
@@ -402,7 +401,7 @@ class PurchaseController extends Controller
             ->where('purchase_id', $id)
             ->get();
 
-        return view('purchases.edit-debt', compact('purchase', 'supplier', 'purchaseDetails'));
+        return view('purchases.edit-debt', compact('purchase', 'purchaseDetails'));
     }
 
     public function updateDebt(Request $request, $id)
@@ -435,12 +434,10 @@ class PurchaseController extends Controller
         $tanggalMulai = $request->get('tanggal_mulai');
         $tanggalAkhir = $request->get('tanggal_akhir');
 
-
         $purchases = Purchase::with('purchaseDetails', 'supplier')
             ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59'])
             ->orderBy('tanggal', 'desc')
             ->paginate(10);
-
 
         return view('purchases.report', ['purchases' => $purchases]);
     }

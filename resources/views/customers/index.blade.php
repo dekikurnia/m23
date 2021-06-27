@@ -55,7 +55,7 @@
                 <div class="card-body">
                     <a href="{{route('customers.create')}}" class="btn btn-primary">Tambah Customer</a>
                     <p>
-                        <table class="table table-bordered table-stripped table-sm">
+                        <table class="table table-stripped table-sm">
                             <thead class="thead-light">
                                 <tr>
                                     <th style="width: 10%"><b>Kode</b></th>
