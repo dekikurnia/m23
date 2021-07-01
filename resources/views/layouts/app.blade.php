@@ -101,10 +101,11 @@
                                 <a class="dropdown-item" href="#">Laporan Stok Gudang</a>
                                 <a class="dropdown-item" href="{{ route('reports.store-stock') }}">Laporan Stok Toko</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Laporan Penjualan Retail (Summary)</a>
-                                <a class="dropdown-item" href="#">Laporan Penjualan Grosir (Summary)</a>
+                                <a class="dropdown-item" href="{{ route('reports.retail-summary') }}">Laporan Penjualan Retail (Summary)</a>
+                                <a class="dropdown-item" href="{{ route('reports.wholesale-summary') }}">Laporan Penjualan Grosir (Summary)</a>
+                                <a class="dropdown-item" href="{{ route('reports.warehouse-summary') }}">Laporan Penjualan Gudang (Summary)</a>
+                                <a class="dropdown-item" href="{{ route('reports.store-sale') }}">Laporan Penjualan Toko</a>
                                 <a class="dropdown-item" href="#">Laporan Penjualan Gudang</a>
-                                <a class="dropdown-item" href="#">Laporan Penjualan Toko</a>
                             </div>
                         </li>
                         <li class="nav-item">

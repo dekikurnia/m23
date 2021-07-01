@@ -10985,11 +10985,17 @@ select {
     border: none;
 }
 
-table {
-    border-collapse: separate;
-    border-spacing: 0 5px;
-}
-
 .modal-dialog {
     max-width: 60%;
+}
+
+table.table-bordered{
+    border:1px solid black;
+    margin-top:20px;
+  }
+table.table-bordered > thead > tr > th{
+    border:1px solid black;
+}
+table.table-bordered > tbody > tr > td{
+    border:1px solid black;
 }

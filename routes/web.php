@@ -64,6 +64,9 @@ Route::group(['prefix'=>'sales'],function(){
 Route::group(['prefix'=>'reports'],function(){
     Route::get('store-stock', [ReportController::class, 'getStoreStockReport'])->name('reports.store-stock');
     Route::get('wholesale-summary', [ReportController::class, 'getWholesaleSummaryReport'])->name('reports.wholesale-summary');
+    Route::get('retail-summary', [ReportController::class, 'getRetailSummaryReport'])->name('reports.retail-summary');
+    Route::get('warehouse-summary', [ReportController::class, 'getWarehouseSummaryReport'])->name('reports.warehouse-summary');
+    Route::get('store-sale', [ReportController::class, 'getStoreSaleReport'])->name('reports.store-sale');
 });
 
 Route::resource('purchases', PurchaseController::class);

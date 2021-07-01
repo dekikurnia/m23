@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('title') Laporan Pembelian @endsection
+@section('title') Laporan Penjualan Gudang (Summary) @endsection
 @section('content')
 <div class="container-fluid">
-    <h2 align="center">
-        LAPORAN PEMBELIAN<br>
-    </h2>
+    <h3 align="center">
+        LAPORAN PENJUALAN GUDANG (SUMMARY)<br>
+    </h3>
     <hr class="my-3">
     <br>
     <div class="row justify-content-center">
@@ -28,71 +28,75 @@
     <table class="table table-sm">
         <thead>
             <tr>
-                <th></th>
-                <th>Tanggal</th>
-                <th style="text-align: center">Invoice</th>
-                <th style="text-align: center; width: 20%">Supplier</th>
-                <th>Pajak</th>
-                <th>Status</th>
-                <th>Tanggal Lunas</th>
+                <th style="width: 7%">Tanggal</th>
+                <th style="width: 16%">Invoice</th>
+                <th style="width: 15%">Customer</th>
+                <th style="width: 10%">Pajak</th>
+                <th style="width: 10%">Cara Bayar</th>
+                <th style="width: 15%">Keterangan</th>
+                <th style="width: 10%">Status</th>
+                <th style="width: 20%">Tanggal Lunas</th>
             </tr>
             <tr class="info">
                 <th></th>
-                <th style="text-align: right; width: 15%">Provider</th>
-                <th style="text-align: right; width: 20%">Nama Barang</th>
-                <th></th>
+                <th style="text-align: right; width: 18%">Provider</th>
+                <th style="text-align: right; width: 15%">Nama Barang</th>
+                <th style="width: 10%"></th>
+                <th style="width: 10%"></th>
                 <th style="text-align: right; width: 15%">Kuantitas</th>
-                <th style="text-align: right; width: 15%">Harga Beli</th>
-                <th style="text-align: right; width: 15%">Sub Total</th>
+                <th style="text-align: right; width: 10%">Harga Jual</th>
+                <th style="text-align: right; width: 20%">Sub Total</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($purchases as $purchase)
+            @foreach ($sales as $sale)
             <tr class="table-active">
-                <td></td>
-                <td>{{$purchase->tanggal}}</td>
-                <td>{{$purchase->invoice}}</td>
-                <td style="text-align: center; width: 20%">{{$purchase->supplier->nama}}</td>
-                <td>{{$purchase->pajak}}</td>
-                @if($purchase->is_lunas == 0)
-                <td>BELUM LUNAS</td>
+                <td>{{$sale->tanggal}}</td>
+                <td style="width: 16%">{{$sale->invoice}}</td>
+                <td style="width: 15%">{{$sale->customer->nama}}</td>
+                <td style="width: 10%">{{$sale->pajak}}</td>
+                <td style="width: 10%">{{$sale->cara_bayar}}</td>
+                <td style="width: 15%">{{$sale->keterangan}}</td>
+                @if($sale->is_lunas == 0)
+                <td style="width: 10%">BELUM LUNAS</td>
                 @else
-                <td>LUNAS</td>
+                <td style="width: 10%">LUNAS</td>
                 @endif
-                <td>{{$purchase->tanggal_lunas}}</td>
+                <td style="width: 20%">{{$sale->tanggal_lunas}}</td>
             </tr>
-            <td colspan="7">
+            <td colspan="9">
                 <div style="display: none">
                     {{ $subTotal = 0 }}
                     {{ $ppn = 0 }}
                     {{ $total = 0 }}
                 </div>
-                @foreach ($purchase->purchaseDetails as $purchaseDetail)
+                @foreach ($sale->saleDetails as $saleDetail)
                 <tr class="table-light bordered">
-                    <td>
-                    <td style="text-align: right; width: 15%">{{ $purchaseDetail->item->provider->nama}}</td>
-                    <td style="text-align: right; width: 15%">{{ $purchaseDetail->item->nama}}</td>
-                    <td>
-                    <td style="text-align: right; width: 15%">{{ number_format($purchaseDetail->kuantitas, 0, ',', '.') }}</td>
-                    <td style="text-align: right; width: 15%">{{ number_format($purchaseDetail->harga, 0, ',', '.') }}
-                    </td>
-                    <td style="text-align: right; width: 15%">
-                        {{ number_format(($purchaseDetail->kuantitas * $purchaseDetail->harga), 0, ',', '.')}}</td>
-                    <div style="display: none">{{$subTotal += ($purchaseDetail->kuantitas * $purchaseDetail->harga)}}</div>
+                    <td></td>
+                    <td style="text-align: right; width: 16%; font-size: 12px;">{{ $saleDetail->item->provider->nama}}</td>
+                    <td style="text-align: right; width: 15%; font-size: 12px;">{{ $saleDetail->item->nama}}</td>
+                    <td style="text-align: center; width: 10%"></td>
+                    <td style="width: 10%"></td>
+                    <td style="text-align: right; width: 10%; font-size: 12px;">{{ number_format($saleDetail->kuantitas, 0, ',', '.') }}</td>
+                    <td style="text-align: right; width: 10%; font-size: 12px;">{{ number_format($saleDetail->harga, 0, ',', '.') }}
+                    <td style="text-align: right; width: 20%; font-size: 12px;">
+                        {{ number_format(($saleDetail->kuantitas * $saleDetail->harga), 0, ',', '.')}}</td>
+                    <div style="display: none">{{$subTotal += ($saleDetail->kuantitas * $saleDetail->harga)}}</div>
                     <div style="display: none">{{$ppn = ($subTotal* 0.1)}}</div>
                     <div style="display: none">{{$total = ($ppn + $subTotal)}}</div>
                 </tr>
                 @endforeach
-                @if($purchase->pajak == 'Non PPN')
+                @if($sale->pajak == 'Non PPN')
                 <tr class="row-non">
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td>
-                    <td style="text-align: right; width: 15%"></td>
-                    <td style="text-align: right; width: 15%; font-weight:bold">
+                    <td></td>
+                    <td></td>
+                    <td style="text-align: right; width: 10%"></td>
+                    <td style="text-align: right; width: 15%; font-weight:bold; font-size: 12px;">
                         TOTAL : </td>
-                    <td style="text-align: right; width: 15%; font-weight:bold;" class="total-non">
+                    <td style="text-align: right; width: 20%; font-weight:bold; font-size: 12px;" class="total-non">
                         {{ number_format($subTotal, 0, ',', '.') }} 
                     </td>
                 </tr>
@@ -101,11 +105,12 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td>
-                    <td style="text-align: right; width: 15%"></td>
-                    <td style="text-align: right; width: 15%; font-weight:bold">
+                    <td></td>
+                    <td></td>
+                    <td style="text-align: right; width: 10%"></td>
+                    <td style="text-align: right; width: 15%; font-weight:bold; font-size: 12px;">
                         SUB TOTAL : </td>
-                    <td style="text-align: right; width: 15%; font-weight:bold;" class="total-non">
+                    <td style="text-align: right; width: 20%; font-weight:bold; font-size: 12px;" class="total-non">
                         {{ number_format($subTotal, 0, ',', '.') }} 
                     </td>
                 </tr>
@@ -113,19 +118,21 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td>
-                    <td style="text-align: right; width: 15%"></td>
-                    <td style="text-align: right; width: 15%; font-weight:bold">PPN :</td>
-                    <td style="text-align: right; width: 15%; font-weight:bold;" class="ppn">{{ number_format($ppn, 0, ',', '.') }}</td>
+                    <td></td>
+                    <td></td>
+                    <td style="text-align: right; width: 10%"></td>
+                    <td style="text-align: right; width: 15%; font-weight:bold; font-size: 12px;">PPN :</td>
+                    <td style="text-align: right; width: 20%; font-weight:bold; font-size: 12px;" class="ppn">{{ number_format($ppn, 0, ',', '.') }}</td>
                 </tr>
                 <tr class="row-ppn">
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td>
-                    <td style="text-align: right; width: 15%"></td>
-                    <td style="text-align: right; width: 15%; font-weight:bold">TOTAL :</td>
-                    <td style="text-align: right; width: 15%; font-weight:bold;" class="total-ppn">{{ number_format($total, 0, ',', '.') }}</td>
+                    <td></td>
+                    <td></td>
+                    <td style="text-align: right; width: 10%"></td>
+                    <td style="text-align: right; width: 15%; font-weight:bold; font-size: 12px;">TOTAL :</td>
+                    <td style="text-align: right; width: 20%; font-weight:bold; font-size: 12px;" class="total-ppn">{{ number_format($total, 0, ',', '.') }}</td>
                 </tr>
                 @endif
                 <tr>
@@ -138,16 +145,17 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td>
+                <td></td>
+                <td></td>
                 <td style="text-align: right; width: 15%"></td>
-                <td style="text-align: right; width: 15%; font-weight:bold; font-size: 16px;">GRAND TOTAL :</td>
-                <td style="text-align: right; width: 15%; font-weight:bold; font-size: 16px;" class="grand-total"></td>
+                <td style="text-align: right; width: 15%; font-weight:bold; font-size: 14px;">GRAND TOTAL :</td>
+                <td style="text-align: right; width: 20%; font-weight:bold; font-size: 14px;" class="grand-total"></td>
             </tr>
         </tbody>
         <tfoot>
             <tr>
                 <td colSpan="10">
-                    {{$purchases->appends(Request::all())->links()}}
+                    {{$sales->appends(Request::all())->links()}}
                 </td>
             </tr>
         </tfoot>

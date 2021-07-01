@@ -20,7 +20,7 @@ class SaleController extends Controller
         if (request()->ajax()) {
             if (!empty($request->tanggal_mulai)) {
                 $sales = DB::table('sales')
-                    ->join('customers', 'sales.customer_id', '=', 'customers.id')
+                    ->leftJoin('customers', 'sales.customer_id', '=', 'customers.id')
                     ->join('sale_details', 'sale_details.sale_id', '=', 'sales.id')
                     ->join('users', 'sales.user_id', '=', 'users.id')
                     ->select('sales.id as idSale', 'sales.tanggal', 'sales.invoice', 'sales.pajak', 'sales.jenis', 'sales.keterangan', 'customers.nama as nama_customer', 'users.username as nama_pengguna', 'sale_details.*')

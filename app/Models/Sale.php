@@ -18,9 +18,9 @@ class Sale extends Model
         1   => '#5cb85c',
     ];
 
-    public function purchaseDetails()
+    public function saleDetails()
     {
-        return $this->hasMany(PurchaseDetail::class, 'purchase_id');
+        return $this->hasMany(SaleDetail::class, 'sale_id');
     }
 
     public function customer()
