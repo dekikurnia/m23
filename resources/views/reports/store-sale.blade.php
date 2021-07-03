@@ -9,14 +9,16 @@
     <div class="row justify-content-center">
         <div class="row justify-content-center input-daterange">
             <form class="form-inline">
-                <input type="text" placeholder="Tanggal Mulai" class="form-control mb-2 mr-sm-2" id="tanggal_mulai"
+                <input type="text" value="{{Request::get('tanggalMulai')}}"  placeholder="Tanggal Mulai" class="form-control mb-2 mr-sm-2" id="tanggal_mulai"
                     name="tanggal_mulai" autocomplete="off">
                 <div class="input-group mb-2 mr-sm-2">
-                    <input type="text" placeholder="Tanggal Akhir" class="form-control" id="tanggal_akhir"
+                    <input type="text" value="{{Request::get('tanggalAkhir')}}" placeholder="Tanggal Akhir" class="form-control" id="tanggal_akhir"
                         name="tanggal_akhir" autocomplete="off">
                 </div>
-                <button type="button" name="filter" id="filter" class="btn btn-primary mb-2">Tampilkan</button>&nbsp;
-                <button type="button" name="refresh" id="refresh" class="btn btn-danger mb-2">Hapus Tanggal</button>
+                <button type="submit" id="filter" class="btn btn-primary mb-2">Tampilkan
+                    Tanggal</button>&nbsp;
+                <button type="submit" id="refresh" class="btn btn-danger mb-2">Hapus
+                    Tanggal</button>&nbsp;
             </form>
         </div>
         <div class="col-md-12">
@@ -42,15 +44,24 @@
                     @foreach ($sales as $sale)
                     <tr>
                         <td>{{$sale->nama_provider}}</td>
-                        <td>{{$sale->nama_item}}</td>
-                        <td style="text-align: right;">{{$sale->kuantitas_retail}}</td>
-                        <td style="text-align: right;"></td>
-                        <td style="text-align: right;"></td>
-                        <td style="text-align: right;"></td>
-                        <td style="text-align: right;"></td>
-                        <td style="text-align: right;"></td>
+                        <td style="width: 20%">{{$sale->nama_item}}</td>
+                        <td style="text-align: right;">{{ number_format($sale->kuantitas_retail, 0, ',', '.') }}</td>
+                        <td style="text-align: right;" class="harga-retail">{{ number_format($sale->harga_retail, 0, ',', '.') }}</td>
+                        <td style="text-align: right;">{{ number_format($sale->kuantitas_grosir, 0, ',', '.') }}</td>
+                        <td style="text-align: right;" class="harga-grosir">{{ number_format($sale->harga_grosir, 0, ',', '.') }}</td>
+                        <td style="text-align: right;">{{ number_format(($sale->kuantitas_retail) + ($sale->kuantitas_grosir), 0, ',', '.') }}</td>
+                        <td style="text-align: right;" class="harga-total">{{ number_format(($sale->harga_retail) + ($sale->harga_grosir), 0, ',', '.') }}</td>
                     </tr>
                     @endforeach
+                    <tr>
+                        <td colspan="2"></td>
+                        <td style="text-align: right; font-weight:bold; font-size: 14px;">Retail</td>
+                        <td style="text-align: right; font-weight:bold; font-size: 14px;" class="total-retail"></td>
+                        <td style="text-align: right; font-weight:bold; font-size: 14px;">Grosir</td>
+                        <td style="text-align: right; font-weight:bold; font-size: 14px;" class="total-grosir"></td>
+                        <td style="text-align: right; font-weight:bold; font-size: 14px;">Total</td>
+                        <td style="text-align: right; font-weight:bold; font-size: 14px;" class="grand-total"></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -61,26 +72,26 @@
 @section('js')
 <script type="text/javascript">
     $(document).ready(function () {
-        function reverseFormatNumber(val, locale) {
-            var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
-            var decimal = new Intl.NumberFormat(locale).format(1.1).replace(/1/g, '');
-            var reversedVal = val.replace(new RegExp('\\' + group, 'g'), '');
-            reversedVal = reversedVal.replace(new RegExp('\\' + decimal, 'g'), '.');
-            return Number.isNaN(reversedVal) ? 0 : reversedVal;
-        }
 
         $(function () {
-            var grandTotalNon = 0;
-            var grandTotalPPN = 0;
-            $(".row-non .total-non").each(function (index, value) {
+            var totalRetail = 0;
+            var totalGrosir = 0;
+            var grandTotal = 0;
+            $(".harga-retail").each(function (index, value) {
                 currentRow = parseFloat($(this).text().replace(/\./g, ""))
-                grandTotalNon += currentRow
+                totalRetail += currentRow
             });
-            $(".row-ppn .total-ppn").each(function (index, value) {
+            $(".harga-grosir").each(function (index, value) {
                 currentRow = parseFloat($(this).text().replace(/\./g, ""))
-                grandTotalPPN += currentRow
+                totalGrosir += currentRow
             });
-            $(".grand-total").text((grandTotalNon+grandTotalPPN).toLocaleString("id-ID"))
+            $(".harga-total").each(function (index, value) {
+                currentRow = parseFloat($(this).text().replace(/\./g, ""))
+                grandTotal += currentRow
+            });
+            $(".total-retail").text((totalRetail).toLocaleString("id-ID"))
+            $(".total-grosir").text((totalGrosir).toLocaleString("id-ID"))
+            $(".grand-total").text((grandTotal).toLocaleString("id-ID"))
         });
 
         $(".input-daterange").datepicker({

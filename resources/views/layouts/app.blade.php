@@ -105,7 +105,7 @@
                                 <a class="dropdown-item" href="{{ route('reports.wholesale-summary') }}">Laporan Penjualan Grosir (Summary)</a>
                                 <a class="dropdown-item" href="{{ route('reports.warehouse-summary') }}">Laporan Penjualan Gudang (Summary)</a>
                                 <a class="dropdown-item" href="{{ route('reports.store-sale') }}">Laporan Penjualan Toko</a>
-                                <a class="dropdown-item" href="#">Laporan Penjualan Gudang</a>
+                                <a class="dropdown-item" href="{{ route('reports.warehouse-sale') }}">Laporan Penjualan Gudang</a>
                             </div>
                         </li>
                         <li class="nav-item">
