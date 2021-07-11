@@ -27,7 +27,9 @@ class CreateItemRequest extends FormRequest
         return [
             'provider_id'   => 'required',
             'nama'          => 'required',
-            'category_id'   => 'required'
+            'category_id'   => 'required',
+            'stok_toko'   => 'required',
+            'stok_gudang'   => 'required',
         ];
     }
 
@@ -37,6 +39,8 @@ class CreateItemRequest extends FormRequest
             'provider_id.required'   => 'Provider wajib diisi.',
             'nama.required'          => 'Nama barang wajib diisi.',
             'category_id.required'   => 'Kategori wajib diisi.',
+            'stok_toko.required'     => 'Stok toko wajib diisi.',
+            'stok_gudang.required'   => 'Stok gudang wajib diisi.',
         ];
     }
 }

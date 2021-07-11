@@ -344,13 +344,13 @@ function calcTotal() {
                 $('#itemsModal').modal('hide');
 
                 hitungTotal();
-                cekStokToko();
-                compareStokKuantitas();
+                //cekStokToko();
+                //compareStokKuantitas();
             });
             
             /*fungsi ini untuk membandingkan kuantitas dan stok toko yang tersedia,
             jika kuantitas melebihi stok toko, maka beri pesan
-            */
+            
             function compareStokKuantitas() {
                 $(".row-wholesales input").keyup(cekStok);
 
@@ -369,8 +369,10 @@ function calcTotal() {
                     });
                 }
             }
+            */
 
             //fungsi ini untuk mengecek jumlah stok toko, beri pesan jika stok toko bernilai 0
+            /*
             function cekStokToko() {
                 $("tr.row-wholesales").each(function () {
                     if ($('.stok-toko', this).val()== 0) {
@@ -382,6 +384,7 @@ function calcTotal() {
                     }
                 });
             }
+            */
 
             function hitungTotal() {
                 $(".row-wholesales input").keyup(multInputs);

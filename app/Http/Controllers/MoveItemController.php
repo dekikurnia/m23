@@ -200,7 +200,7 @@ class MoveItemController extends Controller
             $request->all(),
             [
                 'tanggal'   => 'required',
-                'kuantitas' => 'required|max:{$updateStocks->stok_gudang}'
+                'kuantitas' => 'required'
             ],
             [
                 'tanggal.required'      => 'Tanggal pindah barang wajib diisi.',
@@ -229,7 +229,7 @@ class MoveItemController extends Controller
             $updateMoveItemDetails ->kuantitas = $request->kuantitas[$row];
 
             $updateStocks = Stock::where('item_id', $updateMoveItemDetails ->item_id)->first();
-            $updateStocks->stok_gudang = $updateStocks->stok_gudang - $updateMoveItemDetails ->kuantitas;
+            $updateStocks->stok_gudang = $updateStocks->stok_gudang - $updateMoveItemDetails->kuantitas;
             $updateStocks->stok_toko = $updateStocks->stok_toko + $updateMoveItemDetails->kuantitas;
             $items->id = $updateMoveItemDetails ->item_id;
 

@@ -98,7 +98,7 @@
                                 Laporan Penjualan
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Laporan Stok Gudang</a>
+                                <a class="dropdown-item" href="{{ route('reports.warehouse-stock') }}">Laporan Stok Gudang</a>
                                 <a class="dropdown-item" href="{{ route('reports.store-stock') }}">Laporan Stok Toko</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ route('reports.retail-summary') }}">Laporan Penjualan Retail (Summary)</a>
@@ -108,8 +108,15 @@
                                 <a class="dropdown-item" href="{{ route('reports.warehouse-sale') }}">Laporan Penjualan Gudang</a>
                             </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Manajemen Pengguna<span class="sr-only">(current)</span></a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Manajemen Pengguna
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="#">Kelola Role</a>
+                                <a class="dropdown-item" href="#">Kelola Pengguna</a>
+                            </div>
                         </li>
                     </ul>
 

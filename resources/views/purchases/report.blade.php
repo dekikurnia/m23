@@ -2,19 +2,14 @@
 @section('title') Laporan Pembelian @endsection
 @section('content')
 <div class="container-fluid">
-    <h2 align="center">
-        LAPORAN PEMBELIAN<br>
-    </h2>
-    <hr class="my-3">
-    <br>
     <div class="row justify-content-center">
         <div class="row justify-content-center input-daterange">
             <form class="form-inline">
-                <input type="text"  value="{{Request::get('tanggalMulai')}}" placeholder="Tanggal Mulai" class="form-control mb-2 mr-sm-2" id="tanggal_mulai"
-                    name="tanggal_mulai" autocomplete="off">
+                <input type="text" value="{{Request::get('tanggal_mulai')}}" placeholder="Tanggal Mulai"
+                    class="form-control mb-2 mr-sm-2" id="tanggal_mulai" name="tanggal_mulai" autocomplete="off">
                 <div class="input-group mb-2 mr-sm-2">
-                    <input type="text" value="{{Request::get('tanggalAkhir')}}" placeholder="Tanggal Akhir" class="form-control" id="tanggal_akhir"
-                        name="tanggal_akhir" autocomplete="off">
+                    <input type="text" value="{{Request::get('tanggal_akhir')}}" placeholder="Tanggal Akhir"
+                        class="form-control" id="tanggal_akhir" name="tanggal_akhir" autocomplete="off">
                 </div>
                 <button type="submit" id="filter" class="btn btn-primary mb-2">Tampilkan
                     Tanggal</button>&nbsp;
@@ -23,6 +18,24 @@
                 <!-- <button type="button" name="pdf" id="pdf" class="btn btn-success mb-2">Export PDF</button> !-->
             </form>
         </div>
+    </div>
+    <hr class="my-3">
+    <div class="col-md-12">
+        <h5 align="center">
+            <b>LAPORAN PEMBELIAN</b>
+        </h5>
+    </div>
+    <div class="col-md-12">
+        <p align="center">
+            <b>
+                @if( empty(Request::get('tanggal_mulai')))
+                {{ Carbon\Carbon::today()->format('d F Y')}} - {{Carbon\Carbon::today()->format('d F Y')}}
+                @else
+                {{date('d F Y', strtotime(Request::get('tanggal_mulai')))}} -
+                {{date('d F Y', strtotime(Request::get('tanggal_akhir')))}}
+                @endif
+            </b>
+        </p>
     </div>
     <br />
     <table class="table table-sm">
@@ -73,12 +86,14 @@
                     <td style="text-align: right; width: 15%">{{ $purchaseDetail->item->provider->nama}}</td>
                     <td style="text-align: right; width: 15%">{{ $purchaseDetail->item->nama}}</td>
                     <td>
-                    <td style="text-align: right; width: 15%">{{ number_format($purchaseDetail->kuantitas, 0, ',', '.') }}</td>
+                    <td style="text-align: right; width: 15%">
+                        {{ number_format($purchaseDetail->kuantitas, 0, ',', '.') }}</td>
                     <td style="text-align: right; width: 15%">{{ number_format($purchaseDetail->harga, 0, ',', '.') }}
                     </td>
                     <td style="text-align: right; width: 15%">
                         {{ number_format(($purchaseDetail->kuantitas * $purchaseDetail->harga), 0, ',', '.')}}</td>
-                    <div style="display: none">{{$subTotal += ($purchaseDetail->kuantitas * $purchaseDetail->harga)}}</div>
+                    <div style="display: none">{{$subTotal += ($purchaseDetail->kuantitas * $purchaseDetail->harga)}}
+                    </div>
                     <div style="display: none">{{$ppn = ($subTotal* 0.1)}}</div>
                     <div style="display: none">{{$total = ($ppn + $subTotal)}}</div>
                 </tr>
@@ -93,7 +108,7 @@
                     <td style="text-align: right; width: 15%; font-weight:bold">
                         TOTAL : </td>
                     <td style="text-align: right; width: 15%; font-weight:bold;" class="total-non">
-                        {{ number_format($subTotal, 0, ',', '.') }} 
+                        {{ number_format($subTotal, 0, ',', '.') }}
                     </td>
                 </tr>
                 @else
@@ -106,7 +121,7 @@
                     <td style="text-align: right; width: 15%; font-weight:bold">
                         SUB TOTAL : </td>
                     <td style="text-align: right; width: 15%; font-weight:bold;" class="total-non">
-                        {{ number_format($subTotal, 0, ',', '.') }} 
+                        {{ number_format($subTotal, 0, ',', '.') }}
                     </td>
                 </tr>
                 <tr>
@@ -116,7 +131,8 @@
                     <td>
                     <td style="text-align: right; width: 15%"></td>
                     <td style="text-align: right; width: 15%; font-weight:bold">PPN :</td>
-                    <td style="text-align: right; width: 15%; font-weight:bold;" class="ppn">{{ number_format($ppn, 0, ',', '.') }}</td>
+                    <td style="text-align: right; width: 15%; font-weight:bold;" class="ppn">
+                        {{ number_format($ppn, 0, ',', '.') }}</td>
                 </tr>
                 <tr class="row-ppn">
                     <td></td>
@@ -125,7 +141,8 @@
                     <td>
                     <td style="text-align: right; width: 15%"></td>
                     <td style="text-align: right; width: 15%; font-weight:bold">TOTAL :</td>
-                    <td style="text-align: right; width: 15%; font-weight:bold;" class="total-ppn">{{ number_format($total, 0, ',', '.') }}</td>
+                    <td style="text-align: right; width: 15%; font-weight:bold;" class="total-ppn">
+                        {{ number_format($total, 0, ',', '.') }}</td>
                 </tr>
                 @endif
                 <tr>

@@ -269,6 +269,7 @@
                                 title: 'Oops...',
                                 text: 'Kuantitas melebihi stok gudang',
                             })
+                            $('.kuantitas').val("");
                         }
                     });
                 }
@@ -283,6 +284,8 @@
                             title: 'Oops...',
                             text: 'Stok gudang tidak tersedia',
                         })
+                        $(this).closest("tr").remove();
+                        counter -= 1
                     }
                 });
             }

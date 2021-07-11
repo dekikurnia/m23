@@ -32,7 +32,7 @@
                 <div class="card-body">
                     <a href="{{route('items.create')}}" class="btn btn-primary">Tambah Barang</a>
                     <p>
-                        <table class="table table-striped table-sm" id="items_table">
+                        <table class="table table-sm" id="items_table">
                             <thead class="thead-light">
                                 <tr>
                                     <th style="width: 20%"><b>Provider</b></th>
@@ -45,8 +45,8 @@
                                             @endforeach
                                         </select>
                                     </th>
-                                    <th style="width: 10%"><b>Stok Gudang</b></th>
-                                    <th style="width: 10%"><b>Stok Toko</b></th>
+                                    <th style="width: 15%;"><b>Stok Gudang</b></th>
+                                    <th style="width: 15%;"><b>Stok Toko</b></th>
                                     <th style="width: 5%"><b>Aksi</b></th>
                                 </tr>
                             </thead>

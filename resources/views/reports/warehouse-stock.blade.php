@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title') Laporan Stok Toko @endsection
+@section('title') Laporan Stok Gudang @endsection
 @section('content')
 <div class="container-fluid">
     <div class="row justify-content-center input-daterange">
@@ -20,7 +20,7 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <h5 align="center">
-                <b>LAPORAN STOK TOKO</b>
+                <b>LAPORAN STOK GUDANG</b>
             </h5>
         </div>
         <div class="col-md-12">
@@ -47,8 +47,8 @@
                         <th class="align-middle" rowspan="2" style="text-align: center">Stok Akhir</th>
                     </tr>
                     <tr>
-                        <th style="text-align: center">Retail</th>
-                        <th style="text-align: center">Grosir</th>
+                        <th style="text-align: center">Pindah ke Toko</th>
+                        <th style="text-align: center">Langsung Jual</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,9 +57,9 @@
                         <td>{{$stock->nama_provider}}</td>
                         <td style="width: 20%">{{$stock->nama_item}}</td>
                         <td style="text-align: right;">{{$stock->stok_awal}}</td>
-                        <td style="text-align: right;">{{ $stock->kuantitas_pindah}}</td>
-                        <td style="text-align: right;">{{ $stock->kuantitas_retail}}</td>
-                        <td style="text-align: right;">{{ $stock->kuantitas_grosir}}</td>
+                        <td style="text-align: right;">{{$stock->kuantitas_pembelian}}</td>
+                        <td style="text-align: right;">{{$stock->kuantitas_pindah}}</td>
+                        <td style="text-align: right;">{{$stock->kuantitas_gudang}}</td>
                         <td style="text-align: right;">{{$stock->stok_akhir}}</td>
                     </tr>
                     @endforeach

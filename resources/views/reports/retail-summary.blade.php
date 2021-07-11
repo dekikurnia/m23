@@ -2,18 +2,13 @@
 @section('title') Laporan Penjualan Retail @endsection
 @section('content')
 <div class="container-fluid">
-    <h3 align="center">
-        LAPORAN PENJUALAN RETAIL<br>
-    </h3>
-    <hr class="my-3">
-    <br>
     <div class="row justify-content-center">
         <div class="row justify-content-center input-daterange">
             <form class="form-inline">
-                <input type="text"  value="{{Request::get('tanggalMulai')}}" placeholder="Tanggal Mulai" class="form-control mb-2 mr-sm-2" id="tanggal_mulai"
+                <input type="text"  value="{{Request::get('tanggal_mulai')}}" placeholder="Tanggal Mulai" class="form-control mb-2 mr-sm-2" id="tanggal_mulai"
                     name="tanggal_mulai" autocomplete="off">
                 <div class="input-group mb-2 mr-sm-2">
-                    <input type="text" value="{{Request::get('tanggalAkhir')}}" placeholder="Tanggal Akhir" class="form-control" id="tanggal_akhir"
+                    <input type="text" value="{{Request::get('tanggal_akhir')}}" placeholder="Tanggal Akhir" class="form-control" id="tanggal_akhir"
                         name="tanggal_akhir" autocomplete="off">
                 </div>
                 <button type="submit" id="filter" class="btn btn-primary mb-2">Tampilkan
@@ -24,7 +19,25 @@
             </form>
         </div>
     </div>
-    <br />
+    <hr class="my-3">
+    <div class="col-md-12">
+        <h5 align="center">
+            <b>LAPORAN PENJUALAN RETAIL (SUMMARY)</b>
+        </h5>
+    </div>
+    <div class="col-md-12">
+        <p align="center">
+            <b>
+                @if( empty(Request::get('tanggal_mulai')))
+                {{ Carbon\Carbon::today()->format('d F Y')}} - {{Carbon\Carbon::today()->format('d F Y')}}
+                @else
+                {{date('d F Y', strtotime(Request::get('tanggal_mulai')))}} -
+                {{date('d F Y', strtotime(Request::get('tanggal_akhir')))}} 
+                @endif
+            </b>
+        </p>
+    </div>
+    <br/>
     <table class="table table-sm">
         <thead>
             <tr>
@@ -66,8 +79,8 @@
                 @foreach ($sale->saleDetails as $saleDetail)
                 <tr class="table-light bordered">
                     <td>
-                    <td style="text-align: right; width: 15%; font-size: 12px">{{ $saleDetail->item->provider->nama}}</td>
-                    <td style="text-align: right; width: 15%; font-size: 12px">{{ $saleDetail->item->nama}}</td>
+                    <td style="text-align: right; width: 15%; font-size: 12px">{{ !empty($saleDetail->item->provider) ? $saleDetail->item->provider->nama:''}}</td>
+                    <td style="text-align: right; width: 15%; font-size: 12px">{{ !empty($saleDetail->item) ? $saleDetail->item->nama:''}}</td>
                     <td>
                     <td style="text-align: right; width: 15%; font-size: 12px">{{ number_format($saleDetail->kuantitas, 0, ',', '.') }}</td>
                     <td style="text-align: right; width: 15%; font-size: 12px">{{ number_format($saleDetail->harga, 0, ',', '.') }}

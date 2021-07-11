@@ -161,6 +161,7 @@
                                 title: 'Oops...',
                                 text: 'Kuantitas melebihi stok gudang',
                             })
+                            $('.kuantitas').val("");
                         }
                     });
                 }
@@ -168,13 +169,15 @@
 
             function cekStokGudang() {
                 $("tr.row-move").each(function () {
-                    if ($('.stok-gudang', this).val()== 0) {
+                    if ($('.stok-gudang', this).val() == 0) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
                             text: 'Stok gudang tidak tersedia',
                         })
-                    }
+                        $(this).closest("tr").remove();
+                        counter -= 1
+                    }     
                 });
             }
 

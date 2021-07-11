@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Item;
 use App\Http\Requests\CreateItemRequest;
 use App\Models\Stock;
+use App\Models\FirstStock;
 use App\Models\Provider;
 use App\Models\Category;
 
@@ -69,19 +70,24 @@ class ItemController extends Controller
      */
     public function store(CreateItemRequest $request)
     {
-        $new_item = new Item;
-        $new_stock = new Stock;
+        $newItem = new Item;
+        $newStock = new Stock;
+        $newFirstStock = new FirstStock;
 
-        $new_item->provider_id = $request->get('provider_id');
-        $new_item->nama = $request->get('nama');
-        $new_item->category_id = $request->get('category_id');
+        $newItem->provider_id = $request->get('provider_id');
+        $newItem->nama = $request->get('nama');
+        $newItem->category_id = $request->get('category_id');
 
-        $new_stock->stok_gudang = 0;
-        $new_stock->stok_toko = 0;
+        $newStock->stok_gudang = $request->get('stok_gudang');
+        $newStock->stok_toko = $request->get('stok_toko');
 
-        DB::transaction(function() use ($new_item, $new_stock) {
-            $new_item->save();
-            $new_item->stock()->save($new_stock);
+        $newFirstStock->stok_gudang = $request->get('stok_gudang');
+        $newFirstStock->stok_toko = $request->get('stok_toko');
+
+        DB::transaction(function() use ($newItem, $newStock, $newFirstStock) {
+            $newItem->save();
+            $newItem->stock()->save($newStock);
+            $newItem->firstStock()->save($newFirstStock);
         });
         return redirect()->route('items.index')->with('status-create', 'Tambah barang baru berhasil');
     }
@@ -123,12 +129,24 @@ class ItemController extends Controller
     public function update(CreateItemRequest $request, $id)
     {
         $item = Item::findOrFail($id);
+        $stock = Stock::with('item')->find($id);
+        $firstStock = FirstStock::with('item')->find($id);
 
         $item->provider_id = $request->get('provider_id');
         $item->nama = $request->get('nama');
         $item->category_id = $request->get('category_id');
 
-        $item->save();
+        $stock->stok_gudang  = $request->get('stok_gudang');
+        $stock->stok_toko = $request->get('stok_toko');
+        
+        $firstStock->stok_gudang  = $request->get('stok_gudang');
+        $firstStock->stok_toko = $request->get('stok_toko');
+        
+        DB::transaction(function() use ($item, $stock, $firstStock) {
+            $item->save();
+            $item->stock()->save($stock);
+            $item->firstStock()->save($firstStock);
+        });
         return redirect()->route('items.index')->with('status-edit', 'Ubah barang berhasil');
     }
 

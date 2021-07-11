@@ -119,7 +119,7 @@
                 processing: true,
                 serverSide: true,
                 ordering : false,
-                ajax: "{{ route('items.list') }}",
+                ajax: "{{ route('moves.items-list') }}",
                 columns: [
                     {
                         data: 'id',

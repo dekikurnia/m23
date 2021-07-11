@@ -27,7 +27,7 @@ class SaleController extends Controller
                     ->selectRaw('SUM(sale_details.kuantitas * sale_details.harga) as total_non_ppn')
                     ->selectRaw('SUM(((sale_details.kuantitas * sale_details.harga * 0.1) + (sale_details.kuantitas * sale_details.harga))) as total_ppn')
                     ->groupBy('sale_details.sale_id')
-                    ->orderBy('sales.tanggal', 'desc')
+                    ->orderBy('sales.created_at', 'desc')
                     ->whereBetween('tanggal', array($request->tanggal_mulai, $request->tanggal_akhir));
             } else {
                 $sales = DB::table('sales')
@@ -38,7 +38,7 @@ class SaleController extends Controller
                     ->selectRaw('SUM(sale_details.kuantitas * sale_details.harga) as total_non_ppn')
                     ->selectRaw('SUM(((sale_details.kuantitas * sale_details.harga * 0.1) + (sale_details.kuantitas * sale_details.harga))) as total_ppn')
                     ->groupBy('sale_details.sale_id')
-                    ->orderBy('sales.tanggal', 'desc');
+                    ->orderBy('sales.created_at', 'desc');
                     //->whereNull('sales.customer_id');
             }
             return datatables()->of($sales)
@@ -149,7 +149,7 @@ class SaleController extends Controller
                     ->selectRaw('SUM(sale_details.kuantitas * sale_details.harga) as total_non_ppn')
                     ->selectRaw('SUM(((sale_details.kuantitas * sale_details.harga * 0.1) + (sale_details.kuantitas * sale_details.harga))) as total_ppn')
                     ->groupBy('sale_details.sale_id')
-                    ->orderBy('sales.tanggal', 'desc')
+                    ->orderBy('sales.created_at', 'desc')
                     ->where('sales.cara_bayar', '=', 'Kredit')
                     ->whereBetween('tanggal', array($request->tanggal_mulai, $request->tanggal_akhir));
             } else {
@@ -161,7 +161,7 @@ class SaleController extends Controller
                     ->selectRaw('SUM(sale_details.kuantitas * sale_details.harga) as total_non_ppn')
                     ->selectRaw('SUM(((sale_details.kuantitas * sale_details.harga * 0.1) + (sale_details.kuantitas * sale_details.harga))) as total_ppn')
                     ->groupBy('sale_details.sale_id')
-                    ->orderBy('sales.tanggal', 'desc')
+                    ->orderBy('sales.created_at', 'desc')
                     ->where('sales.cara_bayar', '=', 'Kredit');
             }
             return datatables()->of($sales)

@@ -15,6 +15,10 @@ class Item extends Model
         return $this->hasOne(Stock::class,'item_id');
     }
 
+    public function firstStock() {
+        return $this->hasOne(Stock::class,'item_id');
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);
