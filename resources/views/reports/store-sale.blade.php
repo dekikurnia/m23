@@ -68,21 +68,21 @@
                         {{ number_format($sale->kuantitas_grosir, 0, ',', '.') }}</td>
                     <td style="text-align: right;" class="harga-grosir">
                         {{ number_format($sale->harga_grosir, 0, ',', '.') }}</td>
-                    <td style="text-align: right;">
+                    <td style="text-align: right;" class="gabungan-kuantitas">
                         {{ number_format(($sale->kuantitas_retail) + ($sale->kuantitas_grosir), 0, ',', '.') }}</td>
                     <td style="text-align: right;" class="harga-total">
                         {{ number_format(($sale->harga_retail) + ($sale->harga_grosir), 0, ',', '.') }}</td>
                 </tr>
                 @endforeach
-                <tr>
-                    <td colspan="2"></td>
+                <tr style="background-color:#00FF00">
+                    <td colspan="2" style="text-align: right; font-weight:bold; font-size: 14px;">Total</td>
                     <td style="text-align: right; font-weight:bold; font-size: 14px;" class="total-kuantitas-retail">
                     </td>
                     <td style="text-align: right; font-weight:bold; font-size: 14px;" class="total-retail"></td>
                     <td style="text-align: right; font-weight:bold; font-size: 14px;" class="total-kuantitas-grosir">
                     </td>
                     <td style="text-align: right; font-weight:bold; font-size: 14px;" class="total-grosir"></td>
-                    <td style="text-align: right; font-weight:bold; font-size: 14px;">Total</td>
+                    <td style="text-align: right; font-weight:bold; font-size: 14px;" class="total-kuantitas"></td>
                     <td style="text-align: right; font-weight:bold; font-size: 14px;" class="grand-total"></td>
                 </tr>
             </tbody>
@@ -101,6 +101,7 @@
             var totalKuantitasGrosir = 0;
             var totalRetail = 0;
             var totalGrosir = 0;
+            var totalKuantitas = 0;
             var grandTotal = 0;
             $(".kuantitas-retail").each(function (index, value) {
                 currentRow = parseFloat($(this).text().replace(/\./g, ""))
@@ -118,6 +119,10 @@
                 currentRow = parseFloat($(this).text().replace(/\./g, ""))
                 totalGrosir += currentRow
             });
+            $(".gabungan-kuantitas").each(function (index, value) {
+                currentRow = parseFloat($(this).text().replace(/\./g, ""))
+                totalKuantitas += currentRow
+            });
             $(".harga-total").each(function (index, value) {
                 currentRow = parseFloat($(this).text().replace(/\./g, ""))
                 grandTotal += currentRow
@@ -126,6 +131,7 @@
             $(".total-kuantitas-grosir").text((totalKuantitasGrosir).toLocaleString("id-ID"))
             $(".total-retail").text((totalRetail).toLocaleString("id-ID"))
             $(".total-grosir").text((totalGrosir).toLocaleString("id-ID"))
+            $(".total-kuantitas").text((totalKuantitas).toLocaleString("id-ID"))
             $(".grand-total").text((grandTotal).toLocaleString("id-ID"))
         });
 

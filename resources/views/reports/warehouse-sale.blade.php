@@ -54,14 +54,15 @@
                 <tr>
                     <td>{{$sale->nama_provider}}</td>
                     <td>{{$sale->nama_item}}</td>
-                    <td style="text-align: right;">{{ number_format($sale->kuantitas_gudang, 0, ',', '.') }}</td>
+                    <td style="text-align: right;" class="jumlah-kuantitas">{{ number_format($sale->kuantitas_gudang, 0, ',', '.') }}</td>
                     <td style="text-align: right;" class="harga-gudang">
                         {{ number_format($sale->harga_gudang, 0, ',', '.') }}</td>
                 </tr>
                 @endforeach
-                <tr>
-                    <td colspan="3" style="text-align: right; font-weight:bold; font-size: 14px;">Total</td>
-                    <td style="text-align: right; font-weight:bold; font-size: 14px;" class="total"></td>
+                <tr style="background-color:#00FF00">
+                    <td colspan="2" style="text-align: right; font-weight:bold; font-size: 14px;">Total</td>
+                    <td style="text-align: right; font-weight:bold; font-size: 14px;" class="total-kuantitas"></td>
+                    <td style="text-align: right; font-weight:bold; font-size: 14px;" class="total-harga"></td>
                 </tr>
             </tbody>
         </table>
@@ -75,12 +76,19 @@
     $(document).ready(function () {
 
         $(function () {
-            var total = 0;
+            var totalHarga = 0;
+            var totalKuantitas = 0;
             $(".harga-gudang").each(function (index, value) {
                 currentRow = parseFloat($(this).text().replace(/\./g, ""))
-                total += currentRow
+                totalHarga += currentRow
             });
-            $(".total").text((total).toLocaleString("id-ID"))
+
+            $(".jumlah-kuantitas").each(function (index, value) {
+                currentRow = parseFloat($(this).text().replace(/\./g, ""))
+                totalKuantitas += currentRow
+            });
+            $(".total-harga").text((totalHarga).toLocaleString("id-ID"))
+            $(".total-kuantitas").text((totalKuantitas).toLocaleString("id-ID"))
         });
 
 

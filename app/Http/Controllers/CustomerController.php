@@ -45,14 +45,14 @@ class CustomerController extends Controller
      */
     public function store(CreateCustomerRequest $request)
     {
-        $new_customer = new Customer;
+        $newCustomer = new Customer;
 
-        $new_customer->kode = $request->get('kode');
-        $new_customer->nama = $request->get('nama');
-        $new_customer->alamat = $request->get('alamat');
-        $new_customer->telepon = $request->get('telepon');
+        $newCustomer->kode = $request->get('kode');
+        $newCustomer->nama = $request->get('nama');
+        $newCustomer->alamat = $request->get('alamat');
+        $newCustomer->telepon = $request->get('telepon');
 
-        $new_customer->save();
+        $newCustomer->save();
         return redirect()->route('customers.index')->with('status-create', 'Tambah customer berhasil');
     }
 
