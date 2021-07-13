@@ -10,6 +10,7 @@ use App\Models\Stock;
 use App\Models\FirstStock;
 use App\Models\Provider;
 use App\Models\Category;
+use DataTables;
 
 class ItemController extends Controller
 {
@@ -21,23 +22,17 @@ class ItemController extends Controller
     public function index(Request $request)
     {
         if (request()->ajax()) {
-            if ($request->category) {
                 $data = DB::table('items')
                     ->join('categories', 'categories.id', '=', 'items.category_id')
                     ->join('providers', 'providers.id', '=', 'items.provider_id')
                     ->join('stocks', 'items.id', '=', 'stocks.item_id')
                     ->select('items.id', 'providers.nama as nama_provider', 'items.nama', 'categories.nama as nama_kategori', 'stocks.stok_gudang', 'stocks.stok_toko')
-                    ->where('items.category_id', $request->category)
+                    ->when($request->category != '' , function($db)use($request){
+                        $db->where('items.category_id', $request->category);
+                    })
                     ->orderBy('nama_provider', 'asc');
-            } else {
-                $data = DB::table('items')
-                    ->join('categories', 'categories.id', '=', 'items.category_id')
-                    ->join('providers', 'providers.id', '=', 'items.provider_id')
-                    ->join('stocks', 'items.id', '=', 'stocks.item_id')
-                    ->select('items.id', 'providers.nama as nama_provider', 'items.nama', 'categories.nama as nama_kategori', 'stocks.stok_gudang', 'stocks.stok_toko')
-                    ->orderBy('nama_provider', 'asc');
-            }
-            return datatables()->of($data)
+            
+            return DataTables::of($data)
                 ->addColumn('action', function ($data) {
                     return '<a href="/items/'. $data->id .'/edit" class="btn btn-primary btn-sm">Ubah</a>';
                 })

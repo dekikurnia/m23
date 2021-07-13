@@ -16,7 +16,8 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/rowgroup/1.1.0/css/rowGroup.dataTables.min.css" />
     <link rel="stylesheet"
@@ -74,7 +75,8 @@
                                 <a class="dropdown-item" href="{{ route('purchases.data') }}">Data Pembelian</a>
                                 <a class="dropdown-item" href="{{ route('purchases.debt') }}">Hutang Pembelian</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{ route('purchases.report') }}">Laporan Pembelian Barang</a>
+                                <a class="dropdown-item" href="{{ route('purchases.report') }}">Laporan Pembelian
+                                    Barang</a>
                             </div>
                         </li>
                         <li class="nav-item dropdown">
@@ -83,9 +85,12 @@
                                 Penjualan
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ route('retail-sales.index') }}">Entry Penjualan Retail</a>
-                                <a class="dropdown-item" href="{{ route('wholesales.index') }}">Entry Penjualan Grosir</a>
-                                <a class="dropdown-item" href="{{ route('warehouses.index') }}">Entry Penjualan Gudang</a>
+                                <a class="dropdown-item" href="{{ route('retail-sales.index') }}">Entry Penjualan
+                                    Retail</a>
+                                <a class="dropdown-item" href="{{ route('wholesales.index') }}">Entry Penjualan
+                                    Grosir</a>
+                                <a class="dropdown-item" href="{{ route('warehouses.index') }}">Entry Penjualan
+                                    Gudang</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ route('sales.index') }}">Data Penjualan</a>
                                 <a class="dropdown-item" href="{{ route('sales.debt') }}">Piutang Penjualan</a>
@@ -98,14 +103,20 @@
                                 Laporan Penjualan
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ route('reports.warehouse-stock') }}">Laporan Stok Gudang</a>
+                                <a class="dropdown-item" href="{{ route('reports.warehouse-stock') }}">Laporan Stok
+                                    Gudang</a>
                                 <a class="dropdown-item" href="{{ route('reports.store-stock') }}">Laporan Stok Toko</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{ route('reports.retail-summary') }}">Laporan Penjualan Retail (Summary)</a>
-                                <a class="dropdown-item" href="{{ route('reports.wholesale-summary') }}">Laporan Penjualan Grosir (Summary)</a>
-                                <a class="dropdown-item" href="{{ route('reports.warehouse-summary') }}">Laporan Penjualan Gudang (Summary)</a>
-                                <a class="dropdown-item" href="{{ route('reports.store-sale') }}">Laporan Penjualan Toko</a>
-                                <a class="dropdown-item" href="{{ route('reports.warehouse-sale') }}">Laporan Penjualan Gudang</a>
+                                <a class="dropdown-item" href="{{ route('reports.retail-summary') }}">Laporan Penjualan
+                                    Retail (Summary)</a>
+                                <a class="dropdown-item" href="{{ route('reports.wholesale-summary') }}">Laporan
+                                    Penjualan Grosir (Summary)</a>
+                                <a class="dropdown-item" href="{{ route('reports.warehouse-summary') }}">Laporan
+                                    Penjualan Gudang (Summary)</a>
+                                <a class="dropdown-item" href="{{ route('reports.store-sale') }}">Laporan Penjualan
+                                    Toko</a>
+                                <a class="dropdown-item" href="{{ route('reports.warehouse-sale') }}">Laporan Penjualan
+                                    Gudang</a>
                             </div>
                         </li>
                         <li class="nav-item dropdown">

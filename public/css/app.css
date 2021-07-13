@@ -10968,9 +10968,9 @@ select {
     -moz-appearance: none;
     appearance: none;
     /* Some browsers will not display the caret when using calc, so we put the fallback first */
-    background: url("http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png") white no-repeat 70% !important;
+    background: url("https://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png") white no-repeat 70% !important;
     /* !important used for overriding all other customisations */
-    background: url("http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png") white no-repeat calc(100% - 10px) !important;
+    background: url("https://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png") white no-repeat calc(100% - 10px) !important;
     /* Better placement regardless of input width */
 }
 

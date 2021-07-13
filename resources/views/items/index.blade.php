@@ -72,6 +72,7 @@ $(document).ready(function () {
             ordering: false,
             ajax: {
                 url: "{{ route('items.index') }}",
+                dataType: "json",
                 data: {
                     category: category
                 }
