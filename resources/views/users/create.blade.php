@@ -42,22 +42,22 @@
                         </div>
                         !-->
                         <div class="form-group">
-                            <label for="password">Password</label>
-                            <input class="form-control" placeholder="Nama Pengguna" type="password" name="password" />
+                            <label for="password">Kata Sandi</label>
+                            <input class="form-control" placeholder="Kata Sandi" type="password" name="password" />
                             @if ($errors->has('password'))
                             <span class="text-danger">{{ $errors->first('password') }}</span>
                             @endif
                         </div>
                         <div class="form-group">
-                            <label for="confirm-password">Konfirmasi Password</label>
-                            <input class="form-control" placeholder="Konfirmasi Password" type="password"
-                                name="confirm-password" />
-                            @if ($errors->has('confirm-password'))
-                            <span class="text-danger">{{ $errors->first('confirm-password') }}</span>
+                            <label for="confirm_password">Konfirmasi Kata Sandi</label>
+                            <input class="form-control" placeholder="Konfirmasi Kata Sandi" type="password"
+                                name="confirm_password" />
+                            @if ($errors->has('confirm_password'))
+                            <span class="text-danger">{{ $errors->first('confirm_password') }}</span>
                             @endif
                         </div>
                         <div class="form-group">
-                            <label for="confirm-password">Roles</label>
+                            <label for="roles">Roles</label>
                             <select class="roles js-states form-control" name="roles[]" multiple>
                                 @foreach($roles as $role)
                                 <option value="{{ $role->id }}">{{ $role->name }}</option>

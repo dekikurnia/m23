@@ -29,7 +29,7 @@ class CreateUserRequest extends FormRequest
             'username' => 'required', [Rule::unique('users')->ignore($this->user)],
             'name' => 'required',
             //'email'  => 'required|email', [Rule::unique('users')->ignore($this->user)],
-            'password' => 'required|same:confirm-password',
+            'password' => 'required|same:confirm_password',
             'roles' => 'required'
         ];
     }
