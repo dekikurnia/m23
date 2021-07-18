@@ -15,7 +15,7 @@ class CreatePurchasesTable extends Migration
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
-            $table->char('invoice', 24);
+            $table->string('invoice');
             $table->date('tanggal');
             $table->bigInteger('supplier_id')->unsigned();
             $table->enum('cara_bayar',['Kas', 'Kredit', 'Transfer']);

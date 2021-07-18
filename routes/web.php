@@ -12,6 +12,9 @@ use App\Http\Controllers\WholesaleController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\ChangePasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +36,8 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::group(['middleware' => ['auth']], function () {
+    Route::resource('roles', RoleController::class);
+    Route::resource('users', UserController::class);
     Route::resource("suppliers", SupplierController::class);
     Route::resource("customers", CustomerController::class);
     Route::resource("items", ItemController::class);
@@ -78,4 +83,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('wholesales', WholesaleController::class);
     Route::resource('warehouses', WarehouseController::class);
     Route::resource('sales', SaleController::class);
+
+    Route::get('change-password', [ChangePasswordController::class, 'index'])->name('change-password.index');
+    Route::post('change-password', [ChangePasswordController::class, 'store'])->name('change-password.store');
 });

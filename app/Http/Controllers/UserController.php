@@ -7,6 +7,7 @@ use Spatie\Permission\Models\Role;
 use App\Http\Requests\CreateUserRequest;
 use App\Models\User;
 use Hash;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -15,13 +16,12 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index(Request $request)
     {
-        $users = User::orderBy('id','DESC')->paginate(5);
+        $users = User::orderBy('id','ASC')->get();
 
-        return view('users.index',compact('users'))
-
-            ->with('i', ($request->input('page', 1) - 1) * 5);
+        return view('users.index',compact('users'));
     }
 
     /**
@@ -31,8 +31,8 @@ class UserController extends Controller
      */
     public function create()
     {
-        $roles = Role::pluck('name','name')->all();
-        return view('users.create',compact('roles'));
+        $roles = Role::all();
+        return view('users.create', compact('roles'));
     }
 
     /**
@@ -47,11 +47,11 @@ class UserController extends Controller
 
         $newUser->username = $request->get('username');
         $newUser->name = $request->get('name');
-        $newUser->email = $request->get('email');
+        //$newUser->email = $request->get('email');
         $newUser->password = Hash::make($request->get('password'));
-        $newUser->roles = $newUser->assignRole($request->get('roles'));
 
         $newUser->save();
+        $newUser->roles = $newUser->assignRole($request->get('roles'));
         return redirect()->route('users.index')->with('status-create', 'Tambah pengguna berhasil');
     }
 
@@ -63,7 +63,8 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        $user = User::find($id);
+        return view('users.show', compact('user'));
     }
 
     /**
@@ -74,7 +75,10 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        //
+        $user = User::find($id);
+        $roles = Role::all();
+        $userRole = $user->roles->pluck('name','name')->all();
+        return view('users.edit',compact('user','roles','userRole'));
     }
 
     /**
@@ -84,9 +88,23 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CreateUserRequest $request, $id)
     {
-        //
+        $user = User::find($id);
+        $user->username = $request->get('username');
+        $user->name = $request->get('name');
+        $user->email = $request->get('email');
+
+        if(!empty($request->has('password'))){ 
+            $user->password = Hash::make($request->get('password'));
+
+        } else {
+            $user->password = Arr::except($request->get('password'));    
+        }
+
+        DB::table('model_has_roles')->where('model_id',$id)->delete();
+        $user->roles = $user->assignRole($request->get('roles'));
+        return redirect()->route('users.index')->with('status-edit', 'Pengguna berhasil diubah');
     }
 
     /**
@@ -97,6 +115,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        User::find($id)->delete();
+        return redirect()->route('users.index')->with('status-delete', 'Pengguna berhasil dihapus');
     }
 }

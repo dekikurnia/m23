@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class CreateUserRequest extends FormRequest
 {
@@ -24,9 +26,9 @@ class CreateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'usernama' => 'required',
+            'username' => 'required', [Rule::unique('users')->ignore($this->user)],
             'name' => 'required',
-            'email'  => 'required',
+            //'email'  => 'required|email', [Rule::unique('users')->ignore($this->user)],
             'password' => 'required|same:confirm-password',
             'roles' => 'required'
         ];
@@ -36,11 +38,14 @@ class CreateUserRequest extends FormRequest
     {
         return [
             'username.required'      => 'Username wajib diisi.',
+            'username.unique'      => 'Username sudah digunakan.',
             'name.required'          => 'Nama pengguna wajib diisi.',
-            'email.required'          => 'Email pengguna wajib diisi.',
+            //'email.required'          => 'Email pengguna wajib diisi.',
+            //'email.unique'          => 'Email sudah digunakan.',
+            //'email.email'          => 'Email tidak valid.',
             'password.required'          => 'Kata sandi wajib diisi.',
             'password.same'          => 'Kata sandi tidak sama dengan konfirmasi kata sandi.',
-            'roles.required'            => 'Role/Peran wajib diisi.',
+            'roles.required'            => 'Role wajib diisi.',
         ];
     }
 }

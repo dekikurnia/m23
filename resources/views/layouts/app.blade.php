@@ -124,8 +124,8 @@
                                 Manajemen Pengguna
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Kelola Role</a>
-                                <a class="dropdown-item" href="#">Kelola Pengguna</a>
+                                <a class="dropdown-item" href="{{route('roles.index')}}">Kelola Role</a>
+                                <a class="dropdown-item" href="{{route('users.index')}}">Kelola Pengguna</a>
                             </div>
                         </li>
                     </ul>
@@ -149,7 +149,7 @@
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="#">Ubah Profil</a>
-                                <a class="dropdown-item" href="#">Ubah Password</a>
+                                <a class="dropdown-item" href="{{ route('change-password.index') }}">Ubah Password</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
                                     document.getElementById('logout-form').submit();">
