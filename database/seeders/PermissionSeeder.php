@@ -15,14 +15,15 @@ class PermissionSeeder extends Seeder
     public function run()
     {
         $permissions = [
-            'role-list',
-            'role-create',
-            'role-edit',
-            'role-delete',
-            'item-list',
-            'item-create',
-            'item-edit',
-            'item-delete'
+            'menu-master',
+            'menu-pindah-barang',
+            'menu-pembelian',
+            'menu-penjualan-gudang',
+            'menu-penjualan-retail',
+            'menu-penjualan-grosir',
+            'menu-piutang-penjualan',
+            'menu-laporan',
+            'menu-manajemen-pengguna'
          ];
  
          foreach ($permissions as $permission) {

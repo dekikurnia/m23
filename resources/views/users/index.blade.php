@@ -69,11 +69,8 @@
                                     <td>
                                         <a class="btn btn-dark btn-sm"
                                             href="{{ route('users.show',$user->id) }}">Lihat</a>
-                                        @can('role-edit')
                                         <a class="btn btn-primary btn-sm"
                                             href="{{ route('users.edit', $user->id) }}">Ubah</a>
-                                        @endcan
-                                        @can('role-delete')
                                         <form onsubmit="return confirm('Anda yakin menghapus data ini ?')"
                                             class="d-inline" action="{{route('users.destroy', [$user->id])}}"
                                             method="POST">
@@ -81,7 +78,6 @@
                                             <input type="hidden" name="_method" value="DELETE">
                                             <input type="submit" value="Hapus" class="btn btn-danger btn-sm">
                                         </form>
-                                        @endcan
                                     </td>
                                 </tr>
                                 @endforeach

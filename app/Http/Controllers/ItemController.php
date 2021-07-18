@@ -19,15 +19,6 @@ class ItemController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    function __construct()
-    {
-         $this->middleware('permission:item-list|product-create|product-edit|product-delete', ['only' => ['index','show']]);
-         $this->middleware('permission:item-create', ['only' => ['create','store']]);
-         $this->middleware('permission:item-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:item-delete', ['only' => ['destroy']]);
-
-    }
-
     public function index(Request $request)
     {
         if (request()->ajax()) {

@@ -15,6 +15,7 @@ class SaleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index(Request $request)
     {
         if (request()->ajax()) {
@@ -39,7 +40,7 @@ class SaleController extends Controller
                     ->selectRaw('SUM(((sale_details.kuantitas * sale_details.harga * 0.1) + (sale_details.kuantitas * sale_details.harga))) as total_ppn')
                     ->groupBy('sale_details.sale_id')
                     ->orderBy('sales.created_at', 'desc');
-                    //->whereNull('sales.customer_id');
+                //->whereNull('sales.customer_id');
             }
             return datatables()->of($sales)
                 ->addColumn('action', function ($sales) {
@@ -157,7 +158,7 @@ class SaleController extends Controller
                     ->join('customers', 'sales.customer_id', '=', 'customers.id')
                     ->join('sale_details', 'sale_details.sale_id', '=', 'sales.id')
                     ->join('users', 'sales.user_id', '=', 'users.id')
-                    ->select('sales.id as idSale', 'sales.tanggal', 'sales.invoice', 'sales.jenis', 'sales.pajak', 'sales.jatuh_tempo', 'sales.tanggal_lunas', 'sales.is_lunas', 'customers.nama as nama_customer', 'users.username as nama_pengguna','sale_details.*')
+                    ->select('sales.id as idSale', 'sales.tanggal', 'sales.invoice', 'sales.jenis', 'sales.pajak', 'sales.jatuh_tempo', 'sales.tanggal_lunas', 'sales.is_lunas', 'customers.nama as nama_customer', 'users.username as nama_pengguna', 'sale_details.*')
                     ->selectRaw('SUM(sale_details.kuantitas * sale_details.harga) as total_non_ppn')
                     ->selectRaw('SUM(((sale_details.kuantitas * sale_details.harga * 0.1) + (sale_details.kuantitas * sale_details.harga))) as total_ppn')
                     ->groupBy('sale_details.sale_id')

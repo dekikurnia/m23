@@ -49,6 +49,7 @@
                             <a class="nav-link" href="{{ route('home') }}">Dashboard<span
                                     class="sr-only">(current)</span></a>
                         </li>
+                        @can('menu-master')
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -61,9 +62,13 @@
                                 <a class="dropdown-item" href="{{ route('price.index') }}">Harga Jual</a>
                             </div>
                         </li>
+                        @endcan
+                        @can('menu-pindah-barang')
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('move-items.index') }}">Pindah Barang</a>
                         </li>
+                        @endcan
+                        @can('menu-pembelian')
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -78,6 +83,7 @@
                                     Barang</a>
                             </div>
                         </li>
+                        @endcan
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -88,11 +94,15 @@
                                     Retail</a>
                                 <a class="dropdown-item" href="{{ route('wholesales.index') }}">Entry Penjualan
                                     Grosir</a>
+                                    @can('menu-penjualan-gudang')
                                 <a class="dropdown-item" href="{{ route('warehouses.index') }}">Entry Penjualan
                                     Gudang</a>
+                                    @endcan
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ route('sales.index') }}">Data Penjualan</a>
+                                @can('menu-piutang-penjualan')
                                 <a class="dropdown-item" href="{{ route('sales.debt') }}">Piutang Penjualan</a>
+                                @endcan
                             </div>
                         </li>
 
@@ -118,6 +128,7 @@
                                     Gudang</a>
                             </div>
                         </li>
+                        @can('menu-manajemen-pengguna')
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -128,6 +139,7 @@
                                 <a class="dropdown-item" href="{{route('users.index')}}">Kelola Pengguna</a>
                             </div>
                         </li>
+                        @endcan
                     </ul>
 
                     <!-- Right Side Of Navbar -->

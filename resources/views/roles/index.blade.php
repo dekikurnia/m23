@@ -40,9 +40,7 @@
                 <div class="card-header">{{ __('Kelola Role') }}</div>
 
                 <div class="card-body">
-                    @can('role-create')
                     <a href="{{route('roles.create')}}" class="btn btn-primary">Tambah Role</a>
-                    @endcan
                     <p>
                         <table class="table table-stripped table-sm">
                             <thead class="thead-light">
@@ -60,10 +58,7 @@
                                     <td>{{$role->name}}</td>
                                     <td>
                                         <a class="btn btn-dark btn-sm" href="{{ route('roles.show',$role->id) }}">Lihat</a>
-                                        @can('role-edit')
                                         <a class="btn btn-primary btn-sm" href="{{ route('roles.edit', $role->id) }}">Ubah</a>
-                                        @endcan
-                                        @can('role-delete')
                                         <form onsubmit="return confirm('Anda yakin menghapus data ini ?')"
                                             class="d-inline" action="{{route('roles.destroy', [$role->id])}}"
                                             method="POST">
@@ -71,7 +66,6 @@
                                             <input type="hidden" name="_method" value="DELETE">
                                             <input type="submit" value="Hapus" class="btn btn-danger btn-sm">
                                         </form>
-                                        @endcan
                                     </td>
                                 </tr>
                                 @endforeach
