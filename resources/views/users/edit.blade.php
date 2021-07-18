@@ -35,14 +35,6 @@
                         </div>
                         <!--
                         <div class="form-group">
-                            <label for="email">Email</label>
-                            <input class="form-control" placeholder="Email" type="text" name="email" />
-                            @if ($errors->has('email'))
-                            <span class="text-danger">{{ $errors->first('email') }}</span>
-                            @endif
-                        </div>
-                        !-->
-                        <div class="form-group">
                             <label for="password">Password</label>
                             <input class="form-control" placeholder="Password" type="password" name="password" />
                             @if ($errors->has('password'))
@@ -50,13 +42,14 @@
                             @endif
                         </div>
                         <div class="form-group">
-                            <label for="confirm-password">Konfirmasi Password</label>
+                            <label for="confirm_password">Konfirmasi Password</label>
                             <input class="form-control" placeholder="Konfirmasi Password" type="password"
-                                name="confirm-password" />
-                            @if ($errors->has('confirm-password'))
-                            <span class="text-danger">{{ $errors->first('confirm-password') }}</span>
+                                name="confirm_password" />
+                            @if ($errors->has('confirm_password'))
+                            <span class="text-danger">{{ $errors->first('confirm_password') }}</span>
                             @endif
                         </div>
+                        !-->
                         <div class="form-group">
                             <label for="confirm-password">Roles</label>
                             <select class="roles js-states form-control" name="roles[]" multiple>
@@ -68,8 +61,8 @@
                             <span class="text-danger">{{ $errors->first('roles') }}</span>
                             @endif
                         </div>
-                        <input class="btn btn-primary" type="submit" value="Simpan" />
-                        <a href="{{route('items.index')}}" class="btn btn-dark">Kembali</a>
+                        <input class="btn btn-primary" type="submit" value="Ubah" />
+                        <a href="{{route('users.index')}}" class="btn btn-dark">Kembali</a>
                     </form>
                 </div>
             </div>

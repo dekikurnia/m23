@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangePasswordRequest;
-use App\Rules\MatchOldPassword;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 

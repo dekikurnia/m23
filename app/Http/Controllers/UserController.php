@@ -47,7 +47,6 @@ class UserController extends Controller
 
         $newUser->username = $request->get('username');
         $newUser->name = $request->get('name');
-        //$newUser->email = $request->get('email');
         $newUser->password = Hash::make($request->get('password'));
 
         $newUser->save();
@@ -88,21 +87,21 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CreateUserRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $user = User::find($id);
         $user->username = $request->get('username');
         $user->name = $request->get('name');
-        $user->email = $request->get('email');
-
+        /*
         if(!empty($request->has('password'))){ 
             $user->password = Hash::make($request->get('password'));
 
         } else {
             $user->password = Arr::except($request->get('password'));    
         }
-
+        */
         DB::table('model_has_roles')->where('model_id',$id)->delete();
+        $user->save();
         $user->roles = $user->assignRole($request->get('roles'));
         return redirect()->route('users.index')->with('status-edit', 'Pengguna berhasil diubah');
     }

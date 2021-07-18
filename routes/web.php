@@ -15,6 +15,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\ChangePasswordController;
+use App\Http\Controllers\Auth\ChangeProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,4 +87,6 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('change-password', [ChangePasswordController::class, 'index'])->name('change-password.index');
     Route::post('change-password', [ChangePasswordController::class, 'store'])->name('change-password.store');
+    Route::get('change-profile', [ChangeProfileController::class, 'index'])->name('change-profile.index');
+    Route::post('change-profile', [ChangeProfileController::class, 'store'])->name('change-profile.store');
 });

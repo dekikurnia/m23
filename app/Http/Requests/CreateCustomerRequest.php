@@ -26,7 +26,7 @@ class CreateCustomerRequest extends FormRequest
     public function rules()
     {
         return [
-            'kode'          => [Rule::unique('customers')->ignore($this->customer)],
+            'kode'          => Rule::unique('customers', 'kode')->ignore($this->customer),
             'nama'          => 'required',
             'telepon'       => 'max:13'
         ];
@@ -35,8 +35,8 @@ class CreateCustomerRequest extends FormRequest
     public function messages()
     {
         return [
-            'kode.unique'            => 'Kode supplier sudah ada',
-            'nama.required'          => 'Nama supplier wajib diisi.',
+            'kode.unique'            => 'Kode customer sudah digunakan',
+            'nama.required'          => 'Nama customer wajib diisi.',
             'telepon.max'            => 'Telepon maksimal 13 digit.',
         ];
     }
