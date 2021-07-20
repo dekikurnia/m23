@@ -16,11 +16,14 @@ class AdministratorSeeder extends Seeder
     public function run()
     {
         $administrator = new \App\Models\User;
-        $administrator->username = "dekikurnia";
-        $administrator->name = "Deki Kurnia";
-        $administrator->password = \Hash::make("rahasia0909");
 
-        $role = Role::create(['name' => 'Admin']);
+        $technician = new \App\Models\User;
+        $technician->username = "dekikurnia";
+        $technician->name = "Deki Kurnia";
+        $technician->password = \Hash::make("rahasia0909");
+
+        $role = Role::create(['name' => 'Technician']);
+
         $permissions = Permission::pluck('id','id')->all();
         $role->syncPermissions($permissions);
         $administrator->assignRole([$role->id]);
