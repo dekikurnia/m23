@@ -17,10 +17,10 @@ class AdministratorSeeder extends Seeder
     {
         $administrator = new \App\Models\User;
 
-        $technician = new \App\Models\User;
-        $technician->username = "dekikurnia";
-        $technician->name = "Deki Kurnia";
-        $technician->password = \Hash::make("rahasia0909");
+        $administrator = new \App\Models\User;
+        $administrator->username = "dekikurnia";
+        $administrator->name = "Deki Kurnia";
+        $administrator->password = \Hash::make("rahasia0909");
 
         $role = Role::create(['name' => 'Technician']);
 
