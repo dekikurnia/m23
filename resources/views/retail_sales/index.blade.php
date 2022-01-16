@@ -137,7 +137,7 @@
             autoclose: true,
             todayHighlight: true,
             orientation: 'bottom'
-        });
+        })
 
         $("#select-ppn").change(function () {
             $(this).find("option:selected").each(function () {
@@ -252,6 +252,9 @@
                     multInputs();
                 });
             }
+            $('.modal').on('shown.bs.modal', function () {
+                table.columns.adjust()
+            })
         });
     });
     $.ajaxSetup({

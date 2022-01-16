@@ -332,6 +332,9 @@
                     multInputs();
                 });
             }
+            $('.modal').on('shown.bs.modal', function () {
+                table.columns.adjust()
+            })
         });
     });
     $.ajaxSetup({

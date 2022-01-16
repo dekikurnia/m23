@@ -43,7 +43,7 @@
                 </div>
                 <div class="tab-pane fade" id="nav-voucher" role="tabpanel" aria-labelledby="nav-voucher-tab">
                     <p>
-                        <table class="table table-striped table-sm" id="tabel_voucher">
+                        <table style="width: 100% !important" class="table table-striped table-sm" id="tabel_voucher">
                             <thead class="thead-light">
                                 <tr>
                                     <th style="width: 20%"><b>Provider</b></th>

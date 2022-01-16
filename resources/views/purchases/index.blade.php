@@ -133,7 +133,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <table class="table-striped" id="items-table" style="width:100%">
+                <table class="table-striped responsive" id="items-table" style="width:100%">
                     <thead>
                         <tr>
                             <th style="display:none;"><b>Provider ID</b></th>
@@ -294,6 +294,9 @@
                     multInputs();
                 });
             }
+            $('.modal').on('shown.bs.modal', function () {
+                table.columns.adjust()
+            })
         });
     });
     $.ajaxSetup({

@@ -16,8 +16,6 @@ class AdministratorSeeder extends Seeder
     public function run()
     {
         $administrator = new \App\Models\User;
-
-        $administrator = new \App\Models\User;
         $administrator->username = "dekikurnia";
         $administrator->name = "Deki Kurnia";
         $administrator->password = \Hash::make("rahasia0909");

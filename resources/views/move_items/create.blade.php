@@ -185,6 +185,10 @@
                 $(this).closest("tr").remove();
                 counter -= 1
             });
+
+            $('.modal').on('shown.bs.modal', function () {
+                table.columns.adjust()
+            })
         });
     });
     $.ajaxSetup({
