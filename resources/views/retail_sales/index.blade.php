@@ -16,7 +16,7 @@
                         </div>
                         <div class="form-group col-md-10">
                             <label for="tanggal">Tanggal</label>
-                            <input type="text" class="form-control datepicker" name="tanggal" autocomplete="off">
+                            <input type="text" class="form-control datepicker" name="tanggal" autocomplete="off" disabled>
                         </div>
                     </div>
                     <div class="column" style="background-color:#ffffff;">
@@ -137,7 +137,7 @@
             autoclose: true,
             todayHighlight: true,
             orientation: 'bottom'
-        })
+        }).datepicker("setDate",'now');
 
         $("#select-ppn").change(function () {
             $(this).find("option:selected").each(function () {
