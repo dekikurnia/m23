@@ -156,6 +156,7 @@ class WholesaleController extends Controller
     public function edit($id)
     {
         $sale = Sale::with('customer')->findOrFail($id);
+        $customer = Customer::all();
 
         $saleDetails = DB::table('sale_details')
             ->join('items', 'sale_details.item_id', '=', 'items.id')
@@ -168,7 +169,7 @@ class WholesaleController extends Controller
             ->where('sale_id', $id)
             ->get();
 
-        return view('wholesales.edit', compact('sale', 'saleDetails'));
+        return view('wholesales.edit', compact('sale', 'saleDetails', 'customer'));
     }
 
     /**

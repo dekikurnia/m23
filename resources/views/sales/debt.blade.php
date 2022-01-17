@@ -40,7 +40,7 @@
             <div class="card">
                 <div class="card-header">{{ __('Piutang Penjualan') }}</div>
                 <div class="card-body">
-                    <table class="table-striped" id="sales-table">
+                    <table style="width: 100% !important" class="table-striped" id="sales-table">
                         <thead>
                             <tr>
                                 <th style="width: 8%; vertical-align: middle;">
@@ -85,7 +85,8 @@
 
     function fetch_data(tanggal_mulai = '', tanggal_akhir = '') {
         $('#sales-table').DataTable({
-            pageLength: 25,
+            pageLength: 300,
+            lengthMenu: [100, 200, 300, 400, 500],
             processing: true,
             serverSide: true,
             ordering : false,
@@ -148,7 +149,12 @@
             createdRow: (row, data, dataIndex, cells) => {
                 $(cells[7]).css('background-color', data.status_color)
             }
+            
         });
+
+        $('.modal').on('shown.bs.modal', function () {
+            table.columns.adjust()
+        })
     }
 
     $('#filter').click(function () {

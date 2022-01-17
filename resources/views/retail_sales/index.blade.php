@@ -16,7 +16,7 @@
                         </div>
                         <div class="form-group col-md-10">
                             <label for="tanggal">Tanggal</label>
-                            <input type="text" class="form-control datepicker" name="tanggal" autocomplete="off" disabled>
+                            <input type="text" class="form-control datepicker" name="tanggal" autocomplete="off" readonly>
                         </div>
                     </div>
                     <div class="column" style="background-color:#ffffff;">
@@ -152,6 +152,8 @@
 
         $(function () {
             var table = $('#items-table').DataTable({
+                pageLength: 300,
+                lengthMenu: [100, 200, 300, 400, 500],
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('retail.items-list') }}",

@@ -116,6 +116,8 @@
 
         $(function () {
             var table = $('#items-table').DataTable({
+                pageLength: 300,
+                lengthMenu: [100, 200, 300, 400, 500],
                 processing: true,
                 serverSide: true,
                 ordering : false,
@@ -184,6 +186,10 @@
                 $(this).closest("tr").remove();
                 counter -= 1
             });
+
+            $('.modal').on('shown.bs.modal', function () {
+                table.columns.adjust()
+            })
         });
     });
     $.ajaxSetup({

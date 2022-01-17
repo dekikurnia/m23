@@ -132,6 +132,7 @@ class WarehouseController extends Controller
     public function edit($id)
     {
         $sale = Sale::with('customer')->findOrFail($id);
+        $customer = Customer::all();
 
         $saleDetails = DB::table('sale_details')
             ->join('items', 'sale_details.item_id', '=', 'items.id')
@@ -144,7 +145,7 @@ class WarehouseController extends Controller
             ->where('sale_id', $id)
             ->get();
 
-        return view('warehouses.edit', compact('sale', 'saleDetails'));
+        return view('warehouses.edit', compact('sale', 'saleDetails', 'customer'));
     }
 
     /**

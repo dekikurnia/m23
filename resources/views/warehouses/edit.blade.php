@@ -293,6 +293,8 @@ function calcTotal() {
 
         $(function () {
             var table = $('#items-table').DataTable({
+                pageLength: 300,
+                lengthMenu: [100, 200, 300, 400, 500],
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('moves.items-list') }}",
@@ -399,6 +401,10 @@ function calcTotal() {
                 $(this).closest("tr").remove();
                 calcTotal();
             });
+
+            $('.modal').on('shown.bs.modal', function () {
+                table.columns.adjust()
+            })
         });
     });
     $.ajaxSetup({

@@ -173,6 +173,7 @@ class PurchaseController extends Controller
     public function edit($id)
     {
         $purchase = Purchase::with('supplier')->findOrFail($id);
+        $supplier = Supplier::all();
 
         $purchaseDetails = DB::table('purchase_details')
             ->join('items', 'purchase_details.item_id', '=', 'items.id')
@@ -185,7 +186,7 @@ class PurchaseController extends Controller
             ->where('purchase_id', $id)
             ->get();
 
-        return view('purchases.edit', compact('purchase', 'purchaseDetails'));
+        return view('purchases.edit', compact('purchase', 'purchaseDetails', 'supplier'));
     }
 
     /**

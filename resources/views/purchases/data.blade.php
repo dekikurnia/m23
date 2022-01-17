@@ -63,7 +63,8 @@
 
     function fetch_data(tanggal_mulai = '', tanggal_akhir = '') {
         $('#purchases-table').DataTable({
-            pageLength: 25,
+            pageLength: 300,
+            lengthMenu: [100, 200, 300, 400, 500],
             processing: true,
             serverSide: true,
             ordering : false,

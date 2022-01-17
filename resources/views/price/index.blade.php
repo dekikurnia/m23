@@ -100,7 +100,8 @@
 <script>
 $(function() {
     $('#tabel_perdana').DataTable({
-        pageLength : 25,
+        pageLength: 100,
+        lengthMenu: [100, 200, 300, 400, 500],
         processing: true,
         serverSide: true,
         ordering : false,
@@ -117,7 +118,8 @@ $(function() {
 
 $(function() {
     var voucher = $('#tabel_voucher').DataTable({
-        pageLength : 25,
+        pageLength: 100,
+        lengthMenu: [100, 200, 300, 400, 500],
         processing: true,
         serverSide: true,
         responsive: true,

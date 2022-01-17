@@ -198,6 +198,8 @@
 
         $(function () {
             var table = $('#items-table').DataTable({
+                pageLength: 300,
+                lengthMenu: [100, 200, 300, 400, 500],
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('retail.items-list') }}",
