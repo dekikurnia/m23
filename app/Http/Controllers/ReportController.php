@@ -205,13 +205,15 @@ class ReportController extends Controller
             ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59'])
             ->where('jenis', '=', 'Retail')
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
+            //->paginate(10);
         } else {
             $sales = Sale::with('saleDetails')
             ->where('tanggal', Carbon::today())
             ->where('jenis', '=', 'Retail')
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
+            //->paginate(10);
         }
         
         return view('reports.retail-summary', ['sales' => $sales]);

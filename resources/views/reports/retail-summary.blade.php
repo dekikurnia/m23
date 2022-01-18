@@ -153,13 +153,15 @@
                 <td style="text-align: right; width: 15%; font-weight:bold; font-size: 14px;" class="grand-total"></td>
             </tr>
         </tbody>
+        <!--
         <tfoot>
             <tr>
                 <td colSpan="10">
-                    {{$sales->appends(Request::all())->links()}}
+                    {{-- $sales->appends(Request::all())->links() --}}
                 </td>
             </tr>
         </tfoot>
+        -->
     </table>
 </div>
 @endsection
