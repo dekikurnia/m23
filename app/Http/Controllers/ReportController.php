@@ -182,13 +182,15 @@ class ReportController extends Controller
             ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59'])
             ->where('jenis', '=', 'Grosir')
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
+            //->paginate(10);
         } else {
             $sales = Sale::with('saleDetails', 'customer')
             ->where('tanggal', Carbon::today())
             ->where('jenis', '=', 'Grosir')
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
+            //->paginate(10);
         }
         
         return view('reports.wholesale-summary', ['sales' => $sales]);
@@ -230,13 +232,15 @@ class ReportController extends Controller
             ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59'])
             ->where('jenis', '=', 'Gudang')
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
+            //->paginate(10);
         } else {
             $sales = Sale::with('saleDetails', 'customer')
             ->where('tanggal', Carbon::today())
             ->where('jenis', '=', 'Gudang')
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
+            //->paginate(10);
         }
        
         return view('reports.warehouse-summary', ['sales' => $sales]);
