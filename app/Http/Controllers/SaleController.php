@@ -39,7 +39,8 @@ class SaleController extends Controller
                     ->selectRaw('SUM(sale_details.kuantitas * sale_details.harga) as total_non_ppn')
                     ->selectRaw('SUM(((sale_details.kuantitas * sale_details.harga * 0.1) + (sale_details.kuantitas * sale_details.harga))) as total_ppn')
                     ->groupBy('sale_details.sale_id')
-                    ->orderBy('sales.created_at', 'desc');
+                    ->orderBy('sales.created_at', 'desc')
+                    ->where('tanggal', Carbon::today());
                 //->whereNull('sales.customer_id');
             }
             return datatables()->of($sales)
