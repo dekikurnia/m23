@@ -98,7 +98,7 @@
                                 <td style="width: 15%"><input value="{{ $saleDetail->kuantitas }}" type="number" onkeyup="calcTotal() "
                                         class="form-control form-control-sm w-50 kuantitas" name="kuantitas[]" /></td>
                                 <td style="width: 15%"><input
-                                        value="{{ floor($saleDetail->harga) }}" type="number"
+                                        value="{{ floor($saleDetail->harga) }}" type="number" onkeyup="calcTotal() "
                                         class="form-control form-control-sm harga" name="harga[]"/></td>
                                 <td style="text-align: right; width: 10%; font-weight: bold;" class="multTotal">
                                     {{ number_format($saleDetail->sub_total, 0, ',', '.') }}</td>
