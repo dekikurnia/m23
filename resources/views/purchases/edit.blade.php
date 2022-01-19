@@ -297,6 +297,8 @@
 
         $(function () {
             var table = $('#items-table').DataTable({
+                pageLength: 300,
+                lengthMenu: [100, 200, 300, 400, 500],
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('purchases.items-list') }}",
@@ -338,11 +340,29 @@
                 $("#purchases-table").append(newRow);
                 counter++;
 
+                cekDuplikatItem();
                 $('#itemsModal').modal('hide');
 
                 hitungTotal();
 
             });
+
+            function cekDuplikatItem() {
+                var namaItem = {};
+                $('.row-purchases').each(function () {
+                    var txt = $(this).text();
+                    if (namaItem[txt]) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            html: "Item sudah ada di keranjang"
+                        })
+                        $(this).remove();
+                    } else {
+                        namaItem[txt] = true;
+                    }
+                });
+            }
 
             function hitungTotal() {
                 $(".row-purchases input").keyup(multInputs);
@@ -362,6 +382,10 @@
                 $(this).closest("tr").remove();
                 calcTotal();
             });
+
+            $('.modal').on('shown.bs.modal', function () {
+                table.columns.adjust()
+            })
         });
     });
 

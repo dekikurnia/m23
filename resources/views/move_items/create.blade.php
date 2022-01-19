@@ -143,11 +143,30 @@
                 $("#move-items-table").append(newRow);
                 counter++;
 
+                cekDuplikatItem();
+
                 $('#itemsModal').modal('hide');
                 cekStokGudang();
                 compareStokKuantitas();
 
             });
+
+            function cekDuplikatItem() {
+                var namaItem = {};
+                $('.row-move').each(function () {
+                    var txt = $(this).text();
+                    if (namaItem[txt]) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            html: "Item sudah ada di keranjang"
+                        })
+                        $(this).remove();
+                    } else {
+                        namaItem[txt] = true;
+                    }
+                });
+            }
 
             function compareStokKuantitas() {
                 $(".row-move input").keyup(cekStok);

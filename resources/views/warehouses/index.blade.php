@@ -247,6 +247,8 @@
                 $("#warehouses-table").append(newRow);
                 counter++;
 
+                cekDuplikatItem();
+
                 $('#itemsModal').modal('hide');
 
                 hitungTotal();
@@ -254,6 +256,22 @@
                 compareStokKuantitas();
             });
             
+            function cekDuplikatItem() {
+                var namaItem = {};
+                $('.row-warehouses').each(function () {
+                    var txt = $(this).text();
+                    if (namaItem[txt]) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            html: "Item sudah ada di keranjang"
+                        })
+                        $(this).remove();
+                    } else {
+                        namaItem[txt] = true;
+                    }
+                });
+            }
             /*fungsi ini untuk membandingkan kuantitas dan stok toko yang tersedia,
             jika kuantitas melebihi stok toko, maka beri pesan
             */

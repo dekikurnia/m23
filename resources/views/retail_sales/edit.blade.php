@@ -157,45 +157,45 @@
 <script type="text/javascript">
 
 function calcTotal() {
-        var mult = 0;
-        $("tr.row-retails").each(function () {
-            var $kuantitas = $('.kuantitas', this).val();
-            var $harga = $('.harga', this).val();
-            var $total = $kuantitas * (reverseFormatNumber($harga, 'id-ID'));
+    var mult = 0;
+    $("tr.row-retails").each(function () {
+        var $kuantitas = $('.kuantitas', this).val();
+        var $harga = $('.harga', this).val();
+        var $total = $kuantitas * (reverseFormatNumber($harga, 'id-ID'));
 
-            $('.multTotal', this).text($total.toLocaleString("id-ID"));
-            mult += $total;
+        $('.multTotal', this).text($total.toLocaleString("id-ID"));
+        mult += $total;
+    });
+
+    $("#total").text(mult.toLocaleString("id-ID"));
+    $("#grand-total").text(mult.toLocaleString("id-ID"));
+
+    $("#select-ppn").change(function () {
+        $(this).find("option:selected").each(function () {
+            var optionValue = $(this).attr("value") == "PPN";
+            if (optionValue) {
+                $(".row-ppn").show();
+                var ppn = mult * 0.1;
+                var grandTotal = mult + ppn;
+                $("#ppn").text(ppn.toLocaleString("id-ID"));
+                $("#grand-total").text(grandTotal.toLocaleString("id-ID"));
+
+            } else {
+                $(".row-ppn").hide();
+                $("#grand-total").text(mult.toLocaleString("id-ID"));
+
+            }
         });
+    }).change();
+}
 
-        $("#total").text(mult.toLocaleString("id-ID"));
-        $("#grand-total").text(mult.toLocaleString("id-ID"));
-
-        $("#select-ppn").change(function () {
-            $(this).find("option:selected").each(function () {
-                var optionValue = $(this).attr("value") == "PPN";
-                if (optionValue) {
-                    $(".row-ppn").show();
-                    var ppn = mult * 0.1;
-                    var grandTotal = mult + ppn;
-                    $("#ppn").text(ppn.toLocaleString("id-ID"));
-                    $("#grand-total").text(grandTotal.toLocaleString("id-ID"));
-
-                } else {
-                    $(".row-ppn").hide();
-                    $("#grand-total").text(mult.toLocaleString("id-ID"));
-
-                }
-            });
-        }).change();
-    }
-
-    function reverseFormatNumber(val, locale) {
-        var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
-        var decimal = new Intl.NumberFormat(locale).format(1.1).replace(/1/g, '');
-        var reversedVal = val.replace(new RegExp('\\' + group, 'g'), '');
-        reversedVal = reversedVal.replace(new RegExp('\\' + decimal, 'g'), '.');
-        return Number.isNaN(reversedVal) ? 0 : reversedVal;
-    }
+function reverseFormatNumber(val, locale) {
+    var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
+    var decimal = new Intl.NumberFormat(locale).format(1.1).replace(/1/g, '');
+    var reversedVal = val.replace(new RegExp('\\' + group, 'g'), '');
+    reversedVal = reversedVal.replace(new RegExp('\\' + decimal, 'g'), '.');
+    return Number.isNaN(reversedVal) ? 0 : reversedVal;
+}
 
     $(document).ready(function () {
         $(".datepicker").datepicker({
@@ -288,16 +288,18 @@ function calcTotal() {
                 $("#retail-sales-table").append(newRow);
                 counter++;
 
+                cekDuplikatItem();
+
                 $('#itemsModal').modal('hide');
 
                 hitungTotal();
-                cekStokToko();
-                compareStokKuantitas();
+                //cekStokToko();
+                //compareStokKuantitas();
             });
             
             /*fungsi ini untuk membandingkan kuantitas dan stok toko yang tersedia,
             jika kuantitas melebihi stok toko, maka beri pesan
-            */
+            
             function compareStokKuantitas() {
                 $(".row-retails input").keyup(cekStok);
 
@@ -329,7 +331,25 @@ function calcTotal() {
                     }
                 });
             }
+            */
 
+            function cekDuplikatItem() {
+                var namaItem = {};
+                $('.row-retails').each(function () {
+                    var txt = $(this).text();
+                    if (namaItem[txt]) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            html: "Item sudah ada di keranjang"
+                        })
+                        $(this).remove();
+                    } else {
+                        namaItem[txt] = true;
+                    }
+                });
+            }
+            
             function hitungTotal() {
                 $(".row-retails input").keyup(multInputs);
 

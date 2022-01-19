@@ -205,11 +205,27 @@
                 $("#retail-sales-table").append(newRow);
                 counter++;
 
+                var namaItem = {};
+                $('tr.row-retails').each(function () {
+                    var txt = $(this).text();
+                    if (namaItem[txt]) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            html: "Item sudah ada di keranjang"
+                        })
+                        $(this).remove();
+                    } else {
+                        namaItem[txt] = true;
+                    }
+                });
+
+
                 $('#itemsModal').modal('hide');
 
                 hitungTotal();
-                cekStokToko();
-                compareStokKuantitas();
+                //cekStokToko();
+                //compareStokKuantitas();
             });
 
             function hitungTotal() {

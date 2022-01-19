@@ -152,7 +152,7 @@
             $('#items-table tbody').on('click', 'tr', function () {
                 var data = table.row(this).data();
 
-                var newRow = $("<tr>");
+                var newRow = $('<tr class="row-move">');
                 var cols = "";
                 cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id']  + '">' + data['id']  + '</td>';
                 cols += '<td>' + data['nama_provider']  + '</td>';
@@ -164,22 +164,41 @@
                 $("#move-items-table").append(newRow);
                 counter++;
 
+                cekDuplikatItem();
                 $('#itemsModal').modal('hide');
                 cekStokGudang();
 
             });
 
+            function cekDuplikatItem() {
+                var namaItem = {};
+                $('.row-move').each(function () {
+                    var txt = $(this).text();
+                    if (namaItem[txt]) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            html: "Item sudah ada di keranjang"
+                        })
+                        $(this).remove();
+                    } else {
+                        namaItem[txt] = true;
+                    }
+                });
+            }
+
             function cekStokGudang() {
-                var value = $(".stok-gudang").html() == 0;
-                if (value) {
-                    document.getElementById("kuantitas").readOnly = true;
-                    document.getElementById("kuantitas").value = 0;
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Stok gudang tidak tersedia',
-                    })
-                }
+                $("tr.row-move").each(function () {
+                    if ($('.stok-gudang', this).val() == 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Stok gudang tidak tersedia',
+                        })
+                        $(this).closest("tr").remove();
+                        counter -= 1
+                    }     
+                });
             }
 
             $("#move-items-table").on("click", ".btnDel", function (event) {
