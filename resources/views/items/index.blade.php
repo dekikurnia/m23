@@ -30,7 +30,7 @@
                 <div class="card-header">{{ __('Data Barang') }}</div>
 
                 <div class="card-body">
-                    <a href="{{route('items.create')}}" class="btn btn-primary">Tambah Barang</a>
+                    <a href="{{route('items.create')}}" class="btn btn-primary">Tambah Barang</a> 
                     <p>
                         <table class="table table-sm" id="items_table">
                             <thead class="thead-light">
@@ -47,7 +47,7 @@
                                     </th>
                                     <th style="width: 15%;"><b>Stok Gudang</b></th>
                                     <th style="width: 15%;"><b>Stok Toko</b></th>
-                                    <th style="width: 5%"><b>Aksi</b></th>
+                                    <!-- <th style="width: 5%"><b>Aksi</b></th> !-->
                                 </tr>
                             </thead>
                         </table>
@@ -98,10 +98,12 @@ $(document).ready(function () {
                     data: 'stok_toko',
                     name: 'stocks.stok_toko'
                 },
+                /*
                 {
                     data: 'action',
                     name: 'action'
                 }
+                */
             ]
         });
     }
