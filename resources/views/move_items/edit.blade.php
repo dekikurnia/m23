@@ -157,7 +157,7 @@
                 cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id']  + '">' + data['id']  + '</td>';
                 cols += '<td>' + data['nama_provider']  + '</td>';
                 cols += '<td>' + data['nama']  + '</td>';
-                cols += '<td class="stok-gudang">' + data['stok_gudang']  + '</td>';
+                cols += '<td><input type="number" class="form-control form-control-sm w-50 stok-gudang" name="stok_gudang[]" value="' + data['stok_gudang']  + '" readonly></td>';
                 cols += '<td><input type="number" id="kuantitas" class="form-control form-control-sm w-50" name="kuantitas[]" value="" /></td>'
                 cols += '<td><input type="button" class="btnDel btn btn-sm btn-danger" value="Delete" style="float: right;"></td>';
                 newRow.append(cols);
@@ -167,6 +167,7 @@
                 cekDuplikatItem();
                 $('#itemsModal').modal('hide');
                 cekStokGudang();
+                compareStokKuantitas();
 
             });
 
@@ -185,6 +186,26 @@
                         namaItem[txt] = true;
                     }
                 });
+            }
+
+            function compareStokKuantitas() {
+                $(".row-move input").keyup(cekStok);
+
+                function cekStok() {
+                    $("tr.row-move").each(function () {
+                        var $kuantitas = parseFloat($('.kuantitas', this).val());
+                        var $stokGudang = parseFloat($('.stok-gudang', this).val());
+
+                        if ($kuantitas > $stokGudang) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Kuantitas melebihi stok gudang',
+                            })
+                            $('.kuantitas').val("");
+                        }
+                    });
+                }
             }
 
             function cekStokGudang() {
