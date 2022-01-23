@@ -309,7 +309,8 @@ class PurchaseController extends Controller
                     ->selectRaw('SUM(purchase_details.kuantitas * purchase_details.harga) as total_non_ppn')
                     ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
                     ->groupBy('purchase_details.purchase_id')
-                    ->orderBy('purchases.created_at', 'desc');
+                    ->orderBy('purchases.tanggal', 'desc')
+                    ->orderBy('purchases.invoice', 'desc');
             }
             return datatables()->of($purchases)
                 ->addColumn('action', function ($purchases) {
