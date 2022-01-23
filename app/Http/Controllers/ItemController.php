@@ -30,7 +30,8 @@ class ItemController extends Controller
                     ->when($request->category != '' , function($db)use($request){
                         $db->where('items.category_id', $request->category);
                     })
-                    ->orderBy('nama_provider', 'asc');
+                    ->orderBy('nama_provider', 'asc')
+                    ->orderBy('items.nama', 'asc');
             
             return DataTables::of($data)
                 ->addColumn('action', function ($data) {
@@ -73,20 +74,12 @@ class ItemController extends Controller
         $newItem->nama = $request->get('nama');
         $newItem->category_id = $request->get('category_id');
 
-        /*
         $newStock->stok_gudang = $request->get('stok_gudang');
         $newStock->stok_toko = $request->get('stok_toko');
 
         $newFirstStock->stok_gudang = $request->get('stok_gudang');
         $newFirstStock->stok_toko = $request->get('stok_toko');
-        */
-
-        $newStock->stok_gudang = 0;
-        $newStock->stok_toko = 0;
-
-        $newFirstStock->stok_gudang = 0;
-        $newFirstStock->stok_toko = 0;
-
+    
         DB::transaction(function() use ($newItem, $newStock, $newFirstStock) {
             $newItem->save();
             $newItem->stock()->save($newStock);
