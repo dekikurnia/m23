@@ -66,6 +66,7 @@ $(document).ready(function () {
 
     function fetch_data(category = '') {
         $('#items_table').DataTable({
+            autoWidth: false, 
             pageLength: 200,
             lengthMenu: [100, 200, 300, 400, 500],
             processing: true,

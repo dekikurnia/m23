@@ -9,8 +9,8 @@
     <div class="row justify-content-center">
         <div class="row justify-content-center input-daterange">
             <form class="form-inline">
-                <input type="text" placeholder="Tanggal Mulai" class="form-control mb-2 mr-sm-2"
-                    id="tanggal_mulai" name="tanggal_mulai" autocomplete="off">
+                <input type="text" placeholder="Tanggal Mulai" class="form-control mb-2 mr-sm-2" id="tanggal_mulai"
+                    name="tanggal_mulai" autocomplete="off">
                 <div class="input-group mb-2 mr-sm-2">
                     <input type="text" placeholder="Tanggal Akhir" class="form-control" id="tanggal_akhir"
                         name="tanggal_akhir" autocomplete="off">
@@ -28,10 +28,17 @@
                             <tr>
                                 <th style="width: 10%; vertical-align: middle;">
                                     <b>Tanggal</b></th>
-                                <th style="width: 20%; vertical-align: middle;">
-                                    <b>Invoice</b></th>
                                 <th style="width: 15%; vertical-align: middle;">
-                                    <b>Supplier</b></th>
+                                    <b>Invoice</b></th>
+                                <th style="width: 20%;">
+                                    <select name="supplier_filter" id="supplier_filter"
+                                        class="form-control form-control-sm">
+                                        <option value="">Pilih Supplier</option>
+                                        @foreach($supplier as $row)
+                                        <option value="{{ $row->id }}">{{ $row->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </th>
                                 <th style="width: 10%"><b>Pajak</b></th>
                                 <th style="width: 10%; vertical-align: middle;">
                                     <b>Total</b></th>
@@ -61,19 +68,22 @@
 
     fetch_data();
 
-    function fetch_data(tanggal_mulai = '', tanggal_akhir = '') {
+    function fetch_data(tanggal_mulai = '', tanggal_akhir = '', supplier = '') {
         $('#purchases-table').DataTable({
+            autoWidth:false, 
             pageLength: 300,
             lengthMenu: [100, 200, 300, 400, 500],
             processing: true,
             serverSide: true,
             ordering : false,
             searching : false,
+            retrieve: true,
             ajax: {
                 url: "{{ route('purchases.data') }}",
                 data: {
                     tanggal_mulai: tanggal_mulai,
-                    tanggal_akhir: tanggal_akhir
+                    tanggal_akhir: tanggal_akhir,
+                    supplier: supplier
                 }
             },
             columns: [{
@@ -112,17 +122,27 @@
     $('#filter').click(function () {
         var tanggal_mulai = $('#tanggal_mulai').val();
         var tanggal_akhir = $('#tanggal_akhir').val();
-        if (tanggal_mulai != '' && tanggal_akhir  != '') {
+        var supplier = $('#supplier_filter').val();
+        if (tanggal_mulai != '' && tanggal_akhir  != '' && supplier  != 'Pilih Supplier') {
             $('#purchases-table').DataTable().destroy();
-            fetch_data(tanggal_mulai, tanggal_akhir);
+            fetch_data(tanggal_mulai, tanggal_akhir, supplier);
         } else {
             alert('Isi kedua filter tanggal mulai dan tanggal akhir');
         }
     });
 
+    $('#supplier_filter').change(function () {
+        var tanggal_mulai = $('#tanggal_mulai').val();
+        var tanggal_akhir = $('#tanggal_akhir').val();
+        var supplier = $('#supplier_filter').val();
+        $('#purchases-table').DataTable().destroy();
+        fetch_data(tanggal_mulai, tanggal_akhir, supplier);
+    });
+
     $('#refresh').click(function () {
         $('#tanggal_mulai').val('');
         $('#tanggal_akhir').val('');
+        $('#supplier_filter')[0].selectedIndex = 0;
         $('#purchases-table').DataTable().destroy();
         fetch_data();
     });

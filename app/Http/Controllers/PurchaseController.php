@@ -269,7 +269,7 @@ class PurchaseController extends Controller
             $updateStocks->stok_gudang = $updateStocks->stok_gudang + $updatePurchaseDetails->kuantitas;
             $updateItems->id = $updatePurchaseDetails->item_id;
 
-            DB::transaction(function() use ($updatePurchaseDetails, $updateStocks, $updateItems) {
+            DB::transaction(function () use ($updatePurchaseDetails, $updateStocks, $updateItems) {
                 $updatePurchaseDetails->save();
                 $updateItems->stock()->save($updateStocks);
             });
@@ -300,7 +300,10 @@ class PurchaseController extends Controller
                     ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
                     ->groupBy('purchase_details.purchase_id')
                     ->orderBy('purchases.created_at', 'desc')
-                    ->whereBetween('tanggal', array($request->tanggal_mulai, $request->tanggal_akhir));
+                    ->whereBetween('tanggal', array($request->tanggal_mulai, $request->tanggal_akhir))
+                    ->when($request->supplier != '', function ($db) use ($request) {
+                        $db->where('purchases.supplier_id', $request->supplier);
+                    });
             } else {
                 $purchases = DB::table('purchases')
                     ->join('suppliers', 'purchases.supplier_id', '=', 'suppliers.id')
@@ -310,7 +313,10 @@ class PurchaseController extends Controller
                     ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
                     ->groupBy('purchase_details.purchase_id')
                     ->orderBy('purchases.tanggal', 'desc')
-                    ->orderBy('purchases.invoice', 'desc');
+                    ->orderBy('purchases.invoice', 'desc')
+                    ->when($request->supplier != '', function ($db) use ($request) {
+                        $db->where('purchases.supplier_id', $request->supplier);
+                    });
             }
             return datatables()->of($purchases)
                 ->addColumn('action', function ($purchases) {
@@ -326,7 +332,8 @@ class PurchaseController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-        return view('purchases.data');
+        $supplier = Supplier::all();
+        return view('purchases.data', compact('supplier'));
     }
 
     public function getPurchasesDebt(Request $request)
@@ -436,16 +443,16 @@ class PurchaseController extends Controller
         $tanggalMulai = $request->get('tanggal_mulai');
         $tanggalAkhir = $request->get('tanggal_akhir');
 
-        if (!empty($tanggalMulai)) { 
+        if (!empty($tanggalMulai)) {
             $purchases = Purchase::with('purchaseDetails', 'supplier')
-            ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+                ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59'])
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
         } else {
             $purchases = Purchase::with('purchaseDetails', 'supplier')
-            ->where('tanggal', Carbon::today())
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+                ->where('tanggal', Carbon::today())
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
         }
         return view('purchases.report', ['purchases' => $purchases]);
     }
