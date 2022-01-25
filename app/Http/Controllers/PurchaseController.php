@@ -293,29 +293,44 @@ class PurchaseController extends Controller
         if (request()->ajax()) {
             if (!empty($request->tanggal_mulai)) {
                 $purchases = DB::table('purchases')
-                    ->join('suppliers', 'purchases.supplier_id', '=', 'suppliers.id')
-                    ->join('purchase_details', 'purchase_details.purchase_id', '=', 'purchases.id')
-                    ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.keterangan', 'suppliers.nama as nama_supplier', 'purchase_details.*')
-                    ->selectRaw('SUM(purchase_details.kuantitas * purchase_details.harga) as total_non_ppn')
-                    ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
-                    ->groupBy('purchase_details.purchase_id')
-                    ->orderBy('purchases.created_at', 'desc')
+                ->join('suppliers', 'purchases.supplier_id', '=', 'suppliers.id')
+                ->join('purchase_details', 'purchase_details.purchase_id', '=', 'purchases.id')
+                ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.keterangan', 'suppliers.nama as nama_supplier', 'purchase_details.*')
+                ->selectRaw('SUM(purchase_details.kuantitas * purchase_details.harga) as total_non_ppn')
+                ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
+                ->groupBy('purchase_details.purchase_id')
+                ->orderBy('purchases.tanggal', 'desc')
+                    ->orderBy('purchases.invoice', 'desc')
                     ->whereBetween('tanggal', array($request->tanggal_mulai, $request->tanggal_akhir))
                     ->when($request->supplier != '', function ($db) use ($request) {
                         $db->where('purchases.supplier_id', $request->supplier);
+                    })
+                    ->when($request->pajak != '', function ($db) use ($request) {
+                        $db->where('purchases.pajak', $request->pajak);
+                    })
+                    ->when($request->supplier != '' && $request->pajak != '', function ($db) use ($request) {
+                        $db->where('purchases.supplier_id', $request->supplier)
+                            ->where('purchases.pajak', $request->pajak);
                     });
             } else {
                 $purchases = DB::table('purchases')
-                    ->join('suppliers', 'purchases.supplier_id', '=', 'suppliers.id')
-                    ->join('purchase_details', 'purchase_details.purchase_id', '=', 'purchases.id')
-                    ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.keterangan', 'suppliers.nama as nama_supplier', 'purchase_details.*')
-                    ->selectRaw('SUM(purchase_details.kuantitas * purchase_details.harga) as total_non_ppn')
-                    ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
-                    ->groupBy('purchase_details.purchase_id')
-                    ->orderBy('purchases.tanggal', 'desc')
+                ->join('suppliers', 'purchases.supplier_id', '=', 'suppliers.id')
+                ->join('purchase_details', 'purchase_details.purchase_id', '=', 'purchases.id')
+                ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.keterangan', 'suppliers.nama as nama_supplier', 'purchase_details.*')
+                ->selectRaw('SUM(purchase_details.kuantitas * purchase_details.harga) as total_non_ppn')
+                ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
+                ->groupBy('purchase_details.purchase_id')
+                ->orderBy('purchases.tanggal', 'desc')
                     ->orderBy('purchases.invoice', 'desc')
                     ->when($request->supplier != '', function ($db) use ($request) {
                         $db->where('purchases.supplier_id', $request->supplier);
+                    })
+                    ->when($request->pajak != '', function ($db) use ($request) {
+                        $db->where('purchases.pajak', $request->pajak);
+                    })
+                    ->when($request->supplier != '' && $request->pajak != '', function ($db) use ($request) {
+                        $db->where('purchases.supplier_id', $request->supplier)
+                            ->where('purchases.pajak', $request->pajak);
                     });
             }
             return datatables()->of($purchases)

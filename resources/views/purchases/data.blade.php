@@ -30,20 +30,40 @@
                                     <b>Tanggal</b></th>
                                 <th style="width: 15%; vertical-align: middle;">
                                     <b>Invoice</b></th>
+                                <th style="width: 20%; vertical-align: middle;">
+                                    <b>Supplier</b></th>
+                                <th style="width: 10%"><b>Pajak</b></th>
+                                <th style="width: 10%; text-align: right;">
+                                    <b>Total</b></th>
+                                <th style="width: 25%; vertical-align: middle;" class="text-center">
+                                    <b>Keterangan</b></th>
+                                <th style="width: 2%"><b></b></th>
+                            </tr>
+                            <tr>
+                                <th style="width: 10%; vertical-align: middle;">
+                                    <b></b></th>
+                                <th style="width: 15%; vertical-align: middle;">
+                                    <b></b></th>
                                 <th style="width: 20%;">
                                     <select name="supplier_filter" id="supplier_filter"
                                         class="form-control form-control-sm">
-                                        <option value="">Pilih Supplier</option>
+                                        <option value=""></option>
                                         @foreach($supplier as $row)
                                         <option value="{{ $row->id }}">{{ $row->nama }}</option>
                                         @endforeach
                                     </select>
                                 </th>
-                                <th style="width: 10%"><b>Pajak</b></th>
-                                <th style="width: 10%; vertical-align: middle;">
-                                    <b>Total</b></th>
+                                <th style="width: 10%">
+                                    <select class="form-control form-control-sm" name="pajak_filter" id="pajak_filter">
+                                        <option value=""></option>
+                                        <option value="Non PPN">Non PPN</option>
+                                        <option value="PPN">PPN</option>
+                                    </select>
+                                </th>
+                                <th style="width: 10%; text-align: right;">
+                                    <b></b></th>
                                 <th style="width: 25%; vertical-align: middle;" class="text-center">
-                                    <b>Keterangan</b></th>
+                                    <b></b></th>
                                 <th style="width: 2%"><b></b></th>
                             </tr>
                         </thead>
@@ -68,9 +88,9 @@
 
     fetch_data();
 
-    function fetch_data(tanggal_mulai = '', tanggal_akhir = '', supplier = '') {
+    function fetch_data(tanggal_mulai = '', tanggal_akhir = '', supplier = '', pajak = '') {
         $('#purchases-table').DataTable({
-            autoWidth:false, 
+            autoWidth: false, 
             pageLength: 300,
             lengthMenu: [100, 200, 300, 400, 500],
             processing: true,
@@ -83,7 +103,8 @@
                 data: {
                     tanggal_mulai: tanggal_mulai,
                     tanggal_akhir: tanggal_akhir,
-                    supplier: supplier
+                    supplier: supplier,
+                    pajak: pajak
                 }
             },
             columns: [{
@@ -123,9 +144,10 @@
         var tanggal_mulai = $('#tanggal_mulai').val();
         var tanggal_akhir = $('#tanggal_akhir').val();
         var supplier = $('#supplier_filter').val();
-        if (tanggal_mulai != '' && tanggal_akhir  != '' && supplier  != 'Pilih Supplier') {
+        var pajak = $('#pajak_filter').val();
+        if (tanggal_mulai != '' && tanggal_akhir  != '') {
             $('#purchases-table').DataTable().destroy();
-            fetch_data(tanggal_mulai, tanggal_akhir, supplier);
+            fetch_data(tanggal_mulai, tanggal_akhir, supplier, pajak);
         } else {
             alert('Isi kedua filter tanggal mulai dan tanggal akhir');
         }
@@ -135,14 +157,25 @@
         var tanggal_mulai = $('#tanggal_mulai').val();
         var tanggal_akhir = $('#tanggal_akhir').val();
         var supplier = $('#supplier_filter').val();
+        var pajak = $('#pajak_filter').val();
         $('#purchases-table').DataTable().destroy();
-        fetch_data(tanggal_mulai, tanggal_akhir, supplier);
+        fetch_data(tanggal_mulai, tanggal_akhir, supplier, pajak);
+    });
+
+    $('#pajak_filter').change(function () {
+        var tanggal_mulai = $('#tanggal_mulai').val();
+        var tanggal_akhir = $('#tanggal_akhir').val();
+        var supplier = $('#supplier_filter').val();
+        var pajak = $('#pajak_filter').val();
+        $('#purchases-table').DataTable().destroy();
+        fetch_data(tanggal_mulai, tanggal_akhir, supplier, pajak);
     });
 
     $('#refresh').click(function () {
         $('#tanggal_mulai').val('');
         $('#tanggal_akhir').val('');
         $('#supplier_filter')[0].selectedIndex = 0;
+        $('#pajak_filter')[0].selectedIndex = 0;
         $('#purchases-table').DataTable().destroy();
         fetch_data();
     });
