@@ -462,14 +462,15 @@ class PurchaseController extends Controller
             $purchases = Purchase::with('purchaseDetails', 'supplier')
                 ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59'])
                 ->orderBy('created_at', 'desc')
-                ->paginate(10);
+                ->get();
         } else {
             $purchases = Purchase::with('purchaseDetails', 'supplier')
                 ->where('tanggal', Carbon::today())
                 ->orderBy('created_at', 'desc')
-                ->paginate(10);
+                ->get();
         }
-        return view('purchases.report', ['purchases' => $purchases]);
+        $suppliers = Supplier::all();
+        return view('purchases.report', compact('purchases', 'suppliers'));
     }
 
     /*

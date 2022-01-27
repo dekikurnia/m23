@@ -201,6 +201,7 @@
     @section('js')
 
     @show
+    @include('layouts.footer')
 </body>
 
 </html>

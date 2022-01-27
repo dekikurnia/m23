@@ -10999,3 +10999,18 @@ table.table-bordered > thead > tr > th{
 table.table-bordered > tbody > tr > td{
     border:1px solid black;
 }
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+div.copyright { 
+    background-color: #ffffff;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    flex: 0 0 50px;
+    margin-top: auto;
+}

@@ -1,8 +1,8 @@
 @extends('layouts.app')
 @section('title') Laporan Pembelian @endsection
 @section('content')
-<div class="container-fluid">
-    <div class="row justify-content-center">
+<div style="margin-top:10px;" class="container-fluid">
+    <div style="margin-top:20px;" class="row justify-content-center">
         <div class="row justify-content-center input-daterange">
             <form class="form-inline">
                 <input type="text" value="{{Request::get('tanggal_mulai')}}" placeholder="Tanggal Mulai"
@@ -88,11 +88,13 @@
                     <td>
                     <td style="text-align: right; width: 15%">
                         {{ number_format($purchaseDetail->kuantitas, 0, ',', '.') }}</td>
-                    <td style="text-align: right; width: 15%">{{ number_format($purchaseDetail->harga, 0, ',', '.') }}
+                    <td style="text-align: right; width: 15%">
+                        {{ number_format($purchaseDetail->harga, 0, ',', '.') }}
                     </td>
                     <td style="text-align: right; width: 15%">
                         {{ number_format(($purchaseDetail->kuantitas * $purchaseDetail->harga), 0, ',', '.')}}</td>
-                    <div style="display: none">{{$subTotal += ($purchaseDetail->kuantitas * $purchaseDetail->harga)}}
+                    <div style="display: none">
+                        {{$subTotal += ($purchaseDetail->kuantitas * $purchaseDetail->harga)}}
                     </div>
                     <div style="display: none">{{$ppn = ($subTotal* 0.1)}}</div>
                     <div style="display: none">{{$total = ($ppn + $subTotal)}}</div>
@@ -158,16 +160,10 @@
                 <td>
                 <td style="text-align: right; width: 15%"></td>
                 <td style="text-align: right; width: 15%; font-weight:bold; font-size: 16px;">GRAND TOTAL :</td>
-                <td style="text-align: right; width: 15%; font-weight:bold; font-size: 16px;" class="grand-total"></td>
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colSpan="10">
-                    {{$purchases->appends(Request::all())->links()}}
+                <td style="text-align: right; width: 15%; font-weight:bold; font-size: 16px;" class="grand-total">
                 </td>
             </tr>
-        </tfoot>
+        </tbody>
     </table>
 </div>
 @endsection
