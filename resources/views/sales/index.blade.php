@@ -68,12 +68,9 @@
                                         <option value="PPN">PPN</option>
                                     </select>
                                 </th>
-                                <th style="width: 10%; vertical-align: middle;">
-                                    <b>Total</b></th>
-                                <th style="width: 25%; vertical-align: middle;" class="text-center">
-                                    <b>Keterangan</b></th>
-                                    <th style="width: 10%; vertical-align: middle;" class="text-center">
-                                        <b>User</b></th>
+                                <th style="width: 10%; vertical-align: middle;"></th>
+                                <th style="width: 25%; vertical-align: middle;" class="text-center"></th>
+                                    <th style="width: 10%; vertical-align: middle;" class="text-center"></th>
                                 <th style="width: 2%"><b></b></th>
                             </tr>
                         </thead>
