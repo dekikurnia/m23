@@ -457,6 +457,7 @@ class PurchaseController extends Controller
     {
         $tanggalMulai = $request->get('tanggal_mulai');
         $tanggalAkhir = $request->get('tanggal_akhir');
+        $supplier = $request->get('supplier_filter');
 
         if (!empty($tanggalMulai)) {
             $purchases = Purchase::with('purchaseDetails', 'supplier')

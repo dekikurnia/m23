@@ -42,6 +42,40 @@
                                         <b>User</b></th>
                                 <th style="width: 2%"><b></b></th>
                             </tr>
+                            <tr>
+                                <th style="width: 10%; vertical-align: middle;"></th>
+                                <th style="width: 20%; vertical-align: middle;"></th>
+                                <th style="width: 15%; vertical-align: middle;">
+                                    <select class="form-control form-control-sm" name="jenis_filter" id="jenis_filter">
+                                        <option value=""></option>
+                                        <option value="retail">Retail</option>
+                                        <option value="grosir">Grosir</option>
+                                        <option value="gudang">Gudang</option>
+                                    </select></th>
+                                <th style="width: 15%">
+                                    <select name="customer_filter" id="customer_filter"
+                                        class="form-control form-control-sm">
+                                        <option value=""></option>
+                                        @foreach($customers as $row)
+                                        <option value="{{ $row->id }}">{{ $row->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </th>
+                                <th style="width: 10%">
+                                    <select class="form-control form-control-sm" name="pajak_filter" id="pajak_filter">
+                                        <option value=""></option>
+                                        <option value="Non PPN">Non PPN</option>
+                                        <option value="PPN">PPN</option>
+                                    </select>
+                                </th>
+                                <th style="width: 10%; vertical-align: middle;">
+                                    <b>Total</b></th>
+                                <th style="width: 25%; vertical-align: middle;" class="text-center">
+                                    <b>Keterangan</b></th>
+                                    <th style="width: 10%; vertical-align: middle;" class="text-center">
+                                        <b>User</b></th>
+                                <th style="width: 2%"><b></b></th>
+                            </tr>
                         </thead>
                     </table>
                 </div>
@@ -64,8 +98,9 @@
 
     fetch_data();
 
-    function fetch_data(tanggal_mulai = '', tanggal_akhir = '') {
+    function fetch_data(tanggal_mulai = '', tanggal_akhir = '', customer = '', jenis = '', pajak = '') {
         $('#sales-table').DataTable({
+            autoWidth: false, 
             pageLength: 100,
             lengthMenu: [100, 200, 300],
             processing: true,
@@ -76,7 +111,10 @@
                 url: "{{ route('sales.index') }}",
                 data: {
                     tanggal_mulai: tanggal_mulai,
-                    tanggal_akhir: tanggal_akhir
+                    tanggal_akhir: tanggal_akhir,
+                    customer: customer,
+                    jenis: jenis,
+                    pajak: pajak
                 }
             },
             columns: [{
@@ -123,17 +161,53 @@
     $('#filter').click(function () {
         var tanggal_mulai = $('#tanggal_mulai').val();
         var tanggal_akhir = $('#tanggal_akhir').val();
+        var customer = $('#customer_filter').val();
+        var jenis = $('#jenis_filter').val();
+        var pajak = $('#pajak_filter').val();
         if (tanggal_mulai != '' && tanggal_akhir  != '') {
             $('#sales-table').DataTable().destroy();
-            fetch_data(tanggal_mulai, tanggal_akhir);
+            fetch_data(tanggal_mulai, tanggal_akhir, customer, jenis, pajak);
         } else {
             alert('Isi kedua filter tanggal mulai dan tanggal akhir');
         }
     });
 
+    $('#customer_filter').change(function () {
+        var tanggal_mulai = $('#tanggal_mulai').val();
+        var tanggal_akhir = $('#tanggal_akhir').val();
+        var customer = $('#customer_filter').val();
+        var jenis = $('#jenis_filter').val();
+        var pajak = $('#pajak_filter').val();
+        $('#sales-table').DataTable().destroy();
+        fetch_data(tanggal_mulai, tanggal_akhir, customer, jenis, pajak);
+    });
+
+    $('#jenis_filter').change(function () {
+        var tanggal_mulai = $('#tanggal_mulai').val();
+        var tanggal_akhir = $('#tanggal_akhir').val();
+        var customer = $('#customer_filter').val();
+        var jenis = $('#jenis_filter').val();
+        var pajak = $('#pajak_filter').val();
+        $('#sales-table').DataTable().destroy();
+        fetch_data(tanggal_mulai, tanggal_akhir, customer, jenis, pajak);;
+    });
+
+    $('#pajak_filter').change(function () {
+        var tanggal_mulai = $('#tanggal_mulai').val();
+        var tanggal_akhir = $('#tanggal_akhir').val();
+        var customer = $('#customer_filter').val();
+        var jenis = $('#jenis_filter').val();
+        var pajak = $('#pajak_filter').val();
+        $('#sales-table').DataTable().destroy();
+        fetch_data(tanggal_mulai, tanggal_akhir, customer, jenis, pajak);;
+    });
+
     $('#refresh').click(function () {
         $('#tanggal_mulai').val('');
         $('#tanggal_akhir').val('');
+        $('#customer_filter')[0].selectedIndex = 0;
+        $('#jenis_filter')[0].selectedIndex = 0;
+        $('#pajak_filter')[0].selectedIndex = 0;
         $('#sales-table').DataTable().destroy();
         fetch_data();
     });

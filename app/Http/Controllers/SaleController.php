@@ -28,8 +28,23 @@ class SaleController extends Controller
                     ->selectRaw('SUM(sale_details.kuantitas * sale_details.harga) as total_non_ppn')
                     ->selectRaw('SUM(((sale_details.kuantitas * sale_details.harga * 0.1) + (sale_details.kuantitas * sale_details.harga))) as total_ppn')
                     ->groupBy('sale_details.sale_id')
-                    ->orderBy('sales.created_at', 'desc')
-                    ->whereBetween('tanggal', array($request->tanggal_mulai, $request->tanggal_akhir));
+                    ->orderBy('sales.tanggal', 'desc')
+                    ->orderBy('sales.invoice', 'desc')
+                    ->whereBetween('tanggal', array($request->tanggal_mulai, $request->tanggal_akhir))
+                    ->when($request->customer != '', function ($db) use ($request) {
+                        $db->join('customers as c', 'sales.customer_id', '=', 'c.id')->where('sales.customer_id', $request->customer);
+                    })
+                    ->when($request->jenis != '', function ($db) use ($request) {
+                        $db->where('sales.jenis', $request->jenis);
+                    })
+                    ->when($request->pajak != '', function ($db) use ($request) {
+                        $db->where('sales.pajak', $request->pajak);
+                    })
+                    ->when($request->customer != '' && $request->jenis != '' && $request->pajak != '', function ($db) use ($request) {
+                        $db->where('sales.customer_id', $request->customer)
+                           ->where('sales.jenis', $request->jenis)
+                           ->where('sales.pajak', $request->pajak);
+                    });;
             } else {
                 $sales = DB::table('sales')
                     ->leftJoin('customers', 'sales.customer_id', '=', 'customers.id')
@@ -57,7 +72,8 @@ class SaleController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-        return view('sales.index');
+        $customers = Customer::all();
+        return view('sales.index', compact('customers'));
     }
 
     /**

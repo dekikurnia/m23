@@ -94,10 +94,10 @@
                                     Retail</a>
                                 <a class="dropdown-item" href="{{ route('wholesales.index') }}">Entry Penjualan
                                     Grosir</a>
-                                    @can('menu-penjualan-gudang')
+                                @can('menu-penjualan-gudang')
                                 <a class="dropdown-item" href="{{ route('warehouses.index') }}">Entry Penjualan
                                     Gudang</a>
-                                    @endcan
+                                @endcan
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ route('sales.index') }}">Data Penjualan</a>
                                 @can('menu-piutang-penjualan')
