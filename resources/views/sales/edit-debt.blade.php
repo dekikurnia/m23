@@ -28,6 +28,11 @@
                             <td>{{$sale->customer->nama}}</td>
                         </tr>
                         <tr>
+                            <th style="width: 15%">Tipe Penjualan</th>
+                            <td style="width: 2%">:</td>
+                            <td>{{$sale->jenis}}</td>
+                        </tr>
+                        <tr>
                             <th style="width: 15%">Cara Bayar</th>
                             <td style="width: 2%">:</td>
                             <td>{{$sale->cara_bayar}}</td>
@@ -161,6 +166,14 @@
                 </div>
                 <br>
                 <input class="btn btn-primary" id="save" type="submit" value="Bayar" />
+                @if($sale->jenis == 'Grosir')
+                <a class="btn btn-success text-white" href="{{route('wholesales.edit',
+                [$sale->id])}}">Ubah</a>
+                @endif
+                @if($sale->jenis == 'Gudang')
+                <a class="btn btn-success text-white" href="{{route('warehouses.edit',
+                [$sale->id])}}">Ubah</a>
+                @endif
                 <a href="/sales/debt" class="btn btn-dark">Kembali</a>
             </form>
         </div>

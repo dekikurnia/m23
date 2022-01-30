@@ -44,7 +44,7 @@ class SaleController extends Controller
                         $db->where('sales.customer_id', $request->customer)
                            ->where('sales.jenis', $request->jenis)
                            ->where('sales.pajak', $request->pajak);
-                    });;
+                    });
             } else {
                 $sales = DB::table('sales')
                     ->leftJoin('customers', 'sales.customer_id', '=', 'customers.id')
@@ -167,7 +167,8 @@ class SaleController extends Controller
                     ->selectRaw('SUM(sale_details.kuantitas * sale_details.harga) as total_non_ppn')
                     ->selectRaw('SUM(((sale_details.kuantitas * sale_details.harga * 0.1) + (sale_details.kuantitas * sale_details.harga))) as total_ppn')
                     ->groupBy('sale_details.sale_id')
-                    ->orderBy('sales.created_at', 'desc')
+                    ->orderBy('sales.invoice', 'desc')
+                    ->orderBy('sales.tanggal', 'desc')
                     ->where('sales.cara_bayar', '=', 'Kredit')
                     ->whereBetween('tanggal', array($request->tanggal_mulai, $request->tanggal_akhir));
             } else {
@@ -179,8 +180,27 @@ class SaleController extends Controller
                     ->selectRaw('SUM(sale_details.kuantitas * sale_details.harga) as total_non_ppn')
                     ->selectRaw('SUM(((sale_details.kuantitas * sale_details.harga * 0.1) + (sale_details.kuantitas * sale_details.harga))) as total_ppn')
                     ->groupBy('sale_details.sale_id')
-                    ->orderBy('sales.created_at', 'desc')
-                    ->where('sales.cara_bayar', '=', 'Kredit');
+                    ->orderBy('sales.invoice', 'desc')
+                    ->orderBy('sales.tanggal', 'desc')
+                    ->where('sales.cara_bayar', '=', 'Kredit')
+                    ->when($request->jenis != '', function ($db) use ($request) {
+                        $db->where('sales.jenis', $request->jenis);
+                    })
+                    ->when($request->pajak != '', function ($db) use ($request) {
+                        $db->where('sales.pajak', $request->pajak);
+                    })
+                    ->when($request->customer != '', function ($db) use ($request) {
+                        $db->join('customers as c', 'sales.customer_id', '=', 'c.id')->where('sales.customer_id', $request->customer);
+                    })
+                    ->when($request->is_lunas != '', function ($db) use ($request) {
+                        $db->where('sales.is_lunas', $request->is_lunas);
+                    })
+                    ->when($request->jenis != '' && $request->pajak != '' && $request->jatuh_tempo != '' && $request->customer != '' && $request->is_lunas != '', function ($db) use ($request) {
+                        $db->where('sales.jenis', $request->jenis)
+                           ->where('sales.pajak', $request->pajak)
+                           ->where('sales.customer', $request->customer)
+                           ->where('sales.is_lunas', $request->is_lunas);
+                    });;
             }
             return datatables()->of($sales)
                 ->addColumn('action', function ($sales) {
@@ -202,10 +222,10 @@ class SaleController extends Controller
                     return $sales->is_lunas && Sale::STATUS_COLOR[$sales->is_lunas] ? Sale::STATUS_COLOR[$sales->is_lunas] : Sale::STATUS_COLOR[$sales->is_lunas];
                 })
                 ->editColumn('tanggal', function ($sales) {
-                    return Carbon::parse($sales->tanggal)->translatedFormat('d-F-Y');
+                    return Carbon::parse($sales->tanggal)->translatedFormat('d/m/Y');
                 })
                 ->editColumn('jatuh_tempo', function ($sales) {
-                    return Carbon::parse($sales->jatuh_tempo)->translatedFormat('d-F-Y');
+                    return Carbon::parse($sales->jatuh_tempo)->translatedFormat('d/m/Y');
                 })
                 ->editColumn('tanggal_lunas', function ($sales) {
                     return $sales->tanggal_lunas ? Carbon::parse($sales->tanggal_lunas)->translatedFormat('d-F-Y') : null;
@@ -214,7 +234,8 @@ class SaleController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-        return view('sales.debt');
+        $customers = Customer::all();
+        return view('sales.debt', compact('customers'));
     }
 
     public function editDebt($id)
@@ -225,12 +246,12 @@ class SaleController extends Controller
             ->join('items', 'sale_details.item_id', '=', 'items.id')
             ->join('providers', 'items.provider_id', '=', 'providers.id')
             ->join('sales', 'sale_details.sale_id', '=', 'sales.id')
-            ->select('sales.id as idSale', 'sales.tanggal', 'sales.invoice', 'sales.pajak', 'sales.keterangan', 'sale_details.*', 'items.nama', 'providers.nama as nama_provider')
+            ->select('sales.id as idSale', 'sales.jenis', 'sales.tanggal', 'sales.invoice', 'sales.pajak', 'sales.keterangan', 'sale_details.*', 'items.nama', 'providers.nama as nama_provider')
             ->selectRaw('sale_details.kuantitas * sale_details.harga as sub_total')
             // ->selectRaw('((sale_details.kuantitas * sale_details.harga * 0.1) + (sale_details.kuantitas * sale_details.harga)) as total_ppn')
             ->where('sale_id', $id)
             ->get();
-
+            
         return view('sales.edit-debt', compact('sale', 'saleDetails'));
     }
 

@@ -10989,15 +10989,14 @@ select {
     max-width: 60%;
 }
 
-table.table-bordered{
-    border:1px solid black;
-    margin-top:20px;
-  }
-table.table-bordered > thead > tr > th{
-    border:1px solid black;
+table.table-bordered {
+    border-collapse: collapse;
+    border-spacing: 1px;
 }
-table.table-bordered > tbody > tr > td{
-    border:1px solid black;
+
+table.table-bordered>thead>tr>th {
+    border-collapse: collapse;
+    border-spacing: 0 5px;
 }
 
 body {

@@ -16,7 +16,7 @@
                         name="tanggal_akhir" autocomplete="off">
                 </div>
                 <button type="button" name="filter" id="filter" class="btn btn-primary mb-2">Tampilkan</button>&nbsp;
-                <button type="button" name="refresh" id="refresh" class="btn btn-danger mb-2">Hapus Tanggal</button>
+                <button type="button" name="refresh" id="refresh" class="btn btn-danger mb-2">Reset</button>
             </form>
         </div>
         <div class="col-md-12">

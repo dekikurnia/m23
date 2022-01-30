@@ -396,10 +396,10 @@ class PurchaseController extends Controller
                     return $purchases->is_lunas && Purchase::STATUS_COLOR[$purchases->is_lunas] ? Purchase::STATUS_COLOR[$purchases->is_lunas] : Purchase::STATUS_COLOR[$purchases->is_lunas];
                 })
                 ->editColumn('tanggal', function ($purchases) {
-                    return Carbon::parse($purchases->tanggal)->translatedFormat('d-F-Y');
+                    return Carbon::parse($purchases->tanggal)->translatedFormat('d/m/Y');
                 })
                 ->editColumn('jatuh_tempo', function ($purchases) {
-                    return Carbon::parse($purchases->jatuh_tempo)->translatedFormat('d-F-Y');
+                    return Carbon::parse($purchases->jatuh_tempo)->translatedFormat('d/m/Y');
                 })
                 ->editColumn('tanggal_lunas', function ($purchases) {
                     return $purchases->tanggal_lunas ? Carbon::parse($purchases->tanggal_lunas)->translatedFormat('d-F-Y') : null;
