@@ -63,7 +63,7 @@
             processing: true,
             serverSide: true,
             ordering : false,
-            searching : false,
+            searching : true,
             ajax: {
                 url: "{{ route('move-items.index') }}",
                 data: {
