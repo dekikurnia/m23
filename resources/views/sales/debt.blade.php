@@ -125,6 +125,7 @@
 
         function fetch_data(tanggal_mulai = '', tanggal_akhir = '', jenis = '', pajak = '', customer = '', is_lunas = '') {
             $('#sales-table').DataTable({
+                autoWidth: false, 
                 pageLength: 300,
                 lengthMenu: [100, 200, 300, 400, 500],
                 processing: true,
@@ -225,7 +226,6 @@
             var customer = $('#customer_filter').val();
             var jenis = $('#jenis_filter').val();
             var pajak = $('#pajak_filter').val();
-            var jatuh_tempo = $('#tempo_filter').val();
             var is_lunas = $('#status_filter').val();
             $('#sales-table').DataTable().destroy();
             fetch_data(tanggal_mulai, tanggal_akhir, jenis, pajak, customer, is_lunas);
@@ -237,7 +237,6 @@
             var customer = $('#customer_filter').val();
             var jenis = $('#jenis_filter').val();
             var pajak = $('#pajak_filter').val();
-            var jatuh_tempo = $('#tempo_filter').val();
             var is_lunas = $('#status_filter').val();
             $('#sales-table').DataTable().destroy();
             fetch_data(tanggal_mulai, tanggal_akhir, jenis, pajak, customer, is_lunas);
@@ -249,7 +248,6 @@
             var customer = $('#customer_filter').val();
             var jenis = $('#jenis_filter').val();
             var pajak = $('#pajak_filter').val();
-            var jatuh_tempo = $('#tempo_filter').val();
             var is_lunas = $('#status_filter').val();
             $('#sales-table').DataTable().destroy();
             fetch_data(tanggal_mulai, tanggal_akhir, jenis, pajak, customer, is_lunas);
@@ -261,7 +259,6 @@
             var customer = $('#customer_filter').val();
             var jenis = $('#jenis_filter').val();
             var pajak = $('#pajak_filter').val();
-            var jatuh_tempo = $('#tempo_filter').val();
             var is_lunas = $('#status_filter').val();
             $('#sales-table').DataTable().destroy();
             fetch_data(tanggal_mulai, tanggal_akhir, jenis, pajak, customer, is_lunas);

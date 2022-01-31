@@ -362,9 +362,24 @@ class PurchaseController extends Controller
                     ->selectRaw('SUM(purchase_details.kuantitas * purchase_details.harga) as total_non_ppn')
                     ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
                     ->groupBy('purchase_details.purchase_id')
-                    ->orderBy('purchases.created_at', 'desc')
+                    ->orderBy('purchases.tanggal', 'desc')
+                    ->orderBy('purchases.invoice', 'desc')
                     ->where('purchases.cara_bayar', '=', 'Kredit')
-                    ->whereBetween('tanggal', array($request->tanggal_mulai, $request->tanggal_akhir));
+                    ->whereBetween('tanggal', array($request->tanggal_mulai, $request->tanggal_akhir))
+                    ->when($request->supplier != '', function ($db) use ($request) {
+                        $db->where('purchases.supplier_id', $request->supplier);
+                    })
+                    ->when($request->pajak != '', function ($db) use ($request) {
+                        $db->where('purchases.pajak', $request->pajak);
+                    })
+                    ->when($request->is_lunas != '', function ($db) use ($request) {
+                        $db->where('purchases.is_lunas', $request->is_lunas);
+                    })
+                    ->when($request->supplier != '' && $request->pajak != '' && $request->is_lunas != '', function ($db) use ($request) {
+                        $db->where('purchases.supplier_id', $request->supplier)
+                           ->where('purchases.pajak', $request->pajak)
+                           ->where('purchases.is_lunas', $request->is_lunas);
+                    });
             } else {
                 $purchases = DB::table('purchases')
                     ->join('suppliers', 'purchases.supplier_id', '=', 'suppliers.id')
@@ -373,8 +388,23 @@ class PurchaseController extends Controller
                     ->selectRaw('SUM(purchase_details.kuantitas * purchase_details.harga) as total_non_ppn')
                     ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
                     ->groupBy('purchase_details.purchase_id')
-                    ->orderBy('purchases.created_at', 'desc')
-                    ->where('purchases.cara_bayar', '=', 'Kredit');
+                    ->orderBy('purchases.tanggal', 'desc')
+                    ->orderBy('purchases.invoice', 'desc')
+                    ->where('purchases.cara_bayar', '=', 'Kredit')
+                    ->when($request->supplier != '', function ($db) use ($request) {
+                        $db->where('purchases.supplier_id', $request->supplier);
+                    })
+                    ->when($request->pajak != '', function ($db) use ($request) {
+                        $db->where('purchases.pajak', $request->pajak);
+                    })
+                    ->when($request->is_lunas != '', function ($db) use ($request) {
+                        $db->where('purchases.is_lunas', $request->is_lunas);
+                    })
+                    ->when($request->supplier != '' && $request->pajak != '' && $request->is_lunas != '', function ($db) use ($request) {
+                        $db->where('purchases.supplier_id', $request->supplier)
+                           ->where('purchases.pajak', $request->pajak)
+                           ->where('purchases.is_lunas', $request->is_lunas);
+                    });
             }
             return datatables()->of($purchases)
                 ->addColumn('action', function ($purchases) {
@@ -408,7 +438,8 @@ class PurchaseController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-        return view('purchases.debt');
+        $suppliers = Supplier::all();
+        return view('purchases.debt', compact('suppliers'));
     }
 
     public function editDebt($id)
