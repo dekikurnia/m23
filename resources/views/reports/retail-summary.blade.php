@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="row justify-content-center input-daterange">
             <form class="form-inline">
-                <input type="text"  value="{{Request::get('tanggal_mulai')}}" placeholder="Tanggal Mulai" class="form-control mb-2 mr-sm-2" id="tanggal_mulai"
+                <input type="text" value="{{Request::get('tanggal_mulai')}}" placeholder="Tanggal Mulai" class="form-control mb-2 mr-sm-2" id="tanggal_mulai"
                     name="tanggal_mulai" autocomplete="off">
                 <div class="input-group mb-2 mr-sm-2">
                     <input type="text" value="{{Request::get('tanggal_akhir')}}" placeholder="Tanggal Akhir" class="form-control" id="tanggal_akhir"

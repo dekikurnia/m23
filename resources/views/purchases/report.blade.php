@@ -2,23 +2,59 @@
 @section('title') Laporan Pembelian @endsection
 @section('content')
 <div style="margin-top:10px;" class="container-fluid">
-    <div style="margin-top:20px;" class="row justify-content-center">
-        <div class="row justify-content-center input-daterange">
-            <form class="form-inline">
-                <input type="text" value="{{Request::get('tanggal_mulai')}}" placeholder="Tanggal Mulai"
-                    class="form-control mb-2 mr-sm-2" id="tanggal_mulai" name="tanggal_mulai" autocomplete="off">
-                <div class="input-group mb-2 mr-sm-2">
-                    <input type="text" value="{{Request::get('tanggal_akhir')}}" placeholder="Tanggal Akhir"
-                        class="form-control" id="tanggal_akhir" name="tanggal_akhir" autocomplete="off">
+    <form>
+        <div class="row justify-content-center">
+            <div class="card">
+                <div class="card-header">{{ __('Filter Laporan Pembelian') }}</div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <div class="form-group">
+                            <label>Supplier</label>
+                            <select class="form-control form-control-sm" name="supplier_filter" id="supplier_filter">
+                                <option value="">--Pilih Supplier--</option>
+                                @foreach($suppliers as $row)
+                                <option value="{{ $row->id }}">{{ $row->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cara Bayar</label>
+                            <select class="form-control form-control-sm" name="bayar_filter" id="bayar_filter">
+                                <option value="">--Semua Tipe--</option>
+                                <option value="Kas">Kas</option>
+                                <option value="Kredit">Kredit</option>
+                                <option value="Transfer">Transfer</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Pajak</label>
+                            <select class="form-control form-control-sm" name="pajak_filter" id="pajak_filter">
+                                <option value="">--Pilih Pajak--</option>
+                                <option value="Non PPN">Non PPN</option>
+                                <option value="PPN">PPN</option>
+                            </select>
+                        </div>
+                        <div class="input-daterange">
+                            <form>
+                                <div class="form-row">
+                                    <div class="col">
+                                        <input type="text" placeholder="Tanggal Mulai" class="form-control mb-2 mr-sm-2"
+                                            id="tanggal_mulai" name="tanggal_mulai" autocomplete="off">
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" placeholder="Tanggal Akhir" class="form-control"
+                                            id="tanggal_akhir" name="tanggal_akhir" autocomplete="off">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <button type="submit" id="filter" class="btn btn-primary mb-2">Tampilkan</button>&nbsp;
+                        <button type="submit" id="refresh" class="btn btn-danger mb-2">Reset</button>&nbsp;
+                    </div>
                 </div>
-                <button type="submit" id="filter" class="btn btn-primary mb-2">Tampilkan
-                    Tanggal</button>&nbsp;
-                <button type="submit" id="refresh" class="btn btn-danger mb-2">Hapus
-                    Tanggal</button>&nbsp;
-                <!-- <button type="button" name="pdf" id="pdf" class="btn btn-success mb-2">Export PDF</button> !-->
-            </form>
+            </div>
         </div>
-    </div>
+    </form>
     <hr class="my-3">
     <div class="col-md-12">
         <h5 align="center">
@@ -201,17 +237,12 @@
             orientation: 'bottom'
         });
 
-        $('#filter').click(function () {
-            var tanggal_mulai = $('#tanggal_mulai').val();
-            var tanggal_akhir = $('#tanggal_akhir').val();
-            if (tanggal_mulai == '' && tanggal_akhir == '') {
-                alert('Isi kedua filter tanggal mulai dan tanggal akhir');
-            }
-        });
-
         $('#refresh').click(function () {
             $('#tanggal_mulai').val('');
             $('#tanggal_akhir').val('');
+            $('#supplier_filter').val('');
+            $('#bayar_filter').val('');
+            $('#pajak_filter').val('');
         });
 
     });

@@ -293,13 +293,13 @@ class PurchaseController extends Controller
         if (request()->ajax()) {
             if (!empty($request->tanggal_mulai)) {
                 $purchases = DB::table('purchases')
-                ->join('suppliers', 'purchases.supplier_id', '=', 'suppliers.id')
-                ->join('purchase_details', 'purchase_details.purchase_id', '=', 'purchases.id')
-                ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.keterangan', 'suppliers.nama as nama_supplier', 'purchase_details.*')
-                ->selectRaw('SUM(purchase_details.kuantitas * purchase_details.harga) as total_non_ppn')
-                ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
-                ->groupBy('purchase_details.purchase_id')
-                ->orderBy('purchases.tanggal', 'desc')
+                    ->join('suppliers', 'purchases.supplier_id', '=', 'suppliers.id')
+                    ->join('purchase_details', 'purchase_details.purchase_id', '=', 'purchases.id')
+                    ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.keterangan', 'suppliers.nama as nama_supplier', 'purchase_details.*')
+                    ->selectRaw('SUM(purchase_details.kuantitas * purchase_details.harga) as total_non_ppn')
+                    ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
+                    ->groupBy('purchase_details.purchase_id')
+                    ->orderBy('purchases.tanggal', 'desc')
                     ->orderBy('purchases.invoice', 'desc')
                     ->whereBetween('tanggal', array($request->tanggal_mulai, $request->tanggal_akhir))
                     ->when($request->supplier != '', function ($db) use ($request) {
@@ -314,13 +314,13 @@ class PurchaseController extends Controller
                     });
             } else {
                 $purchases = DB::table('purchases')
-                ->join('suppliers', 'purchases.supplier_id', '=', 'suppliers.id')
-                ->join('purchase_details', 'purchase_details.purchase_id', '=', 'purchases.id')
-                ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.keterangan', 'suppliers.nama as nama_supplier', 'purchase_details.*')
-                ->selectRaw('SUM(purchase_details.kuantitas * purchase_details.harga) as total_non_ppn')
-                ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
-                ->groupBy('purchase_details.purchase_id')
-                ->orderBy('purchases.tanggal', 'desc')
+                    ->join('suppliers', 'purchases.supplier_id', '=', 'suppliers.id')
+                    ->join('purchase_details', 'purchase_details.purchase_id', '=', 'purchases.id')
+                    ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.keterangan', 'suppliers.nama as nama_supplier', 'purchase_details.*')
+                    ->selectRaw('SUM(purchase_details.kuantitas * purchase_details.harga) as total_non_ppn')
+                    ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
+                    ->groupBy('purchase_details.purchase_id')
+                    ->orderBy('purchases.tanggal', 'desc')
                     ->orderBy('purchases.invoice', 'desc')
                     ->when($request->supplier != '', function ($db) use ($request) {
                         $db->where('purchases.supplier_id', $request->supplier);
@@ -377,8 +377,8 @@ class PurchaseController extends Controller
                     })
                     ->when($request->supplier != '' && $request->pajak != '' && $request->is_lunas != '', function ($db) use ($request) {
                         $db->where('purchases.supplier_id', $request->supplier)
-                           ->where('purchases.pajak', $request->pajak)
-                           ->where('purchases.is_lunas', $request->is_lunas);
+                            ->where('purchases.pajak', $request->pajak)
+                            ->where('purchases.is_lunas', $request->is_lunas);
                     });
             } else {
                 $purchases = DB::table('purchases')
@@ -402,8 +402,8 @@ class PurchaseController extends Controller
                     })
                     ->when($request->supplier != '' && $request->pajak != '' && $request->is_lunas != '', function ($db) use ($request) {
                         $db->where('purchases.supplier_id', $request->supplier)
-                           ->where('purchases.pajak', $request->pajak)
-                           ->where('purchases.is_lunas', $request->is_lunas);
+                            ->where('purchases.pajak', $request->pajak)
+                            ->where('purchases.is_lunas', $request->is_lunas);
                     });
             }
             return datatables()->of($purchases)
@@ -489,16 +489,146 @@ class PurchaseController extends Controller
         $tanggalMulai = $request->get('tanggal_mulai');
         $tanggalAkhir = $request->get('tanggal_akhir');
         $supplier = $request->get('supplier_filter');
+        $caraBayar = $request->get('bayar_filter');
+        $pajak = $request->get('pajak_filter');
 
-        if (!empty($tanggalMulai)) {
+        if (!empty($supplier) && !empty($caraBayar) && !empty($pajak) && !empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $purchases = Purchase::with('purchaseDetails', 'supplier')
+                ->where(function ($query) use ($supplier, $pajak, $caraBayar, $tanggalMulai, $tanggalAkhir) {
+                    $query->where('supplier_id', '=', $supplier)
+                        ->where('cara_bayar', '=', $caraBayar)
+                        ->where('pajak', '=', $pajak)
+                        ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($supplier) && !empty($caraBayar) && !empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $purchases = Purchase::with('purchaseDetails', 'supplier')
+                ->where(function ($query) use ($supplier, $caraBayar, $tanggalMulai, $tanggalAkhir) {
+                    $query->where('supplier_id', '=', $supplier)
+                        ->where('cara_bayar', '=', $caraBayar)
+                        ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($supplier) && !empty($pajak) && !empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $purchases = Purchase::with('purchaseDetails', 'supplier')
+                ->where(function ($query) use ($supplier, $pajak, $tanggalMulai, $tanggalAkhir) {
+                    $query->where('supplier_id', '=', $supplier)
+                        ->where('pajak', '=', $pajak)
+                        ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($caraBayar) && !empty($pajak) && !empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $purchases = Purchase::with('purchaseDetails', 'supplier')
+                ->where(function ($query) use ($caraBayar, $pajak, $tanggalMulai, $tanggalAkhir) {
+                    $query->where('cara_bayar', '=', $caraBayar)
+                        ->where('pajak', '=', $pajak)
+                        ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($supplier) && !empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $purchases = Purchase::with('purchaseDetails', 'supplier')
+                ->where(function ($query) use ($supplier, $tanggalMulai, $tanggalAkhir) {
+                    $query->where('supplier_id', '=', $supplier)
+                        ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($caraBayar) && !empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $purchases = Purchase::with('purchaseDetails', 'supplier')
+                ->where(function ($query) use ($caraBayar, $tanggalMulai, $tanggalAkhir) {
+                    $query->where('cara_bayar', '=', $caraBayar)
+                        ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($pajak) && !empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $purchases = Purchase::with('purchaseDetails', 'supplier')
+                ->where(function ($query) use ($pajak, $tanggalMulai, $tanggalAkhir) {
+                    $query->where('pajak', '=', $pajak)
+                        ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($supplier) && !empty($caraBayar) && !empty($pajak)) {
+            $purchases = Purchase::with('purchaseDetails', 'supplier')
+                ->where(function ($query) use ($supplier, $pajak, $caraBayar) {
+                    $query->where('supplier_id', '=', $supplier)
+                        ->where('cara_bayar', '=', $caraBayar)
+                        ->where('pajak', '=', $pajak);
+                })
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($supplier) && !empty($caraBayar)) {
+            $purchases = Purchase::with('purchaseDetails', 'supplier')
+                ->where(function ($query) use ($supplier, $caraBayar) {
+                    $query->where('supplier_id', '=', $supplier)
+                        ->where('cara_bayar', '=', $caraBayar);
+                })
+                //
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($supplier) && !empty($pajak)) {
+            $purchases = Purchase::with('purchaseDetails', 'supplier')
+                ->where(function ($query) use ($supplier, $pajak) {
+                    $query->where('supplier_id', '=', $supplier)
+                        ->where('pajak', '=', $pajak);
+                })
+                //
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($pajak) && !empty($caraBayar)) {
+            $purchases = Purchase::with('purchaseDetails', 'supplier')
+                ->where(function ($query) use ($pajak, $caraBayar) {
+                    $query->where('pajak', '=', $pajak)
+                        ->where('cara_bayar', '=', $caraBayar);
+                })
+                //
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($supplier)) {
+            $purchases = Purchase::with('purchaseDetails', 'supplier')
+                ->where('supplier_id', $supplier)
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($caraBayar)) {
+            $purchases = Purchase::with('purchaseDetails', 'supplier')
+                ->where('cara_bayar', $caraBayar)
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($pajak)) {
+            $purchases = Purchase::with('purchaseDetails', 'supplier')
+                ->where('pajak', $pajak)
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($tanggalMulai) && !empty($tanggalAkhir)) {
             $purchases = Purchase::with('purchaseDetails', 'supplier')
                 ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59'])
-                ->orderBy('created_at', 'desc')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
                 ->get();
         } else {
             $purchases = Purchase::with('purchaseDetails', 'supplier')
                 ->where('tanggal', Carbon::today())
-                ->orderBy('created_at', 'desc')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
                 ->get();
         }
         $suppliers = Supplier::all();
