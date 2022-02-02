@@ -16,7 +16,7 @@
                         </div>
                         <div class="form-group col-md-10">
                             <label for="tanggal">Tanggal</label>
-                            <input type="text" class="form-control datepicker" name="tanggal" autocomplete="off" readonly>
+                            <input type="text" value="{{ date('Y-m-d') }}" class="form-control" name="tanggal" autocomplete="off" readonly>
                         </div>
                     </div>
                     <div class="column" style="background-color:#ffffff;">
@@ -132,12 +132,6 @@
 @section('js')
 <script type="text/javascript">
     $(document).ready(function () {
-        $(".datepicker").datepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true,
-            todayHighlight: true,
-            orientation: 'bottom'
-        }).datepicker("setDate",'now');
 
         $("#select-ppn").change(function () {
             $(this).find("option:selected").each(function () {
