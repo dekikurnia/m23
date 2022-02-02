@@ -6,15 +6,81 @@ use Illuminate\Http\Request;
 use App\Models\Sale;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Models\Category;
 
 class ReportController extends Controller
 {
     public function getStoreStockReport(Request $request)
     {
-
         $tanggalMulai = $request->get('tanggal_mulai');
         $tanggalAkhir = $request->get('tanggal_akhir');
-        if (!empty($tanggalMulai)) {
+        $items = $request->get('items_filter', []);
+        $placeholders = implode(",",$items);
+        $category = $request->get('category_filter');
+        if (!empty($tanggalMulai) && !empty($items)) {
+            $stocks = DB::select('SELECT p.nama AS nama_provider, i.nama as nama_item, 
+            ifnull(fs.stok_toko + ifnull(bmid.kuantitas_pindah, 0) - ifnull(bsds.kuantitas_retail, 0) - ifnull(bsds.kuantitas_grosir, 0), 0) as stok_awal,
+            ifnull(mid.kuantitas_pindah,0) as kuantitas_pindah, 
+            ifnull(sds.kuantitas_retail,0) 
+            as kuantitas_retail, ifnull(sds.kuantitas_grosir,0) as kuantitas_grosir,
+            ifnull((fs.stok_toko + ifnull(bmid.kuantitas_pindah, 0) - ifnull(bsds.kuantitas_retail, 0) - ifnull(bsds.kuantitas_grosir, 0)) + ifnull(mid.kuantitas_pindah, 0) - ifnull(sds.kuantitas_retail, 0) - ifnull(sds.kuantitas_grosir, 0), 0) as stok_akhir
+            FROM items AS i 
+            JOIN providers AS p ON  i.provider_id = p.id 
+            JOIN first_stocks AS fs ON  i.id = fs.item_id 
+            LEFT JOIN 
+            (SELECT item_id, SUM(CASE WHEN move_items.tanggal <  "'.$tanggalMulai.'" AND "'.$tanggalAkhir.'" then
+            move_item_details.kuantitas else 0 end) as kuantitas_pindah
+            FROM move_item_details JOIN move_items ON move_item_details.move_item_id = move_items.id
+            GROUP BY item_id) AS bmid ON (i.id = bmid.item_id)
+            LEFT JOIN
+            (SELECT item_id, SUM(CASE WHEN sales.tanggal < "'.$tanggalMulai.'" AND "'.$tanggalAkhir.'"
+            AND jenis="Grosir" then sale_details.kuantitas else 0 end) as kuantitas_grosir,
+            SUM(CASE WHEN sales.tanggal < "'.$tanggalMulai.'" AND "'.$tanggalAkhir.'" AND jenis="Retail" then sale_details.kuantitas else 0 end) as kuantitas_retail FROM sale_details 
+            JOIN sales ON sale_details.sale_id = sales.id GROUP BY item_id) AS bsds ON (i.id = bsds.item_id)
+            LEFT JOIN 
+            (SELECT item_id, SUM(CASE WHEN move_items.tanggal BETWEEN "'.$tanggalMulai.'" AND "'.$tanggalAkhir.'" then
+            move_item_details.kuantitas else 0 end) as kuantitas_pindah
+            FROM move_item_details JOIN move_items ON move_item_details.move_item_id = move_items.id
+            GROUP BY item_id) AS mid ON (i.id = mid.item_id)
+            LEFT JOIN 
+            (SELECT item_id, SUM(CASE WHEN sales.tanggal BETWEEN "'.$tanggalMulai.'" AND "'.$tanggalAkhir.'"
+            AND jenis="Grosir" then sale_details.kuantitas else 0 end) as kuantitas_grosir,
+            SUM(CASE WHEN sales.tanggal BETWEEN "'.$tanggalMulai.'" AND "'.$tanggalAkhir.'" AND jenis="Retail" then sale_details.kuantitas else 0 end) as kuantitas_retail FROM sale_details 
+            JOIN sales ON sale_details.sale_id = sales.id GROUP BY item_id) AS sds ON (i.id = sds.item_id)
+            WHERE i.id IN ('.$placeholders.') ORDER BY p.nama ASC, i.nama ASC');
+        } elseif (!empty($tanggalMulai) && !empty($category)) {
+            $stocks = DB::select('SELECT p.nama AS nama_provider, i.nama as nama_item, 
+            ifnull(fs.stok_toko + ifnull(bmid.kuantitas_pindah, 0) - ifnull(bsds.kuantitas_retail, 0) - ifnull(bsds.kuantitas_grosir, 0), 0) as stok_awal,
+            ifnull(mid.kuantitas_pindah,0) as kuantitas_pindah, 
+            ifnull(sds.kuantitas_retail,0) 
+            as kuantitas_retail, ifnull(sds.kuantitas_grosir,0) as kuantitas_grosir,
+            ifnull((fs.stok_toko + ifnull(bmid.kuantitas_pindah, 0) - ifnull(bsds.kuantitas_retail, 0) - ifnull(bsds.kuantitas_grosir, 0)) + ifnull(mid.kuantitas_pindah, 0) - ifnull(sds.kuantitas_retail, 0) - ifnull(sds.kuantitas_grosir, 0), 0) as stok_akhir
+            FROM items AS i 
+            JOIN providers AS p ON  i.provider_id = p.id 
+            JOIN first_stocks AS fs ON  i.id = fs.item_id 
+            JOIN categories AS c ON i.category_id = c.id
+            LEFT JOIN 
+            (SELECT item_id, SUM(CASE WHEN move_items.tanggal <  "'.$tanggalMulai.'" AND "'.$tanggalAkhir.'" then
+            move_item_details.kuantitas else 0 end) as kuantitas_pindah
+            FROM move_item_details JOIN move_items ON move_item_details.move_item_id = move_items.id
+            GROUP BY item_id) AS bmid ON (i.id = bmid.item_id)
+            LEFT JOIN
+            (SELECT item_id, SUM(CASE WHEN sales.tanggal < "'.$tanggalMulai.'" AND "'.$tanggalAkhir.'"
+            AND jenis="Grosir" then sale_details.kuantitas else 0 end) as kuantitas_grosir,
+            SUM(CASE WHEN sales.tanggal < "'.$tanggalMulai.'" AND "'.$tanggalAkhir.'" AND jenis="Retail" then sale_details.kuantitas else 0 end) as kuantitas_retail FROM sale_details 
+            JOIN sales ON sale_details.sale_id = sales.id GROUP BY item_id) AS bsds ON (i.id = bsds.item_id)
+            LEFT JOIN 
+            (SELECT item_id, SUM(CASE WHEN move_items.tanggal BETWEEN "'.$tanggalMulai.'" AND "'.$tanggalAkhir.'" then
+            move_item_details.kuantitas else 0 end) as kuantitas_pindah
+            FROM move_item_details JOIN move_items ON move_item_details.move_item_id = move_items.id
+            GROUP BY item_id) AS mid ON (i.id = mid.item_id)
+            LEFT JOIN 
+            (SELECT item_id, SUM(CASE WHEN sales.tanggal BETWEEN "'.$tanggalMulai.'" AND "'.$tanggalAkhir.'"
+            AND jenis="Grosir" then sale_details.kuantitas else 0 end) as kuantitas_grosir,
+            SUM(CASE WHEN sales.tanggal BETWEEN "'.$tanggalMulai.'" AND "'.$tanggalAkhir.'" AND jenis="Retail" then sale_details.kuantitas else 0 end) as kuantitas_retail FROM sale_details 
+            JOIN sales ON sale_details.sale_id = sales.id GROUP BY item_id) AS sds ON (i.id = sds.item_id)
+            WHERE c.id = '.$category.' ORDER BY p.nama ASC, i.nama ASC');
+        } elseif(!empty($tanggalMulai)) {
             $stocks = DB::select('SELECT p.nama AS nama_provider, i.nama as nama_item, 
             ifnull(fs.stok_toko + ifnull(bmid.kuantitas_pindah, 0) - ifnull(bsds.kuantitas_retail, 0) - ifnull(bsds.kuantitas_grosir, 0), 0) as stok_awal,
             ifnull(mid.kuantitas_pindah,0) as kuantitas_pindah, 
@@ -45,6 +111,71 @@ class ReportController extends Controller
             SUM(CASE WHEN sales.tanggal BETWEEN "'.$tanggalMulai.'" AND "'.$tanggalAkhir.'" AND jenis="Retail" then sale_details.kuantitas else 0 end) as kuantitas_retail FROM sale_details 
             JOIN sales ON sale_details.sale_id = sales.id GROUP BY item_id) AS sds ON (i.id = sds.item_id)
             ORDER BY p.nama ASC, i.nama ASC');
+        } elseif(!empty($items)) {
+            $tanggal = Carbon::today();
+            $stocks =  DB::select('SELECT p.nama AS nama_provider, i.nama as nama_item, 
+            ifnull(fs.stok_toko + ifnull(bmid.kuantitas_pindah, 0) - ifnull(bsds.kuantitas_retail, 0) - ifnull(bsds.kuantitas_grosir, 0), 0) as stok_awal,
+            ifnull(mid.kuantitas_pindah,0) as kuantitas_pindah, 
+            ifnull(sds.kuantitas_retail,0) 
+            as kuantitas_retail, ifnull(sds.kuantitas_grosir,0) as kuantitas_grosir,
+            ifnull((fs.stok_toko + ifnull(bmid.kuantitas_pindah, 0) - ifnull(bsds.kuantitas_retail, 0) - ifnull(bsds.kuantitas_grosir, 0)) + ifnull(mid.kuantitas_pindah, 0) - ifnull(sds.kuantitas_retail, 0) - ifnull(sds.kuantitas_grosir, 0), 0) as stok_akhir
+            FROM items AS i 
+            JOIN providers AS p ON  i.provider_id = p.id 
+            JOIN first_stocks AS fs ON  i.id = fs.item_id
+            LEFT JOIN 
+            (SELECT item_id, SUM(CASE WHEN move_items.tanggal <  "'.$tanggal.'" then
+            move_item_details.kuantitas else 0 end) as kuantitas_pindah
+            FROM move_item_details JOIN move_items ON move_item_details.move_item_id = move_items.id
+            GROUP BY item_id) AS bmid ON (i.id = bmid.item_id) 
+            LEFT JOIN
+            (SELECT item_id, SUM(CASE WHEN sales.tanggal < "'.$tanggal.'"
+            AND jenis="Grosir" then sale_details.kuantitas else 0 end) as kuantitas_grosir,
+            SUM(CASE WHEN sales.tanggal < "'.$tanggal.'" AND jenis="Retail" then sale_details.kuantitas else 0 end) as kuantitas_retail FROM sale_details 
+            JOIN sales ON sale_details.sale_id = sales.id GROUP BY item_id) AS bsds ON (i.id = bsds.item_id)
+            LEFT JOIN 
+            (SELECT item_id, SUM(CASE WHEN move_items.tanggal = "'.$tanggal.'" then
+            move_item_details.kuantitas else 0 end) as kuantitas_pindah
+            FROM move_item_details JOIN move_items ON move_item_details.move_item_id = move_items.id
+            GROUP BY item_id) AS mid ON (i.id = mid.item_id)
+            LEFT JOIN 
+            (SELECT item_id, SUM(CASE WHEN sales.tanggal ="'.$tanggal.'"
+            AND jenis="Grosir" then sale_details.kuantitas else 0 end) as kuantitas_grosir,
+            SUM(CASE WHEN sales.tanggal = "'.$tanggal.'" AND jenis="Retail" then sale_details.kuantitas else 0 end) as kuantitas_retail FROM sale_details 
+            JOIN sales ON sale_details.sale_id = sales.id GROUP BY item_id) AS sds ON (i.id = sds.item_id)
+            WHERE i.id IN ('.$placeholders.') ORDER BY p.nama ASC, i.nama ASC');
+        } elseif(!empty($category)) {
+            $tanggal = Carbon::today();
+            $stocks =  DB::select('SELECT p.nama AS nama_provider, i.nama as nama_item, 
+            ifnull(fs.stok_toko + ifnull(bmid.kuantitas_pindah, 0) - ifnull(bsds.kuantitas_retail, 0) - ifnull(bsds.kuantitas_grosir, 0), 0) as stok_awal,
+            ifnull(mid.kuantitas_pindah,0) as kuantitas_pindah, 
+            ifnull(sds.kuantitas_retail,0) 
+            as kuantitas_retail, ifnull(sds.kuantitas_grosir,0) as kuantitas_grosir,
+            ifnull((fs.stok_toko + ifnull(bmid.kuantitas_pindah, 0) - ifnull(bsds.kuantitas_retail, 0) - ifnull(bsds.kuantitas_grosir, 0)) + ifnull(mid.kuantitas_pindah, 0) - ifnull(sds.kuantitas_retail, 0) - ifnull(sds.kuantitas_grosir, 0), 0) as stok_akhir
+            FROM items AS i 
+            JOIN providers AS p ON  i.provider_id = p.id 
+            JOIN first_stocks AS fs ON  i.id = fs.item_id
+            JOIN categories AS c ON i.category_id = c.id
+            LEFT JOIN 
+            (SELECT item_id, SUM(CASE WHEN move_items.tanggal <  "'.$tanggal.'" then
+            move_item_details.kuantitas else 0 end) as kuantitas_pindah
+            FROM move_item_details JOIN move_items ON move_item_details.move_item_id = move_items.id
+            GROUP BY item_id) AS bmid ON (i.id = bmid.item_id) 
+            LEFT JOIN
+            (SELECT item_id, SUM(CASE WHEN sales.tanggal < "'.$tanggal.'"
+            AND jenis="Grosir" then sale_details.kuantitas else 0 end) as kuantitas_grosir,
+            SUM(CASE WHEN sales.tanggal < "'.$tanggal.'" AND jenis="Retail" then sale_details.kuantitas else 0 end) as kuantitas_retail FROM sale_details 
+            JOIN sales ON sale_details.sale_id = sales.id GROUP BY item_id) AS bsds ON (i.id = bsds.item_id)
+            LEFT JOIN 
+            (SELECT item_id, SUM(CASE WHEN move_items.tanggal = "'.$tanggal.'" then
+            move_item_details.kuantitas else 0 end) as kuantitas_pindah
+            FROM move_item_details JOIN move_items ON move_item_details.move_item_id = move_items.id
+            GROUP BY item_id) AS mid ON (i.id = mid.item_id)
+            LEFT JOIN 
+            (SELECT item_id, SUM(CASE WHEN sales.tanggal ="'.$tanggal.'"
+            AND jenis="Grosir" then sale_details.kuantitas else 0 end) as kuantitas_grosir,
+            SUM(CASE WHEN sales.tanggal = "'.$tanggal.'" AND jenis="Retail" then sale_details.kuantitas else 0 end) as kuantitas_retail FROM sale_details 
+            JOIN sales ON sale_details.sale_id = sales.id GROUP BY item_id) AS sds ON (i.id = sds.item_id)
+            WHERE c.id = '.$category.' ORDER BY p.nama ASC, i.nama ASC');
         } else {
             $tanggal = Carbon::today();
             $stocks =  DB::select('SELECT p.nama AS nama_provider, i.nama as nama_item, 
@@ -55,12 +186,12 @@ class ReportController extends Controller
             ifnull((fs.stok_toko + ifnull(bmid.kuantitas_pindah, 0) - ifnull(bsds.kuantitas_retail, 0) - ifnull(bsds.kuantitas_grosir, 0)) + ifnull(mid.kuantitas_pindah, 0) - ifnull(sds.kuantitas_retail, 0) - ifnull(sds.kuantitas_grosir, 0), 0) as stok_akhir
             FROM items AS i 
             JOIN providers AS p ON  i.provider_id = p.id 
-            JOIN first_stocks AS fs ON  i.id = fs.item_id 
+            JOIN first_stocks AS fs ON  i.id = fs.item_id
             LEFT JOIN 
             (SELECT item_id, SUM(CASE WHEN move_items.tanggal <  "'.$tanggal.'" then
             move_item_details.kuantitas else 0 end) as kuantitas_pindah
             FROM move_item_details JOIN move_items ON move_item_details.move_item_id = move_items.id
-            GROUP BY item_id) AS bmid ON (i.id = bmid.item_id)
+            GROUP BY item_id) AS bmid ON (i.id = bmid.item_id) 
             LEFT JOIN
             (SELECT item_id, SUM(CASE WHEN sales.tanggal < "'.$tanggal.'"
             AND jenis="Grosir" then sale_details.kuantitas else 0 end) as kuantitas_grosir,
@@ -78,7 +209,8 @@ class ReportController extends Controller
             JOIN sales ON sale_details.sale_id = sales.id GROUP BY item_id) AS sds ON (i.id = sds.item_id)
             ORDER BY p.nama ASC, i.nama ASC');
         }
-        return view('reports.store-stock', ['stocks' => $stocks]);
+        $categories = Category::all();
+        return view('reports.store-stock', compact('stocks', 'categories'));
     }
 
     public function getWarehouseStockReport(Request $request)
@@ -334,5 +466,18 @@ class ReportController extends Controller
                 ->get();
         }
         return view('reports.warehouse-sale', ['sales' => $sales]);
+    }
+
+    public function itemsSearch(Request $request)
+    {
+        $keyword = $request->get('q');
+
+        $items = DB::table('items')
+        ->join('providers', 'providers.id', '=', 'items.provider_id')
+        ->select('items.id', 'providers.id as provider_id', 'providers.nama as nama_provider', 'items.nama as nama_item')
+        ->orderBy('nama_provider', 'asc')
+        ->orderBy('nama_item', 'asc')
+        ->where("items.nama", "LIKE", "%$keyword%")->get();
+        return $items;
     }
 }

@@ -104,6 +104,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/purchases/items/list', [PurchaseController::class, 'itemsList'])->name('purchases.items-list');
     Route::get('/moves/items/list', [MoveItemController::class, 'itemsList'])->name('moves.items-list');
     Route::get('/retail/items/list', [RetailSaleController::class, 'itemsList'])->name('retail.items-list');
+    Route::get('/ajax/items/search', [ReportController::class, 'itemsSearch'])->name('items.search');
 
     Route::resource('sales', SaleController::class);
 

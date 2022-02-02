@@ -11013,3 +11013,12 @@ div.copyright {
     flex: 0 0 50px;
     margin-top: auto;
 }
+
+.select2-container--default .select2-results>.select2-results__options{
+    max-height: 500px !important;
+    font-size:12px !important;
+}
+
+.select2-results__option[aria-selected=true] {
+    display: none;
+}
