@@ -114,8 +114,8 @@ class MoveItemController extends Controller
             $newMoveItemDetails->kuantitas = $request->kuantitas[$row];
 
             $newStocks = Stock::where('item_id', $newMoveItemDetails->item_id)->first();
-            $newStocks->stok_gudang = $newStocks->stok_gudang - $newMoveItemDetails->kuantitas;
-            $newStocks->stok_toko = $newStocks->stok_toko + $newMoveItemDetails->kuantitas;
+            $newStocks->stok_gudang = ($newStocks->stok_gudang) - ($newMoveItemDetails->kuantitas);
+            $newStocks->stok_toko = ($newStocks->stok_toko) + ($newMoveItemDetails->kuantitas);
             $items->id = $newMoveItemDetails->item_id;
 
             DB::transaction(function () use ($newMoveItemDetails, $newStocks, $items) {

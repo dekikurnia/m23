@@ -2,20 +2,47 @@
 @section('title') Laporan Stok Gudang @endsection
 @section('content')
 <div class="container-fluid">
-    <div class="row justify-content-center input-daterange">
-        <form class="form-inline">
-            <input type="text" value="{{Request::get('tanggal_mulai')}}" placeholder="Tanggal Mulai"
-                class="form-control mb-2 mr-sm-2" id="tanggal_mulai" name="tanggal_mulai" autocomplete="off">
-            <div class="input-group mb-2 mr-sm-2">
-                <input type="text" value="{{Request::get('tanggal_akhir')}}" placeholder="Tanggal Akhir"
-                    class="form-control" id="tanggal_akhir" name="tanggal_akhir" autocomplete="off">
+   <form>
+        <div class="row justify-content-center">
+            <div class="card">
+                <div class="card-header">{{ __('Filter Laporan Stok Gudang') }}</div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <div class="form-group">
+                            <label>Barang</label>
+                            <select style="width: 100%;" name="items_filter[]" multiple id="items_filter" class="form-control form-control-sm">
+                            </select>
+                        </div>
+                         <div class="form-group">
+                            <label>Kategori Barang</label>
+                            <select class="form-control form-control-sm" name="category_filter" id="category_filter">
+                                <option value="">--Pilih Kategori--</option>
+                                @foreach($categories as $row)
+                                <option value="{{ $row->id }}">{{ $row->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="input-daterange">
+                            <form>
+                                <div class="form-row">
+                                    <div class="col">
+                                        <input type="text" placeholder="Tanggal Mulai" class="form-control form-control-sm mb-2 mr-sm-2"
+                                            id="tanggal_mulai" name="tanggal_mulai" autocomplete="off">
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" placeholder="Tanggal Akhir" class="form-control form-control-sm"
+                                            id="tanggal_akhir" name="tanggal_akhir" autocomplete="off">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <button type="submit" id="filter" class="btn btn-primary mb-2">Tampilkan</button>&nbsp;
+                        <button type="submit" id="refresh" class="btn btn-danger mb-2">Reset</button>&nbsp;
+                    </div>
+                </div>
             </div>
-            <button type="submit" id="filter" class="btn btn-primary mb-2">Tampilkan
-                Tanggal</button>&nbsp;
-            <button type="submit" id="refresh" class="btn btn-danger mb-2">Hapus
-                Tanggal</button>&nbsp;
-        </form>
-    </div>
+        </div>
+    </form>
     <hr class="my-3">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -81,18 +108,28 @@
             orientation: 'bottom'
         });
 
-        $('#filter').click(function () {
-            var tanggal_mulai = $('#tanggal_mulai').val();
-            var tanggal_akhir = $('#tanggal_akhir').val();
-            if (tanggal_mulai == '' && tanggal_akhir == '') {
-                alert('Isi kedua filter tanggal mulai dan tanggal akhir');
+        $('#items_filter').select2({
+            ajax: {
+                url: "{{ route('items.search') }}",
+                processResults: function (data) {
+                    return {
+                        results: data.map(function (item) {
+                            return {
+                                id: item.id,
+                                text: item.nama_item
+                            }
+                        })
+                    }
+                }
             }
         });
 
         $('#refresh').click(function () {
             $('#tanggal_mulai').val('');
             $('#tanggal_akhir').val('');
+            $('#item_filter').val('');
         });
+
 
     });
 </script>
