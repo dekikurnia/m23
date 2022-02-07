@@ -1,11 +1,11 @@
 @extends('layouts.app')
 @section('title') Laporan Stok Toko @endsection
 @section('content')
-<div style="margin-top:10px;" class="container-fluid">
+<div class="container-fluid">
    <form>
         <div class="row justify-content-center">
             <div class="card">
-                <div class="card-header">{{ __('Filter Laporan Stok Toko') }}</div>
+                <div class="card-header text-center">{{ __('Filter Laporan Stok Toko') }}</div>
                 <div class="card-body">
                     <div class="text-center">
                         <div class="form-group">

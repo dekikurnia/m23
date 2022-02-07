@@ -5,7 +5,7 @@
    <form>
         <div class="row justify-content-center">
             <div class="card">
-                <div class="card-header">{{ __('Filter Laporan Stok Gudang') }}</div>
+                <div class="card-header text-center">{{ __('Filter Laporan Stok Gudang') }}</div>
                 <div class="card-body">
                     <div class="text-center">
                         <div class="form-group">

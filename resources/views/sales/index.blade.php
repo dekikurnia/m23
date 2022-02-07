@@ -34,7 +34,7 @@
                                     <b>Tipe Penjualan</b></th>
                                 <th style="width: 15%"><b>Customer</b></th>
                                 <th style="width: 10%"><b>Pajak</b></th>
-                                <th style="width: 10%; vertical-align: middle;">
+                                <th style="width: 10%; text-align: right;">
                                     <b>Total</b></th>
                                 <th style="width: 25%; vertical-align: middle;" class="text-center">
                                     <b>Keterangan</b></th>
