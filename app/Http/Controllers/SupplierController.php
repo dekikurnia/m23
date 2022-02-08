@@ -22,7 +22,7 @@ class SupplierController extends Controller
                 'nama',
                 'LIKE',
                 "%$filterKeyword%"
-            )->paginate(10);
+            )->paginate(50);
         }
         return view('suppliers.index', ['suppliers' => $suppliers]);
     }/*  */

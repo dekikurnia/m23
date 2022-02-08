@@ -22,7 +22,7 @@ class CustomerController extends Controller
                 'nama',
                 'LIKE',
                 "%$filterKeyword%"
-            )->paginate(10);
+            )->paginate(50);
         }
         return view('customers.index', ['customers' => $customers]);
     }
