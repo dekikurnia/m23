@@ -949,7 +949,9 @@ class ReportController extends Controller
     {
         $tanggalMulai = $request->get('tanggal_mulai');
         $tanggalAkhir = $request->get('tanggal_akhir');
-        if (!empty($tanggalMulai)) {
+        $items = $request->get('items_filter', []);
+        $category = $request->get('category_filter');
+        if (!empty($tanggalMulai) && !empty($items)) {
             $sales = DB::table('items')
                 ->leftJoin('sale_details', 'sale_details.item_id', 'items.id')
                 ->leftJoin('sales', function ($join) use ($tanggalMulai, $tanggalAkhir) {
@@ -965,6 +967,82 @@ class ReportController extends Controller
                 ->groupBy('items.id')
                 ->orderBy('providers.nama')
                 ->orderBy('items.nama')
+                ->whereIn('items.id', $items)
+                ->get();
+        } elseif (!empty($tanggalMulai) && !empty($category)) {
+            $sales = DB::table('items')
+                ->leftJoin('sale_details', 'sale_details.item_id', 'items.id')
+                ->leftJoin('sales', function ($join) use ($tanggalMulai, $tanggalAkhir) {
+                    $join->on('sale_details.sale_id', '=', 'sales.id')->whereBetween('sales.tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->join('providers', 'items.provider_id', '=', 'providers.id')
+                ->join('categories', 'items.category_id', '=', 'categories.id')
+                ->select(
+                    'providers.nama AS nama_provider',
+                    'items.nama AS nama_item',
+                    DB::raw('SUM(CASE WHEN jenis="Gudang" then kuantitas else 0 end) as kuantitas_gudang'),
+                    DB::raw('SUM(CASE WHEN jenis="Gudang" then (sale_details.harga * sale_details.kuantitas )else 0 end)as harga_gudang'),
+                )
+                ->groupBy('items.id')
+                ->orderBy('providers.nama')
+                ->orderBy('items.nama')
+                ->where('categories.id', $category)
+                ->get();
+        } elseif (!empty($tanggalMulai)) {
+            $sales = DB::table('items')
+                ->leftJoin('sale_details', 'sale_details.item_id', 'items.id')
+                ->leftJoin('sales', function ($join) use ($tanggalMulai, $tanggalAkhir) {
+                    $join->on('sale_details.sale_id', '=', 'sales.id')->whereBetween('sales.tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->join('providers', 'items.provider_id', '=', 'providers.id')
+                ->select(
+                    'providers.nama AS nama_provider',
+                    'items.nama AS nama_item',
+                    DB::raw('SUM(CASE WHEN jenis="Gudang" then kuantitas else 0 end) as kuantitas_gudang'),
+                    DB::raw('SUM(CASE WHEN jenis="Gudang" then (sale_details.harga * sale_details.kuantitas )else 0 end)as harga_gudang'),
+                )
+                ->groupBy('items.id')
+                ->orderBy('providers.nama')
+                ->orderBy('items.nama')
+                ->get();
+        } elseif (!empty($items)) {
+            $tanggal = Carbon::today();
+            $sales = DB::table('items')
+                ->leftJoin('sale_details', 'sale_details.item_id', 'items.id')
+                ->leftJoin('sales', function ($join) use ($tanggal) {
+                    $join->on('sale_details.sale_id', '=', 'sales.id')->where('sales.tanggal', $tanggal);
+                })
+                ->join('providers', 'items.provider_id', '=', 'providers.id')
+                ->select(
+                    'providers.nama AS nama_provider',
+                    'items.nama AS nama_item',
+                    DB::raw('SUM(CASE WHEN jenis="Gudang" then kuantitas else 0 end) as kuantitas_gudang'),
+                    DB::raw('SUM(CASE WHEN jenis="Gudang" then (sale_details.harga * sale_details.kuantitas )else 0 end)as harga_gudang'),
+                )
+                ->groupBy('items.id')
+                ->orderBy('providers.nama')
+                ->orderBy('items.nama')
+                ->whereIn('items.id', $items)
+                ->get();
+        } elseif (!empty($category)) {
+            $tanggal = Carbon::today();
+            $sales = DB::table('items')
+                ->leftJoin('sale_details', 'sale_details.item_id', 'items.id')
+                ->leftJoin('sales', function ($join) use ($tanggal) {
+                    $join->on('sale_details.sale_id', '=', 'sales.id')->where('sales.tanggal', $tanggal);
+                })
+                ->join('providers', 'items.provider_id', '=', 'providers.id')
+                ->join('categories', 'items.category_id', '=', 'categories.id')
+                ->select(
+                    'providers.nama AS nama_provider',
+                    'items.nama AS nama_item',
+                    DB::raw('SUM(CASE WHEN jenis="Gudang" then kuantitas else 0 end) as kuantitas_gudang'),
+                    DB::raw('SUM(CASE WHEN jenis="Gudang" then (sale_details.harga * sale_details.kuantitas )else 0 end)as harga_gudang'),
+                )
+                ->groupBy('items.id')
+                ->orderBy('providers.nama')
+                ->orderBy('items.nama')
+                ->where('categories.id', $category)
                 ->get();
         } else {
             $tanggal = Carbon::today();
@@ -985,7 +1063,8 @@ class ReportController extends Controller
                 ->orderBy('items.nama')
                 ->get();
         }
-        return view('reports.warehouse-sale', ['sales' => $sales]);
+        $categories = Category::all();
+        return view('reports.warehouse-sale', compact('sales', 'categories'));
     }
 
     public function itemsSearch(Request $request)
