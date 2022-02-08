@@ -12,7 +12,7 @@
                     <div class="column" style="background-color:#ffffff;">
                         <div class="form-group col-md-10">
                             <label for="invoice">No. Invoice</label>
-                            <input value="{{ $sale->invoice }}" class="form-control" type="text" name="invoice" />
+                            <input value="{{ $sale->invoice }}" class="form-control" type="text" name="invoice" readonly />
                         </div>
                         <div class="form-group col-md-10">
                             <label for="tanggal">Tanggal</label>
