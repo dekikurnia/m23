@@ -474,7 +474,6 @@ class ReportController extends Controller
 
     public function getWholesaleSummaryReport(Request $request)
     {
-
         $tanggalMulai = $request->get('tanggal_mulai');
         $tanggalAkhir = $request->get('tanggal_akhir');
         $customer = $request->get('customer_filter');
@@ -659,27 +658,161 @@ class ReportController extends Controller
 
     public function getWarehouseSummaryReport(Request $request)
     {
-
         $tanggalMulai = $request->get('tanggal_mulai');
         $tanggalAkhir = $request->get('tanggal_akhir');
+        $customer = $request->get('customer_filter');
+        $caraBayar = $request->get('bayar_filter');
+        $pajak = $request->get('pajak_filter');
 
-        if (!empty($tanggalMulai)) {
+        if (!empty($customer) && !empty($caraBayar) && !empty($pajak) && !empty($tanggalMulai) && !empty($tanggalAkhir)) {
             $sales = Sale::with('saleDetails', 'customer')
-                ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59'])
+                ->where(function ($query) use ($customer, $pajak, $caraBayar, $tanggalMulai, $tanggalAkhir) {
+                    $query->where('customer_id', '=', $customer)
+                        ->where('cara_bayar', '=', $caraBayar)
+                        ->where('pajak', '=', $pajak)
+                        ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
                 ->where('jenis', '=', 'Gudang')
-                ->orderBy('created_at', 'desc')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
                 ->get();
             //->paginate(10);
+        } else if (!empty($customer) && !empty($caraBayar) && !empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->where(function ($query) use ($customer, $caraBayar, $tanggalMulai, $tanggalAkhir) {
+                    $query->where('customer_id', '=', $customer)
+                        ->where('cara_bayar', '=', $caraBayar)
+                        ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->where('jenis', '=', 'Gudang')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } else if (!empty($customer) && !empty($pajak) && !empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->where(function ($query) use ($customer, $pajak, $tanggalMulai, $tanggalAkhir) {
+                    $query->where('customer_id', '=', $customer)
+                        ->where('pajak', '=', $pajak)
+                        ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->where('jenis', '=', 'Gudang')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($caraBayar) && !empty($pajak) && !empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->where(function ($query) use ($caraBayar, $pajak, $tanggalMulai, $tanggalAkhir) {
+                    $query->where('cara_bayar', '=', $caraBayar)
+                        ->where('pajak', '=', $pajak)
+                        ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->where('jenis', '=', 'Gudang')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } else if (!empty($customer) && !empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->where(function ($query) use ($customer, $tanggalMulai, $tanggalAkhir) {
+                    $query->where('customer_id', '=', $customer)
+                        ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->where('jenis', '=', 'Gudang')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } else if (!empty($caraBayar) && !empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->where(function ($query) use ($caraBayar, $tanggalMulai, $tanggalAkhir) {
+                    $query->where('cara_bayar', '=', $caraBayar)
+                        ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->where('jenis', '=', 'Gudang')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } else if (!empty($pajak) && !empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->where(function ($query) use ($pajak, $tanggalMulai, $tanggalAkhir) {
+                    $query->where('pajak', '=', $pajak)
+                        ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59']);
+                })
+                ->where('jenis', '=', 'Gudang')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($customer) && !empty($caraBayar) && !empty($pajak)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->where(function ($query) use ($customer, $pajak, $caraBayar) {
+                    $query->where('customer_id', '=', $customer)
+                        ->where('cara_bayar', '=', $caraBayar)
+                        ->where('pajak', '=', $pajak);
+                })
+                ->where('jenis', '=', 'Gudang')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($customer) && !empty($caraBayar)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->where(function ($query) use ($customer, $caraBayar) {
+                    $query->where('customer_id', '=', $customer)
+                        ->where('cara_bayar', '=', $caraBayar);
+                })
+                ->where('jenis', '=', 'Gudang')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($customer) && !empty($pajak)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->where(function ($query) use ($customer, $pajak) {
+                    $query->where('customer_id', '=', $customer)
+                        ->where('pajak', '=', $pajak);
+                })
+                ->where('jenis', '=', 'Gudang')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($caraBayar) && !empty($pajak)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->where(function ($query) use ($pajak, $caraBayar) {
+                    $query->where('cara_bayar', '=', $caraBayar)
+                        ->where('pajak', '=', $pajak);
+                })
+                ->where('jenis', '=', 'Gudang')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($customer)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->where('customer_id', '=', $customer)
+                ->where('jenis', '=', 'Gudang')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($caraBayar)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->where('cara_bayar', '=', $caraBayar)
+                ->where('jenis', '=', 'Gudang')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($pajak)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->where('pajak', '=', $pajak)
+                ->where('jenis', '=', 'Gudang')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
         } else {
             $sales = Sale::with('saleDetails', 'customer')
                 ->where('tanggal', Carbon::today())
                 ->where('jenis', '=', 'Gudang')
-                ->orderBy('created_at', 'desc')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
                 ->get();
             //->paginate(10);
         }
-
-        return view('reports.warehouse-summary', ['sales' => $sales]);
+        $customers = Customer::all();
+        return view('reports.warehouse-summary', compact('sales', 'customers'));
     }
 
     public function getStoreSaleReport(Request $request)
