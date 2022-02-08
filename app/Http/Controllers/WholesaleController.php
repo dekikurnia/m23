@@ -115,8 +115,8 @@ class WholesaleController extends Controller
 
         $items = $request->item_id;
         foreach ($items as $row => $key) {
-            $wholesaleDetails= new SaleDetail;
-            $items = new Item;
+            $wholesaleDetails = new SaleDetail;
+            $updateItems = new Item;
 
             $wholesaleDetails->sale_id = $wholesales->id;
             $wholesaleDetails->item_id = $request->item_id[$row];
@@ -124,13 +124,16 @@ class WholesaleController extends Controller
             $wholesaleDetails->harga = $request->harga[$row];
 
             $newStocks = Stock::where('item_id', $wholesaleDetails->item_id)->first();
-            $newStocks->stok_toko = $newStocks->stok_toko - $wholesaleDetails->kuantitas;
-            $items->id = $wholesaleDetails->item_id;
-
-            DB::transaction(function () use ($wholesaleDetails, $newStocks, $items) {
-                $wholesaleDetails->save();
-                $items->stock()->save($newStocks);
-            });
+            $newStocks->stok_toko = ($newStocks->stok_toko) - ($wholesaleDetails->kuantitas);
+            $updateItems->id = $wholesaleDetails->item_id;
+            try {
+                DB::transaction(function () use ($wholesaleDetails, $newStocks, $updateItems) {
+                    $wholesaleDetails->save();
+                    $updateItems->stock()->save($newStocks);
+                });
+            } catch (\Throwable $e) {
+                return $e->getMessage();
+            }
         }
 
         return response()->json(array('status' => 'success', 'msg' => 'Entry penjualan grosir berhasil ditambahkan.'), 200);
@@ -188,7 +191,7 @@ class WholesaleController extends Controller
             $items = Item::where('id', $saleDetail->item_id)->get();
             $stocks = Stock::where('item_id', $saleDetail->item_id)->get();
             foreach ($stocks as $stock) {
-                $stock->stok_toko = $stock->stok_toko + $saleDetail->kuantitas;
+                $stock->stok_toko = ($stock->stok_toko) + ($saleDetail->kuantitas);
                 foreach ($items as $item) {
                     $item->stock()->save($stock);
                     $sale->delete();
@@ -238,7 +241,7 @@ class WholesaleController extends Controller
 
         $items = $request->item_id;
         foreach ($items as $row => $key) {
-            $wholesaleDetails= new SaleDetail;
+            $wholesaleDetails = new SaleDetail;
             $items = new Item;
 
             $wholesaleDetails->sale_id = $wholesales->id;
@@ -247,7 +250,7 @@ class WholesaleController extends Controller
             $wholesaleDetails->harga = $request->harga[$row];
 
             $newStocks = Stock::where('item_id', $wholesaleDetails->item_id)->first();
-            $newStocks->stok_toko = $newStocks->stok_toko - $wholesaleDetails->kuantitas;
+            $newStocks->stok_toko = ($newStocks->stok_toko) - ($wholesaleDetails->kuantitas);
             $items->id = $wholesaleDetails->item_id;
 
             DB::transaction(function () use ($wholesaleDetails, $newStocks, $items) {

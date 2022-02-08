@@ -110,7 +110,7 @@ class RetailSaleController extends Controller
             $retailDetails->harga = $request->harga[$row];
 
             $newStocks = Stock::where('item_id', $retailDetails->item_id)->first();
-            $newStocks->stok_toko = $newStocks->stok_toko - $retailDetails->kuantitas;
+            $newStocks->stok_toko = ($newStocks->stok_toko) - ($retailDetails->kuantitas);
             $updateItems->id = $retailDetails->item_id;
 
             DB::transaction(function () use ($retailDetails, $newStocks, $updateItems) {
@@ -203,29 +203,29 @@ class RetailSaleController extends Controller
             return response()->json(array('status' => 'error', 'msg' => $validator->errors()->all()), 500);
         }
 
-        $retail = new Sale;
-        $retail->invoice = $request->invoice;
-        $retail->tanggal = $request->tanggal;
-        $retail->pajak = $request->pajak;
-        $retail->cara_bayar = "Kas";
-        $retail->jenis = "Retail";
-        $retail->is_lunas = 1;
-        $retail->keterangan = $request->keterangan;
-        $retail->user_id = $request->user()->id;
-        $retail->save();
+        $retailSales = new Sale;
+        $retailSales->invoice = $request->invoice;
+        $retailSales->tanggal = $request->tanggal;
+        $retailSales->pajak = $request->pajak;
+        $retailSales->cara_bayar = "Kas";
+        $retailSales->jenis = "Retail";
+        $retailSales->is_lunas = 1;
+        $retailSales->keterangan = $request->keterangan;
+        $retailSales->user_id = $request->user()->id;
+        $retailSales->save();
 
         $items = $request->item_id;
         foreach ($items as $row => $key) {
             $retailDetails = new SaleDetail;
             $updateItems = new Item;
 
-            $retailDetails->sale_id = $retail->id;
+            $retailDetails->sale_id = $retailSales->id;
             $retailDetails->item_id = $request->item_id[$row];
             $retailDetails->kuantitas = $request->kuantitas[$row];
             $retailDetails->harga = $request->harga[$row];
 
             $newStocks = Stock::where('item_id', $retailDetails->item_id)->first();
-            $newStocks->stok_toko = $newStocks->stok_toko - $retailDetails->kuantitas;
+            $newStocks->stok_toko = ($newStocks->stok_toko) - ($retailDetails->kuantitas);
             $updateItems->id = $retailDetails->item_id;
 
             DB::transaction(function () use ($retailDetails, $newStocks, $updateItems) {
