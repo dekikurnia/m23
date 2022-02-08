@@ -15,7 +15,7 @@ class SupplierController extends Controller
      */
     public function index(Request $request)
     {
-        $suppliers = Supplier::paginate(10);
+        $suppliers = Supplier::paginate(50);
         $filterKeyword = $request->get('keyword');
         if ($filterKeyword) {
             $suppliers = Supplier::where(

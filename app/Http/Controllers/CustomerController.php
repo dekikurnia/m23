@@ -15,7 +15,7 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = Customer::paginate(10);
+        $customers = Customer::paginate(50);
         $filterKeyword = $request->get('keyword');
         if ($filterKeyword) {
             $customers = Customer::where(
