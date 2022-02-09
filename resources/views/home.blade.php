@@ -6,8 +6,44 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">{{ __('Dashboard') }}</div>
-
                 <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 col-xl-3">
+                            <div class="card bg-c-blue order-card">
+                                <div class="card-block">
+                                    <h6 class="m-b-20">Total Penjualan Retail</h6>
+                                    <h2 class="text-right"><i class="fa fa-cart-plus f-left"></i><span>{{ count($retailSales) }}</span></h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-xl-3">
+                            <div class="card bg-c-green order-card">
+                                <div class="card-block">
+                                    <h6 class="m-b-20">Total Penjualan Grosir</h6>
+                                    <h2 class="text-right"><i class="fa fa-tags f-left"></i><span>{{ count($wholesales) }}</span></h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-xl-3">
+                            <div class="card bg-c-yellow order-card">
+                                <div class="card-block">
+                                    <h6 class="m-b-20">Total Penjualan Gudang</h6>
+                                    <h2 class="text-right"><i class="fa fa-store f-left"></i><span>{{ count($warehouseSales) }}</span></h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-xl-3">
+                            <div class="card bg-c-pink order-card">
+                                <div class="card-block">
+                                    <h6 class="m-b-20">Total Pembelian</h6>
+                                    <h2 class="text-right"><i class="fa fa-credit-card f-left"></i><span>{{ count($purchases) }}</span></h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div id="salesChart"></div>
                 </div>
             </div>
@@ -64,6 +100,6 @@
                 }
             }]
         }
-    });
+    });          
 </script>
 @stop

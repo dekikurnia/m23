@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Sale;
+use App\Models\Purchase;
 
 class HomeController extends Controller
 {
@@ -24,10 +25,25 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $salesData = Sale::select(\DB::raw("COUNT(*) as count"))
-                    ->whereYear('tanggal', date('Y'))
-                    ->groupBy(\DB::raw("Month(tanggal)"))
-                    ->pluck('count');
-        return view('home', compact('salesData'));
+        $salesData = Sale::select(\DB::raw("COUNT(id) as count"))
+            ->whereYear('tanggal', date('Y'))
+            ->groupBy(\DB::raw("Month(tanggal)"))
+            ->pluck('count');
+
+        $retailSales = Sale::select("*")
+            ->where("jenis", "Retail")
+            ->get();
+        
+        $wholesales = Sale::select("*")
+            ->where("jenis", "Grosir")
+            ->get();
+        
+        $warehouseSales = Sale::select("*")
+            ->where("jenis", "Gudang")
+            ->get();
+        
+        $purchases = Purchase::all();
+        
+        return view('home', compact('salesData', 'retailSales', 'wholesales', 'warehouseSales', 'purchases'));
     }
 }
