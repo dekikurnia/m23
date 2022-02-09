@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Sale;
 
 class HomeController extends Controller
 {
@@ -23,6 +24,10 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $salesData = Sale::select(\DB::raw("COUNT(*) as count"))
+                    ->whereYear('tanggal', date('Y'))
+                    ->groupBy(\DB::raw("Month(tanggal)"))
+                    ->pluck('count');
+        return view('home', compact('salesData'));
     }
 }

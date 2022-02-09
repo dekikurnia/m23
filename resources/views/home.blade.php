@@ -8,16 +8,62 @@
                 <div class="card-header">{{ __('Dashboard') }}</div>
 
                 <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    {{ __('You are logged in!') }}
+                    <div id="salesChart"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 @endsection
+
+@section('js')
+<script type="text/javascript">
+ var salesData = <?php echo json_encode($salesData)?>;
+    Highcharts.chart('salesChart', {
+        title: {
+            text: 'Grafik Penjualan Per Bulan'
+        },
+        subtitle: {
+            text: 'M23 RELOAD'
+        },
+        xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep',
+                'Okt', 'Nov', 'Des'
+            ]
+        },
+        yAxis: {
+            title: {
+                text: 'Angka Penjualan'
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle'
+        },
+        plotOptions: {
+            series: {
+                allowPointSelect: true
+            }
+        },
+        series: [{
+            name: 'Data Penjualan',
+            data: salesData
+        }],
+        responsive: {
+            rules: [{
+                condition: {
+                    maxWidth: 500
+                },
+                chartOptions: {
+                    legend: {
+                        layout: 'horizontal',
+                        align: 'center',
+                        verticalAlign: 'bottom'
+                    }
+                }
+            }]
+        }
+    });
+</script>
+@stop
