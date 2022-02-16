@@ -19,7 +19,7 @@
                             <td>{{ \Carbon\Carbon::parse($sale->tanggal)->translatedFormat('d-m-Y')}}</td>
                         </tr>
                         <tr>
-                            <th style="width: 15%">Customerr</th>
+                            <th style="width: 15%">Customer</th>
                             <td style="width: 2%">:</td>
                             <td>{{$sale->customer->nama}}</td>
                         </tr>
