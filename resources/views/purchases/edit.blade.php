@@ -154,7 +154,7 @@
                         </tfoot>
                     </table>
                     <input class="btn btn-primary" id="save" type="submit" value="Simpan" />
-                    <a class="btn btn-success text-white" href="/purchases/data">Batal</a>
+                    <a class="btn btn-dark text-white" href="/purchases/data">Batal</a>
                 </form>
         </div>
     </div>

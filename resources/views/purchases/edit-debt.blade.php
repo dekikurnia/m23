@@ -160,7 +160,9 @@
                     </div>
                 </div>
                 <br>
-                <input class="btn btn-primary" id="save" type="submit" value="Simpan" />
+                <input class="btn btn-primary" id="save" type="submit" value="Bayar" />
+                <a class="btn btn-success text-white" href="{{route('purchases.edit',
+                [$purchase->id])}}">Ubah</a>
                 <a href="/purchases/debt" class="btn btn-dark">Kembali</a>
             </form>
         </div>
