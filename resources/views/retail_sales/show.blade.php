@@ -16,7 +16,7 @@
                         <tr>
                             <th style="width: 15%">Tanggal</th>
                             <td style="width: 2%">:</td>
-                            <td>{{ \Carbon\Carbon::parse($sale->tanggal)->translatedFormat('d-m-Y')}}</td>
+                            <td>{{ \Carbon\Carbon::parse($sale->tanggal)->translatedFormat('d/m/Y')}}</td>
                         </tr>
                         <tr>
                             <th style="width: 15%">Pajak</th>
