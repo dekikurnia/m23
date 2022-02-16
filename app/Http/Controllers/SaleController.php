@@ -83,6 +83,9 @@ class SaleController extends Controller
                     if ($sales->pajak == "PPN") return number_format($sales->total_ppn, 0, ',', '.');
                     if ($sales->pajak == "Non PPN") return number_format($sales->total_non_ppn, 0, ',', '.');
                 })
+                ->editColumn('tanggal', function ($sales) {
+                    return Carbon::parse($sales->tanggal)->translatedFormat('d/m/Y');
+                })
                 ->rawColumns(['action'])
                 ->addIndexColumn()
                 ->make(true);
@@ -243,7 +246,7 @@ class SaleController extends Controller
                     return Carbon::parse($sales->jatuh_tempo)->translatedFormat('d/m/Y');
                 })
                 ->editColumn('tanggal_lunas', function ($sales) {
-                    return $sales->tanggal_lunas ? Carbon::parse($sales->tanggal_lunas)->translatedFormat('d-F-Y') : null;
+                    return $sales->tanggal_lunas ? Carbon::parse($sales->tanggal_lunas)->translatedFormat('d/m/Y') : null;
                 })
                 ->rawColumns(['action'])
                 ->addIndexColumn()

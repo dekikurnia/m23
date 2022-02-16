@@ -63,7 +63,7 @@ class PriceController extends Controller
                     return  number_format($data->harga, 0, ',', '.');
                 })
                 ->editColumn('updated_at', function ($data) {
-                    return Carbon::parse($data->updated_at)->timezone('Asia/Jakarta')->translatedFormat('d/m/Y - H:i');;
+                    return Carbon::parse($data->updated_at)->timezone('Asia/Jakarta')->translatedFormat('d/m/Y - H:i');
                 })
                 ->rawColumns(['action'])
                 ->addIndexColumn()

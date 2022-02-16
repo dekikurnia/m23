@@ -343,6 +343,9 @@ class PurchaseController extends Controller
                     if ($purchases->pajak == "PPN") return number_format($purchases->total_ppn, 0, ',', '.');
                     if ($purchases->pajak == "Non PPN") return number_format($purchases->total_non_ppn, 0, ',', '.');
                 })
+                ->editColumn('tanggal', function ($purchases) {
+                    return Carbon::parse($purchases->tanggal)->translatedFormat('d/m/Y');
+                })
                 ->rawColumns(['action'])
                 ->addIndexColumn()
                 ->make(true);
@@ -432,7 +435,7 @@ class PurchaseController extends Controller
                     return Carbon::parse($purchases->jatuh_tempo)->translatedFormat('d/m/Y');
                 })
                 ->editColumn('tanggal_lunas', function ($purchases) {
-                    return $purchases->tanggal_lunas ? Carbon::parse($purchases->tanggal_lunas)->translatedFormat('d-F-Y') : null;
+                    return $purchases->tanggal_lunas ? Carbon::parse($purchases->tanggal_lunas)->translatedFormat('d/m/Y') : null;
                 })
                 ->rawColumns(['action'])
                 ->addIndexColumn()

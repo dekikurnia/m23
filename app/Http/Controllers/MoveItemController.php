@@ -8,6 +8,7 @@ use App\Models\MoveItemDetail;
 use App\Models\Item;
 use App\Models\Stock;
 use DB;
+use Carbon\Carbon;
 
 class MoveItemController extends Controller
 {
@@ -30,6 +31,9 @@ class MoveItemController extends Controller
                     return '<a href="/move-items/' . $moveItems->id . '" class="btn btn-sm"
                 style="background-color:transparent;">
                 <i class="fa fa-eye"></i></a>';
+                })
+                ->editColumn('tanggal', function ($moveItems) {
+                    return Carbon::parse($moveItems->tanggal)->translatedFormat('d/m/Y');
                 })
                 ->rawColumns(['action'])
                 ->addIndexColumn()
