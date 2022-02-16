@@ -76,7 +76,7 @@
                         <th style="text-align: center; width: 15%"><b>Provider</b></th>
                         <th style="text-align: center; width: 30%"><b>Nama Barang</b></th>
                         <th style="text-align: right; width: 10%"><b>Kuantitas</b></th>
-                        <th style="text-align: right; width: 10"><b>Harga Beli</b></th>
+                        <th style="text-align: right; width: 10"><b>Harga Jual</b></th>
                         <th style="text-align: right; width: 10%"><b>Sub Total</b></th>
                     </tr>
                 </thead>
