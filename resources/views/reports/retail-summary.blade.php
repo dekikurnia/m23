@@ -63,7 +63,7 @@
             @foreach ($sales as $sale)
             <tr class="table-active">
                 <td></td>
-                <td>{{$sale->tanggal}}</td>
+                <td>{{ \Carbon\Carbon::parse($sale->tanggal)->format('d/m/Y')}}</td>
                 <td>{{$sale->invoice}}</td>
                 <td style="text-align: center; width: 20%"></td>
                 <td></td>
