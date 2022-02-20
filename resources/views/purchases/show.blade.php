@@ -40,7 +40,7 @@
                                 @if (is_null($purchase->jatuh_tempo))
                                 -
                                 @else
-                                {{ \Carbon\Carbon::parse($purchase->jatuh_tempo)->format('d-m-Y')}}
+                                {{ \Carbon\Carbon::parse($purchase->jatuh_tempo)->format('d/m/Y')}}
                                 @endif
                             </td>
                         </tr>
@@ -51,7 +51,7 @@
                                 @if (is_null($purchase->tanggal_lunas))
                                 -
                                 @else
-                                {{ \Carbon\Carbon::parse($purchase->tanggal_lunas)->format('d-m-Y')}}
+                                {{ \Carbon\Carbon::parse($purchase->tanggal_lunas)->format('d/m/Y')}}
                                 @endif
                             </td>
                         </tr>
