@@ -20,7 +20,7 @@
                         <tr>
                             <th style="width: 15%">Tanggal</th>
                             <td style="width: 2%">:</td>
-                            <td>{{ \Carbon\Carbon::parse($sale->tanggal)->format('d-F-Y')}}</td>
+                            <td>{{ \Carbon\Carbon::parse($sale->tanggal)->format('d/m/Y')}}</td>
                         </tr>
                         <tr>
                             <th style="width: 15%">Customer</th>
