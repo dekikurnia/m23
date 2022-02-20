@@ -27,7 +27,7 @@ class PriceController extends Controller
                 ->join('providers', 'providers.id', '=', 'items.provider_id')
                 ->select('items.id', 'providers.nama as nama_provider', 'items.nama', 'categories.nama as nama_kategori', 'items.harga', 'items.updated_at')
                 ->having('nama_kategori', '=', 'Perdana')
-                ->orderBy('nama_provider');
+                ->orderBy('nama_provider')->whereNull('items.deleted_at');
 
             return datatables()->of($data)
                 ->addColumn('action', function ($data) {
@@ -53,7 +53,7 @@ class PriceController extends Controller
                 ->join('providers', 'providers.id', '=', 'items.provider_id')
                 ->select('items.id', 'providers.nama as nama_provider', 'items.nama', 'categories.nama as nama_kategori', 'items.harga', 'items.updated_at')
                 ->having('nama_kategori', '=', 'Voucher')
-                ->orderBy('nama_provider');
+                ->orderBy('nama_provider')->whereNull('items.deleted_at');
 
             return datatables()->of($data)
                 ->addColumn('action', function ($data) {

@@ -26,6 +26,14 @@
                 </button>
             </div>
             @endif
+            @if(session('status-restore'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{session('status-restore')}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @endif
             <div class="card">
                 <div class="card-header">{{ __('Data Barang') }}</div>
 
@@ -37,10 +45,10 @@
                     <div>
                         <ul class="nav nav-pills card-header-pills">
                             <li class="nav-item">
-                                <a class="nav-link active" href="{{route('items.index')}}">Published</a>
+                                <a class="nav-link" href="{{route('items.index')}}">Published</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{route('items.trash')}}">Trash</a>
+                                <a class="nav-link active" href="{{route('items.trash')}}">Trash</a>
                             </li>
                         </ul>
                     </div>
@@ -76,14 +84,6 @@
 <script type="text/javascript">
 $(document).ready(function () {
 
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
-    var token = ''
-
     fetch_data();
 
     function fetch_data(category = '') {
@@ -95,7 +95,7 @@ $(document).ready(function () {
             serverSide: true,
             ordering: false,
             ajax: {
-                url: "{{ route('items.index') }}",
+                url: "{{ route('items.trash') }}",
                 dataType: "json",
                 data: {
                     category: category
@@ -136,43 +136,6 @@ $(document).ready(function () {
 
         fetch_data(category_id);
     });
-
-    $(document).on('click', '.btn-delete', function (e) {
-        var rowid = $(this).data('rowid')
-
-        Swal.fire({
-            title: "Apakah Anda yakin ?",
-            text: "Barang yang dihapus akan dipindahkan ke trash !",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Ya, Tetap Hapus!"
-        }).then((result) => {
-            if (result.value) {
-                $.ajax({
-                    type: "POST",
-                    dataType: 'JSON',
-                    url: "/items/" + rowid,
-                    data: {
-                        _method: 'delete',
-                        _token: token
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: "Sukses",
-                                text: data.msg
-                            }).then(function () {
-                                location.reload();
-                            });
-                        }
-                    }
-                });
-            }
-        })
-    })
 });
 
 </script>

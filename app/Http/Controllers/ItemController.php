@@ -22,20 +22,22 @@ class ItemController extends Controller
     public function index(Request $request)
     {
         if (request()->ajax()) {
-                $data = DB::table('items')
-                    ->join('categories', 'categories.id', '=', 'items.category_id')
-                    ->join('providers', 'providers.id', '=', 'items.provider_id')
-                    ->join('stocks', 'items.id', '=', 'stocks.item_id')
-                    ->select('items.id', 'providers.nama as nama_provider', 'items.nama', 'categories.nama as nama_kategori', 'stocks.stok_gudang', 'stocks.stok_toko')
-                    ->when($request->category != '' , function($db)use($request){
-                        $db->where('items.category_id', $request->category);
-                    })
-                    ->orderBy('nama_provider', 'asc')
-                    ->orderBy('items.nama', 'asc');
-            
+            $data = DB::table('items')
+                ->join('categories', 'categories.id', '=', 'items.category_id')
+                ->join('providers', 'providers.id', '=', 'items.provider_id')
+                ->join('stocks', 'items.id', '=', 'stocks.item_id')
+                ->select('items.id', 'providers.nama as nama_provider', 'items.nama', 'categories.nama as nama_kategori', 'stocks.stok_gudang', 'stocks.stok_toko')
+                ->when($request->category != '', function ($db) use ($request) {
+                    $db->where('items.category_id', $request->category);
+                })
+                ->orderBy('nama_provider', 'asc')
+                ->orderBy('items.nama', 'asc')
+                ->whereNull('items.deleted_at');
+
             return DataTables::of($data)
                 ->addColumn('action', function ($data) {
-                    return '<a href="/items/'. $data->id .'/edit" class="btn btn-primary btn-sm">Ubah</a>';
+                    $html = '<button data-rowid="' . $data->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash "></i></button>';
+                    return $html;
                 })
                 ->rawColumns(['action'])
                 ->addIndexColumn()
@@ -43,8 +45,8 @@ class ItemController extends Controller
         }
 
         $category = Category::all();
-        $provider = Provider::all();
-        return view('items.index', compact('category', 'provider'));
+        //$provider = Provider::all();
+        return view('items.index', compact('category'));
     }
     /**
      * Show the form for creating a new resource.
@@ -79,8 +81,8 @@ class ItemController extends Controller
 
         $newFirstStock->stok_gudang = $request->get('stok_gudang');
         $newFirstStock->stok_toko = $request->get('stok_toko');
-    
-        DB::transaction(function() use ($newItem, $newStock, $newFirstStock) {
+
+        DB::transaction(function () use ($newItem, $newStock, $newFirstStock) {
             $newItem->save();
             $newItem->stock()->save($newStock);
             $newItem->firstStock()->save($newFirstStock);
@@ -106,13 +108,13 @@ class ItemController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    { 
+    {
         $category = Category::all();
 
         $provider = Provider::all();
 
         $item = Item::findOrFail($id);
-        return view('items.edit', compact('item','category', 'provider'));
+        return view('items.edit', compact('item', 'category', 'provider'));
     }
 
     /**
@@ -134,11 +136,11 @@ class ItemController extends Controller
 
         $stock->stok_gudang  = $request->get('stok_gudang');
         $stock->stok_toko = $request->get('stok_toko');
-        
+
         $firstStock->stok_gudang  = $request->get('stok_gudang');
         $firstStock->stok_toko = $request->get('stok_toko');
-        
-        DB::transaction(function() use ($item, $stock, $firstStock) {
+
+        DB::transaction(function () use ($item, $stock, $firstStock) {
             $item->save();
             $item->stock()->save($stock);
             $item->firstStock()->save($firstStock);
@@ -154,6 +156,50 @@ class ItemController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $item = Item::findOrFail($id);
+        $item->delete();
+        return ['success' => true, 'msg' => 'Berhasil memindahkan barang ke trash'];
+    }
+
+    public function trash(Request $request)
+    {
+        if (request()->ajax()) {
+            $data = DB::table('items')
+                ->join('categories', 'categories.id', '=', 'items.category_id')
+                ->join('providers', 'providers.id', '=', 'items.provider_id')
+                ->join('stocks', 'items.id', '=', 'stocks.item_id')
+                ->select('items.id', 'providers.nama as nama_provider', 'items.nama', 'categories.nama as nama_kategori', 'stocks.stok_gudang', 'stocks.stok_toko')
+                ->when($request->category != '', function ($db) use ($request) {
+                    $db->where('items.category_id', $request->category);
+                })
+                ->orderBy('nama_provider', 'asc')
+                ->orderBy('items.nama', 'asc')
+                ->whereNotNull('items.deleted_at');
+
+            return DataTables::of($data)
+                ->addColumn('action', function ($data) {
+                    $html = '<a href="' . route('items.restore', [$data->id]) . '"  class="btn btn-sm btn-danger"><i class="fas fa-trash-restore"></i></a>';
+                    return $html;
+                })
+                ->rawColumns(['action'])
+                ->addIndexColumn()
+                ->make(true);
+        }
+
+        $category = Category::all();
+        return view('items.trash', compact('category'));
+    }
+
+    public function restore($id)
+    {
+        $item = Item::withTrashed()->findOrFail($id);
+        if ($item->trashed()) {
+            $item->restore();
+        } else {
+            return redirect()->route('items.trash')
+                ->with('status-restore', 'Barang tidak di dalam trash');
+        }
+        return redirect()->route('items.trash')
+            ->with('status-restore', 'Barang berhasil dikembalikan');
     }
 }

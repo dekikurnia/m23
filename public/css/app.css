@@ -11069,3 +11069,8 @@ div.copyright {
 .f-right {
     float: right;
 }
+
+.nav-pills > li > a.active {
+    background-color: #293241 !important;
+    color: #ffffff !important;
+}

@@ -40,6 +40,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['middleware' => ['permission:menu-master']], function () {
         Route::resource("suppliers", SupplierController::class);
         Route::resource("customers", CustomerController::class);
+        Route::get('/items/trash', [ItemController::class, 'trash'])->name('items.trash');
+        Route::get('/items/{id}/restore', [ItemController::class,'restore'])->name('items.restore');
         Route::resource("items", ItemController::class);
         Route::resource("price", PriceController::class);
     });
