@@ -79,6 +79,7 @@
                             <tr>
                                 <th style="width: 15%"><b>Provider</b></th>
                                 <th style="width: 30%"><b>Nama Barang</b></th>
+                                <th style="width: 15%"><b>Stok Gudang</b></th>
                                 <th style="width: 15%"><b>Kuantitas</b></th>
                                 <th style="width: 15"><b>Harga Jual</b></th>
                                 <th style="text-align: right; width: 15%"><b>Sub Total</b></th>
@@ -92,9 +93,10 @@
                             @foreach ($saleDetails as $saleDetail)
                             <tr class='row-warehouses'>
                                 <td style="width: 15%">{{$saleDetail->nama_provider}}</td>
-                                <td style="width: 30%">{{ $saleDetail->nama }}</td>
+                                <td style="width: 30%">{{$saleDetail->nama }}</td>
                                 <td style="width: 15%; display:none;"><input value="{{ $saleDetail->item_id }}" type="number"
                                     class="form-control" name="item_id[]" /></td>
+                                <td style="width: 15%">{{ $saleDetail->stok_gudang }}</td>
                                 <td style="width: 15%"><input value="{{ $saleDetail->kuantitas }}" type="number" onkeyup="calcTotal() "
                                         class="form-control form-control-sm w-50 kuantitas" name="kuantitas[]" /></td>
                                 <td style="width: 15%"><input
@@ -112,6 +114,7 @@
                                 <td style="width: 30%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
+                                <td style="width: 15%"></td>
                                 <td style="text-align: right;font-weight: bold; width: 15%">Total :</td>
 
                                 <td style="text-align: right;font-weight: bold; width: 5%">
@@ -125,6 +128,7 @@
                                 <td style="width: 30%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
+                                <td style="width: 15%"></td>
                                 <td style="text-align: right;font-weight: bold; width: 15%">PPN 10% :</td>
 
                                 <td style="text-align: right;font-weight: bold; width: 5%">
@@ -136,6 +140,7 @@
                             <tr>
                                 <td style="width: 15%"></td>
                                 <td style="width: 30%"></td>
+                                <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="text-align: right;font-weight: bold; width: 15%">Grand Total :</td>
@@ -334,6 +339,7 @@ function calcTotal() {
                 cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id']  + '"></td>';
                 cols += '<td>' + data['nama_provider']  + '</td>';
                 cols += '<td>' + data['nama']  + '</td>';
+                cols += '<td>' + data['stok_gudang']  + '</td>';
                 cols += '<td><input type="number" class="form-control form-control-sm w-50 kuantitas" name="kuantitas[]"/></td>'
                 cols += '<td><input type="number" class="form-control form-control-sm harga" name="harga[]"/></td>';
                 cols += '<td id="sub_total" style="text-align: right;font-weight: bold" class="multTotal"></td>';
@@ -346,7 +352,7 @@ function calcTotal() {
                 $('#itemsModal').modal('hide');
 
                 hitungTotal();
-                cekStokToko();
+                cekStokGudang();
                 compareStokKuantitas();
             });
             
@@ -384,13 +390,14 @@ function calcTotal() {
                                 title: 'Oops...',
                                 text: 'Kuantitas melebihi stok gudang',
                             })
+                            $(this).find(".kuantitas").val("");
                         }
                     });
                 }
             }
 
             //fungsi ini untuk mengecek jumlah stok gudang, beri pesan jika stok gudang bernilai 0
-            function cekStokToko() {
+            function cekStokGudang() {
                 $("tr.row-warehouses").each(function () {
                     if ($('.stok-gudang', this).val()== 0) {
                         Swal.fire({
