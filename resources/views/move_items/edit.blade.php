@@ -154,11 +154,12 @@
 
                 var newRow = $('<tr class="row-move">');
                 var cols = "";
+                cols += '<td style="display:none;"><input type="number" class="form-control form-control-sm stok-gudang" name="stok_gudang[]" value="' + data['stok_gudang']  + '"></td>';
                 cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id']  + '">' + data['id']  + '</td>';
                 cols += '<td>' + data['nama_provider']  + '</td>';
                 cols += '<td>' + data['nama']  + '</td>';
-                cols += '<td><input type="number" class="form-control form-control-sm w-50 stok-gudang" name="stok_gudang[]" value="' + data['stok_gudang']  + '" readonly></td>';
-                cols += '<td><input type="number" id="kuantitas" class="form-control form-control-sm w-50" name="kuantitas[]" value="" /></td>'
+                cols += '<td>' + data['stok_gudang']  + '</td>';
+                cols += '<td><input type="number" class="form-control form-control-sm w-50 kuantitas" name="kuantitas[]" value="" /></td>'
                 cols += '<td><input type="button" class="btnDel btn btn-sm btn-danger" value="Delete" style="float: right;"></td>';
                 newRow.append(cols);
                 $("#move-items-table").append(newRow);
@@ -187,7 +188,7 @@
                     }
                 });
             }
-
+            
             function compareStokKuantitas() {
                 $(".row-move input").keyup(cekStok);
 
