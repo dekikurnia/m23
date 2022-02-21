@@ -182,7 +182,7 @@
                                 title: 'Oops...',
                                 text: 'Kuantitas melebihi stok gudang',
                             })
-                            $('.kuantitas').val("");
+                            $(this).find(".kuantitas").val("");
                         }
                     });
                 }

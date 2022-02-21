@@ -64,6 +64,7 @@
                             <tr>
                                 <th style="width: 15%"><b>Provider</b></th>
                                 <th style="width: 30%"><b>Nama Barang</b></th>
+                                <th style="width: 15%"><b>Stok Gudang</b></th>
                                 <th style="width: 15%"><b>Kuantitas</b></th>
                                 <th style="width: 15"><b>Harga Jual</b></th>
                                 <th style="text-align: right; width: 15%"><b>Sub Total</b></th>
@@ -74,6 +75,7 @@
                             <tr class="Non-PPN row-non">
                                 <td style="width: 15%"></td>
                                 <td style="width: 30%"></td>
+                                <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="text-align: right;font-weight: bold; width: 15%">Total :</td>
@@ -89,6 +91,7 @@
                                 <td style="width: 30%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
+                                <td style="width: 15%"></td>
                                 <td style="text-align: right;font-weight: bold; width: 15%">PPN 10% :</td>
 
                                 <td style="text-align: right;font-weight: bold; width: 5%">
@@ -100,6 +103,7 @@
                             <tr>
                                 <td style="width: 15%"></td>
                                 <td style="width: 30%"></td>
+                                <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="text-align: right;font-weight: bold; width: 15%">Grand Total :</td>
@@ -239,6 +243,7 @@
                 cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id']  + '"></td>';
                 cols += '<td>' + data['nama_provider']  + '</td>';
                 cols += '<td>' + data['nama']  + '</td>';
+                cols += '<td><input type="number" class="form-control form-control-sm w-50 stok-gudang" name="stok_gudang[]" value="' + data['stok_gudang']  + '" readonly></td>';
                 cols += '<td><input type="number" class="form-control form-control-sm w-50 kuantitas" name="kuantitas[]"/></td>'
                 cols += '<td><input type="number" class="form-control form-control-sm harga" name="harga[]"/></td>';
                 cols += '<td id="sub_total" style="text-align: right;font-weight: bold" class="multTotal"></td>';
@@ -289,7 +294,7 @@
                                 title: 'Oops...',
                                 text: 'Kuantitas melebihi stok gudang',
                             })
-                            $('.kuantitas').val("");
+                            $(this).find(".kuantitas").val("");
                         }
                     });
                 }
