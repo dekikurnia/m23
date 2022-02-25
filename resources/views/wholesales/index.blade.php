@@ -241,7 +241,7 @@
                 cols += '<td>' + data['nama']  + '</td>';
                 cols += '<td><input type="number" class="form-control form-control-sm w-50 kuantitas" name="kuantitas[]"/></td>'
                 cols += '<td><input type="number" class="form-control form-control-sm harga" name="harga[]"/></td>';
-                cols += '<td id="sub_total" style="text-align: right;font-weight: bold" class="multTotal"></td>';
+                cols += '<td style="text-align: right;font-weight: bold" class="multTotal"></td>';
                 cols += '<td><input type="button" class="btnDel btn btn-sm btn-danger" value="Delete" style="float: right;"></td>';
                 newRow.append(cols);
                 $("#wholesales-table").append(newRow);
@@ -327,30 +327,50 @@
                     $("#total").text(mult.toLocaleString("id-ID"));
                     $("#grandTotal").text(mult.toLocaleString("id-ID"));
 
-                    $("#select-ppn").change(function () {
-                        $(this).find("option:selected").each(function () {
-                            var optionValue = $(this).attr("value") == "PPN";
-                            if (optionValue) {
-                                $(".row-ppn").show();
-                                var ppn = mult * 0.1;
-                                var grandTotal = mult + ppn;
-                                $("#ppn").text(ppn.toLocaleString("id-ID"));
-                                $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
-                               
-                            } else {
-                                $(".row-ppn").hide();
-                                $("#grandTotal").text(mult.toLocaleString("id-ID"));
-                               
-                            }
-                        });
-                    }).change();
+                    var ppn =  mult * 0.1;
+                    var grandTotal = mult + parseFloat(ppn)
+                    var optionValue = $('#select-ppn').find(":selected").text();
+                    if (optionValue == "PPN") {
+                        $("#ppn").text(ppn.toLocaleString("id-ID"));
+                        $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+                    } 
                 }
+
                 $("#wholesales-table").on("click", ".btnDel", function (event) {
                     $(this).closest("tr").remove();
                     counter -= 1
+
                     multInputs();
+
+                    var total = $("#total").text();
+                    var ppn =  (total.replace(/\./g, '')) * 0.1;
+                    var optionValue = $('#select-ppn').find(":selected").text();
+                    var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn)
+                    if (optionValue == "PPN") {
+                        $("#ppn").text(ppn.toLocaleString("id-ID"));
+                        $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+                    } 
                 });
             }
+
+            $("#select-ppn").change(function () {
+                $(this).find("option:selected").each(function () {
+                    var optionValue = $(this).attr("value") == "PPN";
+                    var total = $("#total").text();
+                    if (optionValue) {
+                        $(".row-ppn").show();
+                        var ppn =  (total.replace(/\./g, '')) * 0.1;
+                        var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn);
+                        $("#ppn").text(ppn.toLocaleString("id-ID"));
+                        $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+
+                    } else {
+                        $(".row-ppn").hide();
+                        $("#grandTotal").text(total);
+                    }
+                });
+            }).change();
+
             $('.modal').on('shown.bs.modal', function () {
                 table.columns.adjust()
             })
