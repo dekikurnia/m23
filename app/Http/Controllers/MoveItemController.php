@@ -9,6 +9,7 @@ use App\Models\Item;
 use App\Models\Stock;
 use DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Input;
 
 class MoveItemController extends Controller
 {
@@ -89,19 +90,20 @@ class MoveItemController extends Controller
         $validator = \Validator::make(
             $request->all(),
             [
-                'tanggal'   => 'required',
-                'kuantitas' => 'required'
+                'tanggal'   => 'required|unique:move_items',
+                'kuantitas[]' => 'required'
             ],
             [
                 'tanggal.required'      => 'Tanggal pindah barang wajib diisi.',
-                'kuantitas.required'    => 'Kuantitas wajib diisi.'
+                'tanggal.unique'      => 'Sudah ada data ditanggal tersebut. <br>Silahkan diupdate data pindah barang pada tanggal tersebut.',
+                'kuantitas[].required'    => 'Kuantitas wajib diisi.'
             ]
         );
 
         if ($validator->fails()) {
             return response()->json(array('status' => 'error', 'msg' => $validator->errors()->all()), 500);
         }
-        
+
         $moveItems = new MoveItem;
         $moveItems->nomor = $request->nomor;
         $moveItems->tanggal = $request->tanggal;
@@ -228,14 +230,14 @@ class MoveItemController extends Controller
             $updateMoveItemDetails = new MoveItemDetail;
             $items = new Item;
 
-            $updateMoveItemDetails ->move_item_id = $moveItems->id;
-            $updateMoveItemDetails ->item_id = $request->item_id[$row];
-            $updateMoveItemDetails ->kuantitas = $request->kuantitas[$row];
+            $updateMoveItemDetails->move_item_id = $moveItems->id;
+            $updateMoveItemDetails->item_id = $request->item_id[$row];
+            $updateMoveItemDetails->kuantitas = $request->kuantitas[$row];
 
-            $updateStocks = Stock::where('item_id', $updateMoveItemDetails ->item_id)->first();
+            $updateStocks = Stock::where('item_id', $updateMoveItemDetails->item_id)->first();
             $updateStocks->stok_gudang = $updateStocks->stok_gudang - $updateMoveItemDetails->kuantitas;
             $updateStocks->stok_toko = $updateStocks->stok_toko + $updateMoveItemDetails->kuantitas;
-            $items->id = $updateMoveItemDetails ->item_id;
+            $items->id = $updateMoveItemDetails->item_id;
 
             DB::transaction(function () use ($updateMoveItemDetails, $updateStocks, $items) {
                 $updateMoveItemDetails->save();
