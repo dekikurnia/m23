@@ -73,14 +73,14 @@ class RetailSaleController extends Controller
             [
                 'tanggal'   => 'required',
                 'item_id'   => 'required',
-                'kuantitas' => 'required',
-                'harga'     => 'required'
+                'kuantitas[]' => 'required',
+                'harga[]'     => 'required'
             ],
             [
                 'tanggal.required'       => 'Tanggal penjualan retail wajib diisi.',
                 'item_id.required'   => 'Barang belum dipilih.',
-                'kuantitas.required'   => 'Kuantitas wajib diisi.',
-                'harga.required'   => 'Harga beli wajib diisi.'
+                'kuantitas[].required'   => 'Kuantitas wajib diisi.',
+                'harga[].required'   => 'Harga beli wajib diisi.'
             ]
         );
 
@@ -188,14 +188,14 @@ class RetailSaleController extends Controller
             [
                 'tanggal'   => 'required',
                 'item_id'   => 'required',
-                'kuantitas' => 'required',
-                'harga'     => 'required'
+                'kuantitas[]' => 'required',
+                'harga[]'     => 'required'
             ],
             [
                 'tanggal.required'       => 'Tanggal penjualan retail wajib diisi.',
                 'item_id.required'   => 'Barang belum dipilih.',
-                'kuantitas.required'   => 'Kuantitas wajib diisi.',
-                'harga.required'   => 'Harga beli wajib diisi.'
+                'kuantitas[].required'   => 'Kuantitas wajib diisi.',
+                'harga[].required'   => 'Harga beli wajib diisi.'
             ]
         );
 

@@ -206,12 +206,12 @@ class MoveItemController extends Controller
             $request->all(),
             [
                 'tanggal'   => 'required',
-                'kuantitas' => 'required'
+                'kuantitas[]' => 'required'
             ],
             [
                 'tanggal.required'      => 'Tanggal pindah barang wajib diisi.',
-                'kuantitas.required'    => 'Kuantitas wajib diisi.',
-                'kuantitas.max'    => 'Kuantitas melebihi stok gudang.'
+                'kuantitas[].required'    => 'Kuantitas wajib diisi.',
+                'kuantitas[].max'    => 'Kuantitas melebihi stok gudang.'
             ]
         );
 
