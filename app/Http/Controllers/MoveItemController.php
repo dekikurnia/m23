@@ -91,12 +91,12 @@ class MoveItemController extends Controller
             $request->all(),
             [
                 'tanggal'   => 'required|unique:move_items',
-                'kuantitas[]' => 'required'
+                'kuantitas' => 'required'
             ],
             [
                 'tanggal.required'      => 'Tanggal pindah barang wajib diisi.',
                 'tanggal.unique'      => 'Sudah ada data ditanggal tersebut. <br>Silahkan diupdate data pindah barang pada tanggal tersebut.',
-                'kuantitas[].required'    => 'Kuantitas wajib diisi.'
+                'kuantitas.required'    => 'Kuantitas wajib diisi.'
             ]
         );
 
@@ -206,12 +206,12 @@ class MoveItemController extends Controller
             $request->all(),
             [
                 'tanggal'   => 'required',
-                'kuantitas[]' => 'required'
+                'kuantitas' => 'required'
             ],
             [
                 'tanggal.required'      => 'Tanggal pindah barang wajib diisi.',
-                'kuantitas[].required'    => 'Kuantitas wajib diisi.',
-                'kuantitas[].max'    => 'Kuantitas melebihi stok gudang.'
+                'kuantitas.required'    => 'Kuantitas wajib diisi.',
+                'kuantitas.max'    => 'Kuantitas melebihi stok gudang.'
             ]
         );
 
