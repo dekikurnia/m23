@@ -29,6 +29,9 @@ class CreatePurchaseRequest extends FormRequest
             'supplier_id'   => 'required',
             'cara_bayar'   => 'required',
             'tanggal_lunas'   => 'required',
+            'item_id.*'   => 'required',
+            'kuantitas.*'   => 'required',
+            'harga.*'   => 'required'
         ];
     }
 
@@ -39,6 +42,9 @@ class CreatePurchaseRequest extends FormRequest
             'supplier_id.required'   => 'Supplier wajib diisi.',
             'cara_bayar.required'   => 'Cara bayar wajib diisi.',
             'tanggal_lunas.required'   => 'Tanggal pelunasan wajib diisi.',
+            'item_id.*.required'   => 'Silahkan pilih barang terlebih dahulu.',
+            'kuantitas.*.required'   => 'Kuantitas wajib diisi.',
+            'harga.*.required'   => 'Harga beli wajib diisi.',
         ];
     }
 }

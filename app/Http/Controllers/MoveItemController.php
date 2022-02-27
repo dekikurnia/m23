@@ -91,12 +91,12 @@ class MoveItemController extends Controller
             $request->all(),
             [
                 'tanggal'   => 'required|unique:move_items',
-                'kuantitas' => 'required'
+                'kuantitas.*' => 'required'
             ],
             [
                 'tanggal.required'      => 'Tanggal pindah barang wajib diisi.',
                 'tanggal.unique'      => 'Sudah ada data ditanggal tersebut. <br>Silahkan diupdate data pindah barang pada tanggal tersebut.',
-                'kuantitas.required'    => 'Kuantitas wajib diisi.'
+                'kuantitas.*.required'    => 'Kuantitas wajib diisi.'
             ]
         );
 
@@ -184,39 +184,39 @@ class MoveItemController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //cari data pindah barang yang sudah ada, lalu hapus
-        //kembalikan stok ke awal
-        $moveItem = MoveItem::findOrFail($id);
-        $moveItemDetails = MoveItemDetail::where('move_item_id', $moveItem->id)->get();
-
-        foreach ($moveItemDetails as $moveItemDetail) {
-            $items = Item::where('id', $moveItemDetail->item_id)->get();
-            $stocks = Stock::where('item_id', $moveItemDetail->item_id)->get();
-            foreach ($stocks as $stock) {
-                $stock->stok_gudang = $stock->stok_gudang + $moveItemDetail->kuantitas;
-                $stock->stok_toko = $stock->stok_toko - $moveItemDetail->kuantitas;
-                foreach ($items as $item) {
-                    $item->stock()->save($stock);
-                    $moveItem->delete();
-                }
-            }
-        }
-
         $validator = \Validator::make(
             $request->all(),
             [
                 'tanggal'   => 'required',
-                'kuantitas' => 'required'
+                'kuantitas.*' => 'required'
             ],
             [
                 'tanggal.required'      => 'Tanggal pindah barang wajib diisi.',
-                'kuantitas.required'    => 'Kuantitas wajib diisi.',
-                'kuantitas.max'    => 'Kuantitas melebihi stok gudang.'
+                'kuantitas.*.required'    => 'Kuantitas wajib diisi.',
+                'kuantitas.*.max'    => 'Kuantitas melebihi stok gudang.'
             ]
         );
 
         if ($validator->fails()) {
             return response()->json(array('status' => 'error', 'msg' => $validator->errors()->all()), 500);
+        } else {
+            //cari data pindah barang yang sudah ada, lalu hapus
+            //kembalikan stok ke awal
+            $moveItem = MoveItem::findOrFail($id);
+            $moveItemDetails = MoveItemDetail::where('move_item_id', $moveItem->id)->get();
+
+            foreach ($moveItemDetails as $moveItemDetail) {
+                $items = Item::where('id', $moveItemDetail->item_id)->get();
+                $stocks = Stock::where('item_id', $moveItemDetail->item_id)->get();
+                foreach ($stocks as $stock) {
+                    $stock->stok_gudang = $stock->stok_gudang + $moveItemDetail->kuantitas;
+                    $stock->stok_toko = $stock->stok_toko - $moveItemDetail->kuantitas;
+                    foreach ($items as $item) {
+                        $item->stock()->save($stock);
+                        $moveItem->delete();
+                    }
+                }
+            }
         }
 
         $moveItems = new MoveItem;

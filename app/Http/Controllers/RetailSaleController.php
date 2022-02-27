@@ -67,20 +67,16 @@ class RetailSaleController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {   
+    {
         $validator = \Validator::make(
             $request->all(),
             [
                 'tanggal'   => 'required',
-                'item_id'   => 'required',
-                'kuantitas' => 'required',
-                'harga'     => 'required'
+                'kuantitas.*' => 'required',
             ],
             [
                 'tanggal.required'       => 'Tanggal penjualan retail wajib diisi.',
-                'item_id.required'   => 'Barang belum dipilih.',
-                'kuantitas.required'   => 'Kuantitas wajib diisi.',
-                'harga.required'   => 'Harga beli wajib diisi.'
+                'kuantitas.*.required'   => 'Kuantitas wajib diisi.',
             ]
         );
 
@@ -166,41 +162,39 @@ class RetailSaleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //cari data sale yang sudah ada, lalu hapus
-        //kembalikan stok ke awal
-        $sale = Sale::findOrFail($id);
-        $saleDetails = SaleDetail::where('sale_id', $sale->id)->get();
-
-        foreach ($saleDetails as $saleDetail) {
-            $items = Item::where('id', $saleDetail->item_id)->get();
-            $stocks = Stock::where('item_id', $saleDetail->item_id)->get();
-            foreach ($stocks as $stock) {
-                $stock->stok_toko = $stock->stok_toko + $saleDetail->kuantitas;
-                foreach ($items as $item) {
-                    $item->stock()->save($stock);
-                    $sale->delete();
-                }
-            }
-        }
-
         $validator = \Validator::make(
             $request->all(),
             [
                 'tanggal'   => 'required',
-                'item_id'   => 'required',
-                'kuantitas[]' => 'required',
-                'harga[]'     => 'required'
+                'kuantitas.*' => 'required',
+                'harga.*'     => 'required'
             ],
             [
                 'tanggal.required'       => 'Tanggal penjualan retail wajib diisi.',
-                'item_id.required'   => 'Barang belum dipilih.',
-                'kuantitas[].required'   => 'Kuantitas wajib diisi.',
-                'harga[].required'   => 'Harga beli wajib diisi.'
+                'kuantitas.*.required'   => 'Kuantitas wajib diisi.',
+                'harga.*.required'   => 'Harga beli wajib diisi.'
             ]
         );
 
         if ($validator->fails()) {
             return response()->json(array('status' => 'error', 'msg' => $validator->errors()->all()), 500);
+        } else {
+            //cari data sale yang sudah ada, lalu hapus
+            //kembalikan stok ke awal
+            $sale = Sale::findOrFail($id);
+            $saleDetails = SaleDetail::where('sale_id', $sale->id)->get();
+
+            foreach ($saleDetails as $saleDetail) {
+                $items = Item::where('id', $saleDetail->item_id)->get();
+                $stocks = Stock::where('item_id', $saleDetail->item_id)->get();
+                foreach ($stocks as $stock) {
+                    $stock->stok_toko = $stock->stok_toko + $saleDetail->kuantitas;
+                    foreach ($items as $item) {
+                        $item->stock()->save($stock);
+                        $sale->delete();
+                    }
+                }
+            }
         }
 
         $retailSales = new Sale;

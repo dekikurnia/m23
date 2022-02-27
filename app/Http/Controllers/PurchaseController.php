@@ -84,17 +84,15 @@ class PurchaseController extends Controller
                 'tanggal'          => 'required',
                 'supplier_id'   => 'required',
                 'cara_bayar'   => 'required|in:Kas,Kredit,Transfer',
-                'item_id'   => 'required',
-                'kuantitas[]'   => 'required',
-                'harga[]'   => 'required'
+                'kuantitas.*'   => 'required',
+                'harga.*'   => 'required'
             ],
             [
                 'tanggal.required'       => 'Tanggal pembelian wajib diisi.',
                 'supplier_id.required'   => 'Supplier wajib diisi.',
                 'cara_bayar.in'   => 'Cara bayar wajib diisi.',
-                'item_id.required'   => 'Barang belum dipilih.',
-                'kuantitas[].required'   => 'Kuantitas wajib diisi.',
-                'harga[].required'   => 'Harga beli wajib diisi.'
+                'kuantitas.*.required'   => 'Kuantitas wajib diisi.',
+                'harga.*.required'   => 'Harga beli wajib diisi.'
             ]
         );
 
@@ -221,17 +219,15 @@ class PurchaseController extends Controller
                 'tanggal'          => 'required',
                 'supplier_id'   => 'required',
                 'cara_bayar'   => 'required|in:Kas,Kredit,Transfer',
-                'item_id'   => 'required',
-                'kuantitas'   => 'required',
-                'harga'   => 'required'
+                'kuantitas.*'   => 'required',
+                'harga.*'   => 'required'
             ],
             [
                 'tanggal.required'       => 'Tanggal pembelian wajib diisi.',
                 'supplier_id.required'   => 'Supplier wajib diisi.',
                 'cara_bayar.in'   => 'Cara bayar wajib diisi.',
-                'item_id.required'   => 'Barang belum dipilih.',
-                'kuantitas.required'   => 'Kuantitas wajib diisi.',
-                'harga.required'   => 'Harga beli wajib diisi.'
+                'kuantitas.*.required'   => 'Kuantitas wajib diisi.',
+                'harga.*.required'   => 'Harga beli wajib diisi.'
             ]
         );
 

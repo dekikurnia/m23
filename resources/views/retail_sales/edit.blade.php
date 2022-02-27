@@ -288,10 +288,8 @@ function reverseFormatNumber(val, locale) {
                 $("#retail-sales-table").append(newRow);
                 counter++;
 
-                cekDuplikatItem();
-
                 $('#itemsModal').modal('hide');
-
+                cekDuplikatItem();
                 hitungTotal();
                 //cekStokToko();
                 //compareStokKuantitas();
