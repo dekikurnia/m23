@@ -15,7 +15,7 @@ class CreateMoveItemsTable extends Migration
     {
         Schema::create('move_items', function (Blueprint $table) {
             $table->id();
-            $table->char('nomor', 24); //change
+            $table->string('nomor', 24); //change
             $table->date('tanggal')->unique();
             $table->string('keterangan')->nullable();
             $table->timestamps();
