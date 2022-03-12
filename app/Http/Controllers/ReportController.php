@@ -618,6 +618,13 @@ class ReportController extends Controller
                 ->orderBy('tanggal', 'desc')
                 ->orderBy('invoice', 'desc')
                 ->get();
+        } elseif (!empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59'])
+                ->where('jenis', '=', 'Grosir')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
         } else {
             $sales = Sale::with('saleDetails', 'customer')
                 ->where('tanggal', Carbon::today())
@@ -795,6 +802,13 @@ class ReportController extends Controller
         } elseif (!empty($pajak)) {
             $sales = Sale::with('saleDetails', 'customer')
                 ->where('pajak', '=', $pajak)
+                ->where('jenis', '=', 'Gudang')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('invoice', 'desc')
+                ->get();
+        } elseif (!empty($tanggalMulai) && !empty($tanggalAkhir)) {
+            $sales = Sale::with('saleDetails', 'customer')
+                ->whereBetween('tanggal', [$tanggalMulai . ' 00:00:00', $tanggalAkhir . ' 23:59:59'])
                 ->where('jenis', '=', 'Gudang')
                 ->orderBy('tanggal', 'desc')
                 ->orderBy('invoice', 'desc')

@@ -94,7 +94,7 @@ class MoveItemController extends Controller
             ],
             [
                 'tanggal.required'      => 'Tanggal pindah barang wajib diisi.',
-                'tanggal.unique'      => 'Sudah ada data ditanggal tersebut. <br>Silahkan diupdate data pindah barang pada tanggal tersebut.',
+                'tanggal.unique'      => 'Sudah ada data di tanggal tersebut. <br>Silahkan diperbaharui data pindah barang pada tanggal tersebut.',
                 'kuantitas.*.required'    => 'Kuantitas wajib diisi.'
             ]
         );
