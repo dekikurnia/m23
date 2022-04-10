@@ -110,7 +110,7 @@
                                 <td style="text-align: right;font-weight: bold; width: 15%">Grand Total :</td>
 
                                 <td style="text-align: right;font-weight: bold; width: 5%">
-                                    <span id="grand-total">0 </span>
+                                    <span id="grandTotal">0 </span>
                                 </td>
                                 <!--<td></td>-->
 
@@ -158,255 +158,247 @@
 
 function calcTotal() {
     var mult = 0;
+    // for each row:
     $("tr.row-retails").each(function () {
         var $kuantitas = $('.kuantitas', this).val();
         var $harga = $('.harga', this).val();
-        var $total = $kuantitas * (reverseFormatNumber($harga, 'id-ID'));
+        var $total = ($kuantitas * 1) * ($harga * 1)
 
         $('.multTotal', this).text($total.toLocaleString("id-ID"));
         mult += $total;
     });
 
     $("#total").text(mult.toLocaleString("id-ID"));
-    $("#grand-total").text(mult.toLocaleString("id-ID"));
+    $("#grandTotal").text(mult.toLocaleString("id-ID"));
+
+    var ppn = mult * 0.11;
+    var grandTotal = mult + parseFloat(ppn)
+    if ($("#select-ppn option:selected").val() == "PPN") {
+        $("#ppn").text(ppn.toLocaleString("id-ID"));
+        $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+    }
+}
+
+$(document).ready(function () {
+    $(".datepicker").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        todayHighlight: true,
+        orientation: 'bottom'
+    });
 
     $("#select-ppn").change(function () {
         $(this).find("option:selected").each(function () {
             var optionValue = $(this).attr("value") == "PPN";
             if (optionValue) {
                 $(".row-ppn").show();
-                var ppn = mult * 0.11;
-                var grandTotal = mult + ppn;
-                $("#ppn").text(ppn.toLocaleString("id-ID"));
-                $("#grand-total").text(grandTotal.toLocaleString("id-ID"));
-
             } else {
                 $(".row-ppn").hide();
-                $("#grand-total").text(mult.toLocaleString("id-ID"));
-
             }
         });
     }).change();
-}
 
-function reverseFormatNumber(val, locale) {
-    var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
-    var decimal = new Intl.NumberFormat(locale).format(1.1).replace(/1/g, '');
-    var reversedVal = val.replace(new RegExp('\\' + group, 'g'), '');
-    reversedVal = reversedVal.replace(new RegExp('\\' + decimal, 'g'), '.');
-    return Number.isNaN(reversedVal) ? 0 : reversedVal;
-}
+    $(function () {
+        var table = $('#items-table').DataTable({
+            pageLength: 300,
+            lengthMenu: [100, 200, 300, 400, 500],
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('retail.items-list') }}",
+            columns: [{
+                    data: 'id',
+                    name: 'id',
+                    visible: false
+                },
+                {
+                    data: 'nama_provider',
+                    name: 'providers.nama'
+                },
+                {
+                    data: 'nama',
+                    name: 'nama'
+                },
+                {
+                    data: 'nama_kategori',
+                    name: 'categories.nama'
+                },
+                {
+                    data: 'stok_toko',
+                    name: 'stocks.stok_toko'
+                },
+                {
+                    data: 'harga',
+                    name: 'harga'
+                }
+            ]
+        });
 
-    $(document).ready(function () {
-        $(".datepicker").datepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true,
-            todayHighlight: true,
-            orientation: 'bottom'
+        var counter = 0;
+
+        $('#items-table tbody').on('click', 'tr', function () {
+            var data = table.row(this).data();
+
+            var newRow = $("<tr class='row-retails'>");
+            var cols = "";
+            cols += '<td style="display:none;"><input type="number" class="form-control form-control-sm stok-toko" name="stok_toko[]" value="' + data['stok_toko'] + '"></td>';
+            cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id'] + '"></td>';
+            cols += '<td>' + data['nama_provider'] + '</td>';
+            cols += '<td>' + data['nama'] + '</td>';
+            cols += '<td><input type="number" class="form-control form-control-sm w-50 kuantitas" name="kuantitas[]"/></td>'
+            cols += '<td><input type="number" class="form-control form-control-sm harga" name="harga[]" value=' + data['harga'].replace(/\./g, "") + ' readonly/></td>';
+            cols += '<td id="sub_total" style="text-align: right;font-weight: bold" class="multTotal"></td>';
+            cols += '<td><input type="button" class="btnDel btn btn-sm btn-danger" value="Delete" style="float: right;"></td>';
+            newRow.append(cols);
+            $("#retail-sales-table").append(newRow);
+            counter++;
+
+            $('#itemsModal').modal('hide');
+            cekDuplikatItem();
+            hitungTotal();
+            //cekStokToko();
+            //compareStokKuantitas();
+        });
+
+        /*fungsi ini untuk membandingkan kuantitas dan stok toko yang tersedia,
+        jika kuantitas melebihi stok toko, maka beri pesan
+        
+        function compareStokKuantitas() {
+            $(".row-retails input").keyup(cekStok);
+
+            function cekStok() {
+                $("tr.row-retails").each(function () {
+                    var $kuantitas = parseFloat($('.kuantitas', this).val());
+                    var $stokToko = parseFloat($('.stok-toko', this).val());
+
+                    if ($kuantitas > $stokToko) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Kuantitas melebihi stok toko',
+                        })
+                    }
+                });
+            }
+        }
+
+        //fungsi ini untuk mengecek jumlah stok toko, beri pesan jika stok toko bernilai 0
+        function cekStokToko() {
+            $("tr.row-retails").each(function () {
+                if ($('.stok-toko', this).val()== 0) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Stok toko tidak tersedia',
+                    })
+                }
+            });
+        }
+        */
+
+        function cekDuplikatItem() {
+            var namaItem = {};
+            $('.row-retails').each(function () {
+                var txt = $(this).text();
+                if (namaItem[txt]) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        html: "Item sudah ada di keranjang"
+                    })
+                    $(this).remove();
+                } else {
+                    namaItem[txt] = true;
+                }
+            });
+        }
+
+        function hitungTotal() {
+            $(".row-retails input").keyup(multInputs);
+
+            function multInputs() {
+                calcTotal();
+            }
+
+            $("#retail-sales-table").on("click", ".btnDel", function (event) {
+                $(this).closest("tr").remove();
+                counter -= 1
+
+                multInputs();
+
+                var total = $("#total").text();
+                var ppn = (total.replace(/\./g, '')) * 0.11;
+                var optionValue = $('#select-ppn').find(":selected").text();
+                var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn)
+                if (optionValue == "PPN") {
+                    $("#ppn").text(ppn.toLocaleString("id-ID"));
+                    $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+                }
+            });
+        }
+        $("#retail-sales-table").on("click", ".btnDel", function (event) {
+            $(this).closest("tr").remove();
+            calcTotal();
         });
 
         $("#select-ppn").change(function () {
             $(this).find("option:selected").each(function () {
                 var optionValue = $(this).attr("value") == "PPN";
                 var total = $("#total").text();
-
-                if (optionValue) {
-                    var ppn = (reverseFormatNumber(total, 'id-ID')) * 0.11;
-                    $("#ppn").text(ppn.toLocaleString("id-ID"));
-
-                    var grandTotal = ppn + parseInt(reverseFormatNumber(total, 'id-ID'));
-                    $("#grand-total").text(grandTotal.toLocaleString("id-ID"));
-                } else {
-                    $("#grand-total").text(total);
-                }
-            });
-        }).change();
-
-        $("#select-ppn").change(function () {
-            $(this).find("option:selected").each(function () {
-                var optionValue = $(this).attr("value") == "PPN";
                 if (optionValue) {
                     $(".row-ppn").show();
+                    var ppn = (total.replace(/\./g, '')) * 0.11;
+                    var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn);
+                    $("#ppn").text(ppn.toLocaleString("id-ID"));
+                    $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+
                 } else {
                     $(".row-ppn").hide();
+                    $("#grandTotal").text(total);
                 }
             });
         }).change();
-
-        $(function () {
-            var table = $('#items-table').DataTable({
-                pageLength: 300,
-                lengthMenu: [100, 200, 300, 400, 500],
-                processing: true,
-                serverSide: true,
-                ajax: "{{ route('retail.items-list') }}",
-                columns: [
-                    {
-                        data: 'id',
-                        name: 'id',
-                        visible : false
-                    },
-                    {
-                        data: 'nama_provider',
-                        name: 'providers.nama'
-                    },
-                    {
-                        data: 'nama',
-                        name: 'nama'
-                    },
-                    {
-                        data: 'nama_kategori',
-                        name: 'categories.nama'
-                    },
-                    {
-                        data: 'stok_toko',
-                        name: 'stocks.stok_toko'
-                    },
-                    {
-                        data: 'harga',
-                        name: 'harga'
-                    }
-                ]
-            });
-
-            var counter = 0;
-
-            $('#items-table tbody').on('click', 'tr', function () {
-                var data = table.row(this).data();
-
-                var newRow = $("<tr class='row-retails'>");
-                var cols = "";
-                cols += '<td style="display:none;"><input type="number" class="form-control form-control-sm stok-toko" name="stok_toko[]" value="' + data['stok_toko']  + '"></td>';
-                cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id']  + '"></td>';
-                cols += '<td>' + data['nama_provider']  + '</td>';
-                cols += '<td>' + data['nama']  + '</td>';
-                cols += '<td><input type="number" class="form-control form-control-sm w-50 kuantitas" name="kuantitas[]"/></td>'
-                cols += '<td><input type="number" class="form-control form-control-sm harga" name="harga[]" value=' + data['harga'].replace(/\./g, "")  + ' readonly/></td>';
-                cols += '<td id="sub_total" style="text-align: right;font-weight: bold" class="multTotal"></td>';
-                cols += '<td><input type="button" class="btnDel btn btn-sm btn-danger" value="Delete" style="float: right;"></td>';
-                newRow.append(cols);
-                $("#retail-sales-table").append(newRow);
-                counter++;
-
-                $('#itemsModal').modal('hide');
-                cekDuplikatItem();
-                hitungTotal();
-                //cekStokToko();
-                //compareStokKuantitas();
-            });
-            
-            /*fungsi ini untuk membandingkan kuantitas dan stok toko yang tersedia,
-            jika kuantitas melebihi stok toko, maka beri pesan
-            
-            function compareStokKuantitas() {
-                $(".row-retails input").keyup(cekStok);
-
-                function cekStok() {
-                    $("tr.row-retails").each(function () {
-                        var $kuantitas = parseFloat($('.kuantitas', this).val());
-                        var $stokToko = parseFloat($('.stok-toko', this).val());
-
-                        if ($kuantitas > $stokToko) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Kuantitas melebihi stok toko',
-                            })
-                        }
-                    });
-                }
-            }
-
-            //fungsi ini untuk mengecek jumlah stok toko, beri pesan jika stok toko bernilai 0
-            function cekStokToko() {
-                $("tr.row-retails").each(function () {
-                    if ($('.stok-toko', this).val()== 0) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Stok toko tidak tersedia',
-                        })
-                    }
-                });
-            }
-            */
-
-            function cekDuplikatItem() {
-                var namaItem = {};
-                $('.row-retails').each(function () {
-                    var txt = $(this).text();
-                    if (namaItem[txt]) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            html: "Item sudah ada di keranjang"
-                        })
-                        $(this).remove();
-                    } else {
-                        namaItem[txt] = true;
-                    }
-                });
-            }
-            
-            function hitungTotal() {
-                $(".row-retails input").keyup(multInputs);
-
-                function multInputs() {
-                    calcTotal();
-                }
-
-                $("#retail-sales-table").on("click", ".btnDel", function (event) {
-                    $(this).closest("tr").remove();
-                    counter -= 1
-                    multInputs();
-                });
-            }
-            $("#retail-sales-table").on("click", ".btnDel", function (event) {
-                $(this).closest("tr").remove();
-                calcTotal();
-            });
-
-            $('.modal').on('shown.bs.modal', function () {
-                table.columns.adjust()
-            })
-        });
+        
+        $('.modal').on('shown.bs.modal', function () {
+            table.columns.adjust()
+        })
     });
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+});
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+
+$('#save').on('click', function (e) {
+    e.preventDefault();
+    var dataString = $("#form-retail-sales, #form-retail-sales-details").serialize();
+    $.ajax({
+        type: 'json',
+        method: 'PUT',
+        url: `{{ route('retail-sales.update', [$sale->id]) }}`,
+        data: dataString,
+        success: function (data) {
+            Swal.fire({
+                icon: 'success',
+                title: "Sukses",
+                text: data.msg
+            }).then(function () {
+                window.location.href = "/sales";
+            });
+        },
+        error: function (data) {
+            var values = '';
+            $.each(data.responseJSON.msg, function (key, value) {
+                values += '<br/>' + value
+            });
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                html: values
+            })
         }
     });
-
-    $('#save').on('click', function (e) {
-        e.preventDefault();
-        var dataString = $("#form-retail-sales, #form-retail-sales-details").serialize();
-        $.ajax({
-            type: 'json',
-            method: 'PUT',
-            url: `{{ route('retail-sales.update', [$sale->id]) }}`,
-            data: dataString,
-            success: function (data) {
-                Swal.fire({
-                    icon: 'success',
-                    title: "Sukses",
-                    text: data.msg
-                }).then(function () {
-                    window.location.href = "/sales";
-                });
-            },
-            error: function (data) {
-                var values = '';
-                $.each(data.responseJSON.msg, function (key, value) {
-                    values += '<br/>'+value
-                });
-
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    html: values
-                })
-            }
-        });
-    });
+});
 </script>
 @stop
