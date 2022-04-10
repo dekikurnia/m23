@@ -146,7 +146,7 @@
                                 <td style="text-align: right;font-weight: bold; width: 15%">Grand Total :</td>
 
                                 <td style="text-align: right;font-weight: bold; width: 5%">
-                                    <span id="grand-total">0 </span>
+                                    <span id="grandTotal">0 </span>
                                 </td>
                                 <!--<td></td>-->
 
@@ -192,282 +192,276 @@
 <script type="text/javascript">
 
 function calcTotal() {
-        var mult = 0;
-        $("tr.row-warehouses").each(function () {
-            var $kuantitas = $('.kuantitas', this).val();
-            var $harga = $('.harga', this).val();
-            var $total = $kuantitas * (reverseFormatNumber($harga, 'id-ID'));
+    var mult = 0;
+    // for each row:
+    $("tr.row-warehouses").each(function () {
+        var $kuantitas = $('.kuantitas', this).val();
+        var $harga = $('.harga', this).val();
+        var $total = ($kuantitas * 1) * ($harga * 1)
 
-            $('.multTotal', this).text($total.toLocaleString("id-ID"));
-            mult += $total;
+        $('.multTotal', this).text($total.toLocaleString("id-ID"));
+        mult += $total;
+    });
+
+    $("#total").text(mult.toLocaleString("id-ID"));
+    $("#grandTotal").text(mult.toLocaleString("id-ID"));
+
+    var ppn = mult * 0.11;
+    var grandTotal = mult + parseFloat(ppn)
+    if ($("#select-ppn option:selected").val() == "PPN") {
+        $("#ppn").text(ppn.toLocaleString("id-ID"));
+        $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+    }
+}
+
+
+$(document).ready(function () {
+    $(".datepicker").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        todayHighlight: true,
+        orientation: 'bottom'
+    });
+
+
+    $('#customers').select2({
+        ajax: {
+            url: "{{ route('customers.search') }}",
+            processResults: function (data) {
+                return {
+                    results: data.map(function (item) {
+                        return {
+                            id: item.id,
+                            text: item.nama
+                        }
+                    })
+                }
+            }
+        }
+    });
+
+    $("#select-bayar").change(function () {
+        $(this).find("option:selected").each(function () {
+            var optionValue = $(this).attr("value");
+            if (optionValue) {
+                $(".box").not("." + optionValue).hide();
+                $("." + optionValue).show();
+            } else {
+                $(".box").hide();
+            }
+        });
+    }).change();
+
+    $("#select-ppn").change(function () {
+        $(this).find("option:selected").each(function () {
+            var optionValue = $(this).attr("value") == "PPN";
+            if (optionValue) {
+                $(".row-ppn").show();
+            } else {
+                $(".row-ppn").hide();
+            }
+        });
+    }).change();
+
+    $(function () {
+        var table = $('#items-table').DataTable({
+            pageLength: 300,
+            lengthMenu: [100, 200, 300, 400, 500],
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('moves.items-list') }}",
+            columns: [{
+                    data: 'id',
+                    name: 'id',
+                    visible: false
+                },
+                {
+                    data: 'nama_provider',
+                    name: 'providers.nama'
+                },
+                {
+                    data: 'nama',
+                    name: 'nama'
+                },
+                {
+                    data: 'nama_kategori',
+                    name: 'categories.nama'
+                },
+                {
+                    data: 'stok_gudang',
+                    name: 'stocks.stok_gudang'
+                },
+            ]
         });
 
-        $("#total").text(mult.toLocaleString("id-ID"));
-        $("#grand-total").text(mult.toLocaleString("id-ID"));
+        var counter = 0;
 
-        $("#select-ppn").change(function () {
-            $(this).find("option:selected").each(function () {
-                var optionValue = $(this).attr("value") == "PPN";
-                if (optionValue) {
-                    $(".row-ppn").show();
-                    var ppn = mult * 0.11;
-                    var grandTotal = mult + ppn;
-                    $("#ppn").text(ppn.toLocaleString("id-ID"));
-                    $("#grand-total").text(grandTotal.toLocaleString("id-ID"));
+        $('#items-table tbody').on('click', 'tr', function () {
+            var data = table.row(this).data();
 
+            var newRow = $("<tr class='row-warehouses'>");
+            var cols = "";
+            cols += '<td style="display:none;"><input type="number" class="form-control form-control-sm stok-gudang" name="stok_gudang[]" value="' + data['stok_gudang'] + '"></td>';
+            cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id'] + '"></td>';
+            cols += '<td>' + data['nama_provider'] + '</td>';
+            cols += '<td>' + data['nama'] + '</td>';
+            cols += '<td>' + data['stok_gudang'] + '</td>';
+            cols += '<td><input type="number" class="form-control form-control-sm w-50 kuantitas" name="kuantitas[]"/></td>'
+            cols += '<td><input type="number" class="form-control form-control-sm harga" name="harga[]"/></td>';
+            cols += '<td id="sub_total" style="text-align: right;font-weight: bold" class="multTotal"></td>';
+            cols += '<td><input type="button" class="btnDel btn btn-sm btn-danger" value="Delete" style="float: right;"></td>';
+            newRow.append(cols);
+            $("#warehouses-table").append(newRow);
+            counter++;
+
+            cekDuplikatItem();
+            $('#itemsModal').modal('hide');
+
+            hitungTotal();
+            cekStokGudang();
+            compareStokKuantitas();
+        });
+
+        function cekDuplikatItem() {
+            var namaItem = {};
+            $('.row-warehouses').each(function () {
+                var txt = $(this).text();
+                if (namaItem[txt]) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        html: "Item sudah ada di keranjang"
+                    })
+                    $(this).remove();
                 } else {
-                    $(".row-ppn").hide();
-                    $("#grand-total").text(mult.toLocaleString("id-ID"));
-
+                    namaItem[txt] = true;
                 }
             });
-        }).change();
-    }
+        }
 
-    function reverseFormatNumber(val, locale) {
-        var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
-        var decimal = new Intl.NumberFormat(locale).format(1.1).replace(/1/g, '');
-        var reversedVal = val.replace(new RegExp('\\' + group, 'g'), '');
-        reversedVal = reversedVal.replace(new RegExp('\\' + decimal, 'g'), '.');
-        return Number.isNaN(reversedVal) ? 0 : reversedVal;
-    }
+        /*fungsi ini untuk membandingkan kuantitas dan stok gudang yang tersedia,
+        jika kuantitas melebihi stok gudang, maka beri pesan
+        */
+        function compareStokKuantitas() {
+            $(".row-warehouses input").keyup(cekStok);
 
-    $(document).ready(function () {
-        $(".datepicker").datepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true,
-            todayHighlight: true,
-            orientation: 'bottom'
+            function cekStok() {
+                $("tr.row-warehouses").each(function () {
+                    var $kuantitas = parseFloat($('.kuantitas', this).val());
+                    var $stokToko = parseFloat($('.stok-gudang', this).val());
+
+                    if ($kuantitas > $stokToko) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Kuantitas melebihi stok gudang',
+                        })
+                        $(this).find(".kuantitas").val("");
+                    }
+                });
+            }
+        }
+
+        //fungsi ini untuk mengecek jumlah stok gudang, beri pesan jika stok gudang bernilai 0
+        function cekStokGudang() {
+            $("tr.row-warehouses").each(function () {
+                if ($('.stok-gudang', this).val() == 0) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Stok gudang tidak tersedia',
+                    })
+                }
+            });
+        }
+
+        function hitungTotal() {
+            $(".row-warehouses input").keyup(multInputs);
+
+            function multInputs() {
+                calcTotal();
+            }
+
+             $("#warehouses-table").on("click", ".btnDel", function (event) {
+                $(this).closest("tr").remove();
+                counter -= 1
+
+                multInputs();
+
+                var total = $("#total").text();
+                var ppn = (total.replace(/\./g, '')) * 0.11;
+                var optionValue = $('#select-ppn').find(":selected").text();
+                var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn)
+                if (optionValue == "PPN") {
+                    $("#ppn").text(ppn.toLocaleString("id-ID"));
+                    $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+                }
+            })
+        }
+        $("#warehouses-table").on("click", ".btnDel", function (event) {
+            $(this).closest("tr").remove();
+            calcTotal();
         });
 
         $("#select-ppn").change(function () {
             $(this).find("option:selected").each(function () {
                 var optionValue = $(this).attr("value") == "PPN";
                 var total = $("#total").text();
-
-                if (optionValue) {
-                    var ppn = (reverseFormatNumber(total, 'id-ID')) * 0.11;
-                    $("#ppn").text(ppn.toLocaleString("id-ID"));
-
-                    var grandTotal = ppn + parseInt(reverseFormatNumber(total, 'id-ID'));
-                    $("#grand-total").text(grandTotal.toLocaleString("id-ID"));
-                } else {
-                    $("#grand-total").text(total);
-                }
-            });
-        }).change();
-
-        $('#customers').select2({
-            ajax: {
-                url: "{{ route('customers.search') }}",
-                processResults: function (data) {
-                    return {
-                        results: data.map(function (item) {
-                            return {
-                                id: item.id,
-                                text: item.nama
-                            }
-                        })
-                    }
-                }
-            }
-        });
-
-        $("#select-bayar").change(function () {
-            $(this).find("option:selected").each(function () {
-                var optionValue = $(this).attr("value");
-                if (optionValue) {
-                    $(".box").not("." + optionValue).hide();
-                    $("." + optionValue).show();
-                } else {
-                    $(".box").hide();
-                }
-            });
-        }).change();
-
-        $("#select-ppn").change(function () {
-            $(this).find("option:selected").each(function () {
-                var optionValue = $(this).attr("value") == "PPN";
                 if (optionValue) {
                     $(".row-ppn").show();
+                    var ppn = (total.replace(/\./g, '')) * 0.11;
+                    var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn);
+                    $("#ppn").text(ppn.toLocaleString("id-ID"));
+                    $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+
                 } else {
                     $(".row-ppn").hide();
+                    $("#grandTotal").text(total);
                 }
             });
         }).change();
 
-        $(function () {
-            var table = $('#items-table').DataTable({
-                pageLength: 300,
-                lengthMenu: [100, 200, 300, 400, 500],
-                processing: true,
-                serverSide: true,
-                ajax: "{{ route('moves.items-list') }}",
-                columns: [
-                    {
-                        data: 'id',
-                        name: 'id',
-                        visible : false
-                    },
-                    {
-                        data: 'nama_provider',
-                        name: 'providers.nama'
-                    },
-                    {
-                        data: 'nama',
-                        name: 'nama'
-                    },
-                    {
-                        data: 'nama_kategori',
-                        name: 'categories.nama'
-                    },
-                    {
-                        data: 'stok_gudang',
-                        name: 'stocks.stok_gudang'
-                    },
-                ]
-            });
-
-            var counter = 0;
-
-            $('#items-table tbody').on('click', 'tr', function () {
-                var data = table.row(this).data();
-
-                var newRow = $("<tr class='row-warehouses'>");
-                var cols = "";
-                cols += '<td style="display:none;"><input type="number" class="form-control form-control-sm stok-gudang" name="stok_gudang[]" value="' + data['stok_gudang']  + '"></td>';
-                cols += '<td style="display:none;"><input type="hidden" name="item_id[]" value="' + data['id']  + '"></td>';
-                cols += '<td>' + data['nama_provider']  + '</td>';
-                cols += '<td>' + data['nama']  + '</td>';
-                cols += '<td>' + data['stok_gudang']  + '</td>';
-                cols += '<td><input type="number" class="form-control form-control-sm w-50 kuantitas" name="kuantitas[]"/></td>'
-                cols += '<td><input type="number" class="form-control form-control-sm harga" name="harga[]"/></td>';
-                cols += '<td id="sub_total" style="text-align: right;font-weight: bold" class="multTotal"></td>';
-                cols += '<td><input type="button" class="btnDel btn btn-sm btn-danger" value="Delete" style="float: right;"></td>';
-                newRow.append(cols);
-                $("#warehouses-table").append(newRow);
-                counter++;
-
-                cekDuplikatItem();
-                $('#itemsModal').modal('hide');
-
-                hitungTotal();
-                cekStokGudang();
-                compareStokKuantitas();
-            });
-            
-            function cekDuplikatItem() {
-                var namaItem = {};
-                $('.row-warehouses').each(function () {
-                    var txt = $(this).text();
-                    if (namaItem[txt]) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            html: "Item sudah ada di keranjang"
-                        })
-                        $(this).remove();
-                    } else {
-                        namaItem[txt] = true;
-                    }
-                });
-            }
-
-            /*fungsi ini untuk membandingkan kuantitas dan stok gudang yang tersedia,
-            jika kuantitas melebihi stok gudang, maka beri pesan
-            */
-            function compareStokKuantitas() {
-                $(".row-warehouses input").keyup(cekStok);
-
-                function cekStok() {
-                    $("tr.row-warehouses").each(function () {
-                        var $kuantitas = parseFloat($('.kuantitas', this).val());
-                        var $stokToko = parseFloat($('.stok-gudang', this).val());
-
-                        if ($kuantitas > $stokToko) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Kuantitas melebihi stok gudang',
-                            })
-                            $(this).find(".kuantitas").val("");
-                        }
-                    });
-                }
-            }
-
-            //fungsi ini untuk mengecek jumlah stok gudang, beri pesan jika stok gudang bernilai 0
-            function cekStokGudang() {
-                $("tr.row-warehouses").each(function () {
-                    if ($('.stok-gudang', this).val()== 0) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Stok gudang tidak tersedia',
-                        })
-                    }
-                });
-            }
-
-            function hitungTotal() {
-                $(".row-warehouses input").keyup(multInputs);
-
-                function multInputs() {
-                    calcTotal();
-                }
-
-                $("#warehouses-table").on("click", ".btnDel", function (event) {
-                    $(this).closest("tr").remove();
-                    counter -= 1
-                    multInputs();
-                });
-            }
-            $("#warehouses-table").on("click", ".btnDel", function (event) {
-                $(this).closest("tr").remove();
-                calcTotal();
-            });
-
-            $('.modal').on('shown.bs.modal', function () {
-                table.columns.adjust()
-            })
-        });
+        $('.modal').on('shown.bs.modal', function () {
+            table.columns.adjust()
+        })
     });
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+});
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+
+$('#save').on('click', function (e) {
+    e.preventDefault();
+    var dataString = $("#form-warehouses, #form-warehouses-details").serialize();
+    $.ajax({
+        type: 'json',
+        method: 'PUT',
+        url: `{{ route('warehouses.update', [$sale->id]) }}`,
+        data: dataString,
+        success: function (data) {
+            Swal.fire({
+                icon: 'success',
+                title: "Sukses",
+                text: data.msg
+            }).then(function () {
+                window.location.href = "/sales";
+            });
+        },
+        error: function (data) {
+            var values = '';
+            $.each(data.responseJSON.msg, function (key, value) {
+                values += '<br/>' + value
+            });
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                html: values
+            })
         }
     });
-
-    $('#save').on('click', function (e) {
-        e.preventDefault();
-        var dataString = $("#form-warehouses, #form-warehouses-details").serialize();
-        $.ajax({
-            type: 'json',
-            method: 'PUT',
-            url: `{{ route('warehouses.update', [$sale->id]) }}`,
-            data: dataString,
-            success: function (data) {
-                Swal.fire({
-                    icon: 'success',
-                    title: "Sukses",
-                    text: data.msg
-                }).then(function () {
-                    window.location.href = "/sales";
-                });
-            },
-            error: function (data) {
-                var values = '';
-                $.each(data.responseJSON.msg, function (key, value) {
-                    values += '<br/>'+value
-                });
-
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    html: values
-                })
-            }
-        });
-    });
+});
 </script>
 @stop

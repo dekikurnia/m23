@@ -333,30 +333,49 @@
                     $("#total").text(mult.toLocaleString("id-ID"));
                     $("#grandTotal").text(mult.toLocaleString("id-ID"));
 
-                    $("#select-ppn").change(function () {
-                        $(this).find("option:selected").each(function () {
-                            var optionValue = $(this).attr("value") == "PPN";
-                            if (optionValue) {
-                                $(".row-ppn").show();
-                                var ppn = mult * 0.11;
-                                var grandTotal = mult + ppn;
-                                $("#ppn").text(ppn.toLocaleString("id-ID"));
-                                $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
-                               
-                            } else {
-                                $(".row-ppn").hide();
-                                $("#grandTotal").text(mult.toLocaleString("id-ID"));
-                               
-                            }
-                        });
-                    }).change();
+                    var ppn =  mult * 0.11;
+                    var grandTotal = mult + parseFloat(ppn)
+                    var optionValue = $('#select-ppn').find(":selected").text();
+                    if (optionValue == "PPN") {
+                        $("#ppn").text(ppn.toLocaleString("id-ID"));
+                        $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+                    } 
                 }
                 $("#warehouses-table").on("click", ".btnDel", function (event) {
                     $(this).closest("tr").remove();
                     counter -= 1
+
                     multInputs();
+
+                    var total = $("#total").text();
+                    var ppn =  (total.replace(/\./g, '')) * 0.11;
+                    var optionValue = $('#select-ppn').find(":selected").text();
+                    var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn)
+                    if (optionValue == "PPN") {
+                        $("#ppn").text(ppn.toLocaleString("id-ID"));
+                        $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+                    } 
                 });
             }
+
+            $("#select-ppn").change(function () {
+                $(this).find("option:selected").each(function () {
+                    var optionValue = $(this).attr("value") == "PPN";
+                    var total = $("#total").text();
+                    if (optionValue) {
+                        $(".row-ppn").show();
+                        var ppn =  (total.replace(/\./g, '')) * 0.11;
+                        var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn);
+                        $("#ppn").text(ppn.toLocaleString("id-ID"));
+                        $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+
+                    } else {
+                        $(".row-ppn").hide();
+                        $("#grandTotal").text(total);
+                    }
+                });
+            }).change();
+            
             $('.modal').on('shown.bs.modal', function () {
                 table.columns.adjust()
             })
