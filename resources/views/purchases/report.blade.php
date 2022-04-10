@@ -132,7 +132,7 @@
                     <div style="display: none">
                         {{$subTotal += ($purchaseDetail->kuantitas * $purchaseDetail->harga)}}
                     </div>
-                    <div style="display: none">{{$ppn = ($subTotal* 0.1)}}</div>
+                    <div style="display: none">{{$ppn = ($subTotal* 0.11)}}</div>
                     <div style="display: none">{{$total = ($ppn + $subTotal)}}</div>
                 </tr>
                 @endforeach

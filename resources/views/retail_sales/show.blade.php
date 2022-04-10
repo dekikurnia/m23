@@ -134,7 +134,7 @@ $(document).ready(function () {
     var total = $("#total").text();
 
     if (optionValue) {
-        var ppn = (reverseFormatNumber(total, 'id-ID')) * 0.1;
+        var ppn = (reverseFormatNumber(total, 'id-ID')) * 0.11;
         $("#ppn").text(ppn.toLocaleString("id-ID"));
 
         var grandTotal = ppn + parseInt(reverseFormatNumber(total, 'id-ID'));

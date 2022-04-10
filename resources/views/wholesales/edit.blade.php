@@ -125,7 +125,7 @@
                                 <td style="width: 30%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
-                                <td style="text-align: right;font-weight: bold; width: 15%">PPN 10% :</td>
+                                <td style="text-align: right;font-weight: bold; width: 15%">PPN :</td>
 
                                 <td style="text-align: right;font-weight: bold; width: 5%">
                                     <span id="ppn">0 </span>
@@ -202,7 +202,7 @@ function calcTotal() {
     $("#total").text(mult.toLocaleString("id-ID"));
     $("#grandTotal").text(mult.toLocaleString("id-ID"));
 
-    var ppn = mult * 0.1;
+    var ppn = mult * 0.11;
     var grandTotal = mult + parseFloat(ppn)
     if ($("#select-ppn option:selected").val() == "PPN") {
         $("#ppn").text(ppn.toLocaleString("id-ID"));
@@ -393,7 +393,7 @@ $(document).ready(function () {
                 multInputs();
 
                 var total = $("#total").text();
-                var ppn = (total.replace(/\./g, '')) * 0.1;
+                var ppn = (total.replace(/\./g, '')) * 0.11;
                 var optionValue = $('#select-ppn').find(":selected").text();
                 var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn)
                 if (optionValue == "PPN") {
@@ -414,7 +414,7 @@ $(document).ready(function () {
                 var total = $("#total").text();
                 if (optionValue) {
                     $(".row-ppn").show();
-                    var ppn = (total.replace(/\./g, '')) * 0.1;
+                    var ppn = (total.replace(/\./g, '')) * 0.11;
                     var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn);
                     $("#ppn").text(ppn.toLocaleString("id-ID"));
                     $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));

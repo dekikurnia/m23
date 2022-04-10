@@ -129,7 +129,7 @@
                                 <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
-                                <td style="text-align: right;font-weight: bold; width: 15%">PPN 10% :</td>
+                                <td style="text-align: right;font-weight: bold; width: 15%">PPN :</td>
 
                                 <td style="text-align: right;font-weight: bold; width: 5%">
                                     <span id="ppn">0 </span>
@@ -210,7 +210,7 @@ function calcTotal() {
                 var optionValue = $(this).attr("value") == "PPN";
                 if (optionValue) {
                     $(".row-ppn").show();
-                    var ppn = mult * 0.1;
+                    var ppn = mult * 0.11;
                     var grandTotal = mult + ppn;
                     $("#ppn").text(ppn.toLocaleString("id-ID"));
                     $("#grand-total").text(grandTotal.toLocaleString("id-ID"));
@@ -246,7 +246,7 @@ function calcTotal() {
                 var total = $("#total").text();
 
                 if (optionValue) {
-                    var ppn = (reverseFormatNumber(total, 'id-ID')) * 0.1;
+                    var ppn = (reverseFormatNumber(total, 'id-ID')) * 0.11;
                     $("#ppn").text(ppn.toLocaleString("id-ID"));
 
                     var grandTotal = ppn + parseInt(reverseFormatNumber(total, 'id-ID'));

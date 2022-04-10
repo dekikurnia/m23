@@ -70,7 +70,7 @@
                                 <td style="width: 30%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
-                                <td style="text-align: right;font-weight: bold; width: 15%">PPN 10% :</td>
+                                <td style="text-align: right;font-weight: bold; width: 15%">PPN :</td>
 
                                 <td style="text-align: right;font-weight: bold; width: 5%">
                                     <span id="ppn">0 </span>
@@ -262,7 +262,7 @@
                             var optionValue = $(this).attr("value") == "PPN";
                             if (optionValue) {
                                 $(".row-ppn").show();
-                                var ppn = mult * 0.1;
+                                var ppn = mult * 0.11;
                                 var grandTotal = mult + ppn;
                                 $("#ppn").text(ppn.toLocaleString("id-ID"));
                                 $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
