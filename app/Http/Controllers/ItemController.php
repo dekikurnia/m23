@@ -36,8 +36,9 @@ class ItemController extends Controller
 
             return DataTables::of($data)
                 ->addColumn('action', function ($data) {
-                    $html = '<button data-rowid="' . $data->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash "></i></button>';
-                    return $html;
+                    $btn = '<a href="/items/' . $data->id . '/edit" class="btn btn-sm btn-primary"><i class="fa fa-pencil"></i></a>';
+                    $btn = $btn.' <button data-rowid="' . $data->id . '" class="btn btn-sm btn-danger btn-delete"><i class="fa fa-trash"></i></button>'; 
+                    return $btn;
                 })
                 ->rawColumns(['action'])
                 ->addIndexColumn()

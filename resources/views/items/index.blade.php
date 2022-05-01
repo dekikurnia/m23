@@ -61,7 +61,7 @@
                                     </th>
                                     <th style="width: 15%;"><b>Stok Gudang</b></th>
                                     <th style="width: 15%;"><b>Stok Toko</b></th>
-                                    <th style="width: 5%"><b></b></th>
+                                    <th style="width: 8%"><b></b></th>
                                 </tr>
                             </thead>
                         </table>

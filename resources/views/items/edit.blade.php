@@ -17,9 +17,9 @@
                     action="{{route('items.update', [$item->id])}}" method="POST">
                     @csrf
                     <input type="hidden" value="PUT" name="_method">
-                    <div class="form-group">
+                    <div style="display: none" class="form-group">
                         <label for="provider_id">Provider</label>
-                        <select id="type" name="provider_id" class="form-control">
+                        <select id="type" name="provider_id" class="form-control provider">
                             <option value="" selected>Pilih Provider</option>
                             @foreach($provider as $row)
                             <option value="{{ $row->id }}" {{ $row->id == $item->provider_id ? 'selected' : '' }}>
@@ -38,7 +38,7 @@
                         <span class="text-danger">{{ $errors->first('nama') }}</span>
                         @endif
                     </div>
-                    <div class="form-group">
+                    <div style="display: none" class="form-group">
                         <label for="category_id">Kategori</label>
                         <select id="type" name="category_id" class="form-control">
                             <option value="" selected>Pilih Kategori</option>
@@ -51,18 +51,18 @@
                         <span class="text-danger">{{ $errors->first('category_id') }}</span>
                         @endif
                     </div>
-                    <div class="form-group">
+                    <div style="display: none" class="form-group">
                         <label for="stok_gudang">Stok Gudang</label>
                         <input value="{{$item->stock->stok_gudang}}" class="form-control" placeholder="Nama Barang" type="number"
-                            name="stok_gudang" id="stok_gudang" />
+                            name="stok_gudang" id="stok_gudang" readonly/>
                         @if ($errors->has('stok_gudang'))
                         <span class="text-danger">{{ $errors->first('stok_gudang') }}</span>
                         @endif
                     </div>
-                    <div class="form-group">
+                    <div style="display: none" class="form-group">
                         <label for="stok_toko">Stok Toko</label>
                         <input value="{{$item->stock->stok_toko}}" class="form-control" placeholder="Nama Barang" type="number"
-                            name="stok_toko" id="stok_toko" />
+                            name="stok_toko" id="stok_toko" readonly/>
                         @if ($errors->has('stok_toko'))
                         <span class="text-danger">{{ $errors->first('stok_toko') }}</span>
                         @endif
