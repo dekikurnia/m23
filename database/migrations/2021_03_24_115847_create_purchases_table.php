@@ -20,6 +20,7 @@ class CreatePurchasesTable extends Migration
             $table->bigInteger('supplier_id')->unsigned();
             $table->enum('cara_bayar',['Kas', 'Kredit', 'Transfer']);
             $table->enum('pajak',['Non PPN', 'PPN']);
+            $table->enum('pajak2',['Non PPH', 'PPH']);
             $table->date('jatuh_tempo')->nullable();
             $table->date('tanggal_lunas')->nullable();
             $table->boolean('is_lunas')->default(false);

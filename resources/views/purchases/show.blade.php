@@ -31,7 +31,7 @@
                         <tr>
                             <th style="width: 15%">Pajak</th>
                             <td style="width: 2%">:</td>
-                            <td id="row-pajak">{{$purchase->pajak}}</td>
+                            <td>{{$purchase->pajak}} | {{$purchase->pajak2}} </td>
                         </tr>
                         <tr>
                             <th style="width: 15%">Jatuh Tempo</th>
@@ -91,7 +91,7 @@
                         <td style="text-align: right; width: 10%">{{ $purchaseDetail->kuantitas }}</td>
                         <td style="text-align: right; width: 10%">
                             {{ number_format($purchaseDetail->harga, 0, ',', '.') }}</td>
-                        <td style="text-align: right; width: 10%" class="sub_total">
+                        <td style="text-align: right; width: 10%" class="subTotal">
                             {{ number_format($purchaseDetail->sub_total, 0, ',', '.') }}</td>
                         <!--<td></td>-->
                         <div style="display: none">{{$total += $purchaseDetail->sub_total}}</div>
@@ -111,9 +111,13 @@
                         <td style="width: 15%"></td>
                         <td style="width: 30%"></td>
                         <td style="width: 5%"></td>
-                        <td style="text-align: right;font-weight: bold; width: 10%">Total :</td>
+                        <td class="total" style="text-align: right;font-weight: bold; width: 10%">Total :</td>
                         <td style="text-align: right;font-weight: bold; width: 5%">
+                            @if($purchase->pajak == 'PPN')
+                            <span id="total">{{ number_format(($total * 100)/110, 0, ',', '.') }}</span>
+                            @else
                             <span id="total">{{ number_format($total, 0, ',', '.') }}</span>
+                            @endif
                         </td>
                         <!--<td></td>-->
                     </tr>
@@ -122,10 +126,23 @@
                         <td style="width: 15%"></td>
                         <td style="width: 30%"></td>
                         <td style="width: 5%"></td>
-                        <td style="text-align: right;font-weight: bold; width: 10%">PPN :</td>
+                        <td id="rowPajak" style="text-align: right;font-weight: bold; width: 10%">PPN :</td>
 
                         <td style="text-align: right;font-weight: bold; width: 5%">
                             <span id="ppn">0 </span>
+                        </td>
+                        <!--<td></td>-->
+                    </tr>
+                    @endif
+                    @if($purchase->pajak2 == 'PPH')
+                    <tr>
+                        <td style="width: 15%"></td>
+                        <td style="width: 30%"></td>
+                        <td style="width: 5%"></td>
+                        <td id="rowPajak2" style="text-align: right;font-weight: bold; width: 10%">PPH :</td>
+
+                        <td style="text-align: right;font-weight: bold; width: 5%">
+                            <span id="pph">0 </span>
                         </td>
                         <!--<td></td>-->
                     </tr>
@@ -137,7 +154,7 @@
                         <td style="text-align: right;font-weight: bold; width: 10%">Grand Total :</td>
 
                         <td style="text-align: right;font-weight: bold; width: 5%">
-                            <span id="grand-total">0</span>
+                            <span id="grandTotal">0</span>
                         </td>
                         <!--<td></td>-->
                     </tr>
@@ -150,6 +167,7 @@
     </div>
 </div>
 @endsection
+
 @section('js')
 <script type="text/javascript">
 $(document).ready(function () {
@@ -162,17 +180,28 @@ $(document).ready(function () {
         return Number.isNaN(reversedVal) ? 0 : reversedVal;
     }
 
-    var optionValue = $("#row-pajak").text() == "PPN";
+    var rowPajak = $("#rowPajak").text();
+    var rowPajak2 = $("#rowPajak2").text();
     var total = $("#total").text();
 
-    if (optionValue) {
+    if (rowPajak == "PPN :" && rowPajak2 == "PPH :") {
+        $('.total').html('DPP :');
         var ppn = (reverseFormatNumber(total, 'id-ID')) * 0.11;
-        $("#ppn").text(ppn.toLocaleString("id-ID"));
+        var pph = (reverseFormatNumber(total, 'id-ID')) * 0.005;
+        $("#ppn").text(Math.round(ppn).toLocaleString("id-ID"));
+        $("#pph").text(Math.round(pph).toLocaleString("id-ID"));
+
+        var grandTotal = ppn + pph + parseInt(reverseFormatNumber(total, 'id-ID'));
+        $("#grandTotal").text(Math.round(grandTotal).toLocaleString("id-ID"));
+    } else if (rowPajak == "PPN :") {
+        $('.total').html('DPP :');
+        var ppn = (reverseFormatNumber(total, 'id-ID')) * 0.11;
+        $("#ppn").text(Math.round(ppn).toLocaleString("id-ID"));
 
         var grandTotal = ppn + parseInt(reverseFormatNumber(total, 'id-ID'));
-        $("#grand-total").text(grandTotal.toLocaleString("id-ID"));
+        $("#grandTotal").text(Math.round(grandTotal).toLocaleString("id-ID"));
     } else {
-        $("#grand-total").text(total);
+        $("#grandTotal").text(total);
     }
 });
 </script>

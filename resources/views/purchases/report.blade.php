@@ -102,7 +102,7 @@
                 <td>{{$purchase->tanggal}}</td>
                 <td>{{$purchase->invoice}}</td>
                 <td style="text-align: center; width: 20%">{{$purchase->supplier->nama}}</td>
-                <td>{{$purchase->pajak}}</td>
+                <td>{{$purchase->pajak}} | {{$purchase->pajak2}}</td>
                 @if($purchase->is_lunas == 0)
                 <td>BELUM LUNAS</td>
                 @else
@@ -114,6 +114,7 @@
                 <div style="display: none">
                     {{ $subTotal = 0 }}
                     {{ $ppn = 0 }}
+                    {{ $pph = 0 }}
                     {{ $total = 0 }}
                 </div>
                 @foreach ($purchase->purchaseDetails as $purchaseDetail)
@@ -130,10 +131,16 @@
                     <td style="text-align: right; width: 15%">
                         {{ number_format(($purchaseDetail->kuantitas * $purchaseDetail->harga), 0, ',', '.')}}</td>
                     <div style="display: none">
+                        @if($purchase->pajak == 'PPN')
+                        {{$subTotal += ($purchaseDetail->kuantitas  * $purchaseDetail->harga )*100/110}}
+                        @else
                         {{$subTotal += ($purchaseDetail->kuantitas * $purchaseDetail->harga)}}
+                        @endif
                     </div>
                     <div style="display: none">{{$ppn = ($subTotal* 0.11)}}</div>
+                    <div style="display: none">{{$pph = ($subTotal* 0.005)}}</div>
                     <div style="display: none">{{$total = ($ppn + $subTotal)}}</div>
+                    <div style="display: none">{{$totalPPH = ($ppn + $pph + $subTotal)}}</div>
                 </tr>
                 @endforeach
                 @if($purchase->pajak == 'Non PPN')
@@ -157,7 +164,7 @@
                     <td>
                     <td style="text-align: right; width: 15%"></td>
                     <td style="text-align: right; width: 15%; font-weight:bold">
-                        SUB TOTAL : </td>
+                        DPP : </td>
                     <td style="text-align: right; width: 15%; font-weight:bold;" class="total-non">
                         {{ number_format($subTotal, 0, ',', '.') }}
                     </td>
@@ -172,6 +179,18 @@
                     <td style="text-align: right; width: 15%; font-weight:bold;" class="ppn">
                         {{ number_format($ppn, 0, ',', '.') }}</td>
                 </tr>
+                @if($purchase->pajak2 == 'PPH')
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                    <td style="text-align: right; width: 15%"></td>
+                    <td style="text-align: right; width: 15%; font-weight:bold">PPH :</td>
+                    <td style="text-align: right; width: 15%; font-weight:bold;" class="ppn">
+                        {{ number_format($pph, 0, ',', '.') }}</td>
+                </tr>
+                @endif
                 <tr class="row-ppn">
                     <td></td>
                     <td></td>
@@ -179,8 +198,13 @@
                     <td>
                     <td style="text-align: right; width: 15%"></td>
                     <td style="text-align: right; width: 15%; font-weight:bold">TOTAL :</td>
+                    @if($purchase->pajak2 == 'PPH')
+                    <td style="text-align: right; width: 15%; font-weight:bold;" class="total-ppn">
+                        {{ number_format($totalPPH, 0, ',', '.') }}</td>
+                    @else
                     <td style="text-align: right; width: 15%; font-weight:bold;" class="total-ppn">
                         {{ number_format($total, 0, ',', '.') }}</td>
+                    @endif
                 </tr>
                 @endif
                 <tr>

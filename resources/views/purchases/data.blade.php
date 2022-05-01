@@ -53,7 +53,7 @@
                                         @endforeach
                                     </select>
                                 </th>
-                                <th style="width: 10%">
+                                <th style="width: 12%">
                                     <select class="form-control form-control-sm" name="pajak_filter" id="pajak_filter">
                                         <option value=""></option>
                                         <option value="Non PPN">Non PPN</option>
@@ -118,10 +118,11 @@
                 {
                     data: 'nama_supplier',
                     name: 'suppliers.nama'
-                },
+                }, 
                 {
-                    data: 'pajak',
-                    name: 'pajak'
+                    data: function (data, type, dataToSet) {
+                        return data.pajak + " | " + data.pajak2;
+                    }
                 },
                 {
                     data: 'total',

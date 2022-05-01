@@ -106,6 +106,7 @@ class PurchaseController extends Controller
         $purchases->supplier_id = $request->supplier_id;
         $purchases->cara_bayar = $request->cara_bayar;
         $purchases->pajak = $request->pajak;
+        $purchases->pajak2 = $request->pajak2;
         $purchases->jatuh_tempo = $request->jatuh_tempo;
         if ($purchases->cara_bayar == 'Kredit') {
             $purchases->is_lunas = false;
@@ -177,9 +178,8 @@ class PurchaseController extends Controller
             ->join('items', 'purchase_details.item_id', '=', 'items.id')
             ->join('providers', 'items.provider_id', '=', 'providers.id')
             ->join('purchases', 'purchase_details.purchase_id', '=', 'purchases.id')
-            ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.keterangan', 'purchase_details.*', 'items.nama', 'providers.nama as nama_provider')
+            ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.pajak2', 'purchases.keterangan', 'purchase_details.*', 'items.nama', 'providers.nama as nama_provider')
             ->selectRaw('purchase_details.kuantitas * purchase_details.harga as sub_total')
-            // ->selectRaw('((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga)) as total_ppn')
             ->orderBy('items.nama', 'asc')
             ->where('purchase_id', $id)
             ->get();
@@ -241,6 +241,7 @@ class PurchaseController extends Controller
         $purchases->supplier_id = $request->supplier_id;
         $purchases->cara_bayar = $request->cara_bayar;
         $purchases->pajak = $request->pajak;
+        $purchases->pajak2 = $request->pajak2;
         $purchases->jatuh_tempo = $request->jatuh_tempo;
         if ($purchases->cara_bayar == 'Kredit') {
             $purchases->is_lunas = false;
@@ -291,9 +292,10 @@ class PurchaseController extends Controller
                 $purchases = DB::table('purchases')
                     ->join('suppliers', 'purchases.supplier_id', '=', 'suppliers.id')
                     ->join('purchase_details', 'purchase_details.purchase_id', '=', 'purchases.id')
-                    ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.keterangan', 'suppliers.nama as nama_supplier', 'purchase_details.*')
+                    ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.pajak2', 'purchases.keterangan', 'suppliers.nama as nama_supplier', 'purchase_details.*')
                     ->selectRaw('SUM(purchase_details.kuantitas * purchase_details.harga) as total_non_ppn')
-                    ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
+                    ->selectRaw('SUM((((((purchase_details.kuantitas * purchase_details.harga) * 100) / 110) * 0.11) + ((purchase_details.kuantitas * purchase_details.harga) * 100) / 110)) as total_ppn')
+                    ->selectRaw('SUM((((((purchase_details.kuantitas * purchase_details.harga) * 100) / 110) * 0.11) + ((((purchase_details.kuantitas * purchase_details.harga) * 100) / 110) * 0.005) + ((purchase_details.kuantitas * purchase_details.harga) * 100) / 110)) as total_ppn_pph')
                     ->groupBy('purchase_details.purchase_id')
                     ->orderBy('purchases.tanggal', 'desc')
                     ->orderBy('purchases.invoice', 'desc')
@@ -312,9 +314,10 @@ class PurchaseController extends Controller
                 $purchases = DB::table('purchases')
                     ->join('suppliers', 'purchases.supplier_id', '=', 'suppliers.id')
                     ->join('purchase_details', 'purchase_details.purchase_id', '=', 'purchases.id')
-                    ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.keterangan', 'suppliers.nama as nama_supplier', 'purchase_details.*')
+                    ->select('purchases.id as idPurchase', 'purchases.tanggal', 'purchases.invoice', 'purchases.pajak', 'purchases.pajak2', 'purchases.keterangan', 'suppliers.nama as nama_supplier', 'purchase_details.*')
                     ->selectRaw('SUM(purchase_details.kuantitas * purchase_details.harga) as total_non_ppn')
-                    ->selectRaw('SUM(((purchase_details.kuantitas * purchase_details.harga * 0.1) + (purchase_details.kuantitas * purchase_details.harga))) as total_ppn')
+                    ->selectRaw('SUM((((((purchase_details.kuantitas * purchase_details.harga) * 100) / 110) * 0.11) + ((purchase_details.kuantitas * purchase_details.harga) * 100) / 110)) as total_ppn')
+                    ->selectRaw('SUM((((((purchase_details.kuantitas * purchase_details.harga) * 100) / 110) * 0.11) + ((((purchase_details.kuantitas * purchase_details.harga) * 100) / 110) * 0.005) + ((purchase_details.kuantitas * purchase_details.harga) * 100) / 110)) as total_ppn_pph')
                     ->groupBy('purchase_details.purchase_id')
                     ->orderBy('purchases.tanggal', 'desc')
                     ->orderBy('purchases.invoice', 'desc')
@@ -336,6 +339,7 @@ class PurchaseController extends Controller
                 <i class="fa fa-eye"></i></a>';
                 })
                 ->editColumn('total', function ($purchases) {
+                    if ($purchases->pajak == "PPN" && $purchases->pajak2 == "PPH") return number_format($purchases->total_ppn_pph, 0, ',', '.');
                     if ($purchases->pajak == "PPN") return number_format($purchases->total_ppn, 0, ',', '.');
                     if ($purchases->pajak == "Non PPN") return number_format($purchases->total_non_ppn, 0, ',', '.');
                 })

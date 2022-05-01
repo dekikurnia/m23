@@ -15,16 +15,7 @@
                             <input value="{{ $purchase->invoice }}" class="form-control" type="text" name="invoice"
                                 readonly />
                         </div>
-                        <div class="form-group col-md-10">
-                            <label for="tanggal">Tanggal</label>
-                            <input value="{{ $purchase->tanggal }}" type="text" class="form-control datepicker"
-                                name="tanggal" autocomplete="off">
-                            @error('tanggal')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                            @enderror
-                        </div>
+                        
                         <div class="form-group col-md-10">
                             <label for="supplier">Supplier</label>
                             <select style="min-width:300px" name="supplier_id" multiple id="suppliers"
@@ -36,8 +27,57 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="form-group col-md-10">
+                            <label for="keterangan">Keterangan</label>
+                            <textarea value="{{ $purchase->keterangan }}" class="form-control" rows="3"
+                                name="keterangan"></textarea>
+                        </div>
                     </div>
                     <div class="column" style="background-color:#ffffff;">
+                        <div class="form-group col-md-10">
+                            <label for="tanggal">Tanggal</label>
+                            <input value="{{ $purchase->tanggal }}" type="text" class="form-control datepicker"
+                                name="tanggal" autocomplete="off">
+                            @error('tanggal')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
+                        <div class="form-group col-md-10">
+                            <label for="pajak">PPN / Non PPN</label>
+                            <select class="form-control" name="pajak" id="select-ppn">
+                                <option value="Non PPN"
+                                    {{ old('pajak', $purchase->pajak) == "Non PPN" ? 'selected' : '' }}>
+                                    Non PPN</option>
+                                <option value="PPN" {{ old('pajak', $purchase->pajak) == "PPN" ? 'selected' : '' }}>
+                                    PPN</option>
+                            </select>
+                        </div>
+                        @if($purchase->pajak2 == 'PPH')
+                        <div class="form-group col-md-10 pph">
+                            <label for="pajak2">PPH / Non PPH</label>
+                            <select class="form-control" name="pajak2" id="select-pph">
+                                <option value="Non PPH"
+                                    {{ old('pajak2', $purchase->pajak2) == "Non PPH" ? 'selected' : '' }}>
+                                    Non PPH</option>
+                                <option value="PPH" {{ old('pajak2', $purchase->pajak2) == "PPH" ? 'selected' : '' }}>
+                                    PPH</option>
+                            </select>
+                        </div>
+                        @endif
+                        @if($purchase->pajak2 == 'Non PPH')
+                        <div style="display: none" class="form-group col-md-10 pph">
+                            <label for="pajak2">PPH / Non PPH</label>
+                            <select class="form-control" name="pajak2" id="select-pph">
+                                <option value="Non PPH"
+                                    {{ old('pajak2', $purchase->pajak2) == "Non PPH" ? 'selected' : '' }}>
+                                    Non PPH</option>
+                                <option value="PPH" {{ old('pajak2', $purchase->pajak2) == "PPH" ? 'selected' : '' }}>
+                                    PPH</option>
+                            </select>
+                        </div>
+                        @endif
                         <div class="form-group col-md-10">
                             <label for="cara_bayar">Cara Bayar</label>
                             <select class="form-control" name="cara_bayar" id="select-bayar">
@@ -57,21 +97,6 @@
                             <label for="jatuh_tempo">Jatuh Tempo</label>
                             <input value="{{ $purchase->jatuh_tempo }}" type="text" class="form-control datepicker"
                                 name="jatuh_tempo">
-                        </div>
-                        <div class="form-group col-md-10">
-                            <label for="pajak">PPN / Non PPN</label>
-                            <select class="form-control" name="pajak" id="select-ppn">
-                                <option value="Non PPN"
-                                    {{ old('pajak', $purchase->pajak) == "Non PPN" ? 'selected' : '' }}>
-                                    Non PPN</option>
-                                <option value="PPN" {{ old('pajak', $purchase->pajak) == "PPN" ? 'selected' : '' }}>
-                                    PPN</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-10">
-                            <label for="keterangan">Keterangan</label>
-                            <textarea value="{{ $purchase->keterangan }}" class="form-control" rows="3"
-                                name="keterangan"></textarea>
                         </div>
                     </div>
                 </form>
@@ -104,15 +129,19 @@
                                 <td style="width: 15%; display:none;"><input value="{{ $purchaseDetail->item_id }}" type="number"
                                     class="form-control" name="item_id[]" /></td>
                                 <td style="width: 15%"><input value="{{ $purchaseDetail->kuantitas }}" type="number" onkeyup="calcTotal() "
-                                        class="form-control kuantitas" name="kuantitas[]" /></td>
+                                        class="form-control form-control-sm kuantitas" name="kuantitas[]" /></td>
                                 <td style="width: 15%"><input
                                         value="{{ floor($purchaseDetail->harga) }}" type="number" onkeyup="calcTotal() "
-                                        class="form-control harga" name="harga[]" /></td>
+                                        class="form-control form-control-sm harga" name="harga[]" /></td>
                                 <td style="text-align: right; width: 10%; font-weight: bold;" class="multTotal">
                                     {{ number_format($purchaseDetail->sub_total, 0, ',', '.') }}</td>
+                                @if($purchase->pajak == 'PPN')
+                                <div style="display: none">{{$total += ($purchaseDetail->sub_total * 100) / 110}}</div>
+                                @else
                                 <div style="display: none">{{$total += $purchaseDetail->sub_total}}</div>
-                                <td><input id="btn-delete" type="button" class="btnDel btn btn-sm btn-danger"
-                                        value="Delete" style="float: right;"></td>
+                                @endif
+                                <td><input type="button" class="btnDel btn btn-sm btn-danger" value="Delete"
+                                        style="float: right;"></td>
                             </tr>
                             @endforeach
                             <tr>
@@ -120,12 +149,17 @@
                                 <td style="width: 30%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
-                                <td style="text-align: right;font-weight: bold; width: 10%">Total :</td>
+                                @if($purchase->pajak == 'PPN')
+                                <td class="total" style="text-align: right;font-weight: bold; width: 10%">DPP :</td>
+                                @else
+                                <td class="total" style="text-align: right;font-weight: bold; width: 10%">Total :</td>
+                                @endif
                                 <td style="text-align: right;font-weight: bold; width: 5%">
                                     <span id="total">{{ number_format($total, 0, ',', '.') }}</span>
                                 </td>
                                 <!--<td></td>-->
                             </tr>
+                            @if($purchase->pajak == 'PPN')
                             <tr class="PPN row-ppn">
                                 <td style="width: 15%"></td>
                                 <td style="width: 30%"></td>
@@ -134,10 +168,58 @@
                                 <td style="text-align: right;font-weight: bold; width: 15%">PPN :</td>
 
                                 <td style="text-align: right;font-weight: bold; width: 5%">
-                                    <span id="ppn">0 </span>
+                                    <span id="ppn">{{ number_format(($total*0.11), 0, ',', '.') }}</span>
                                 </td>
+                                
                                 <!--<td></td>-->
                             </tr>
+                            @endif
+
+                            @if($purchase->pajak == 'Non PPN')
+                            <tr style="display: none" class="PPN row-ppn">
+                                <td style="width: 15%"></td>
+                                <td style="width: 30%"></td>
+                                <td style="width: 15%"></td>
+                                <td style="width: 15%"></td>
+                                <td style="text-align: right;font-weight: bold; width: 15%">PPN :</td>
+
+                                <td style="text-align: right;font-weight: bold; width: 5%">
+                                    <span id="ppn">0</span>
+                                </td>
+                                
+                                <!--<td></td>-->
+                            </tr>
+                            @endif
+                            @if($purchase->pajak2 == 'PPH')
+                            <tr class="PPH row-pph">
+                                <td style="width: 15%"></td>
+                                <td style="width: 30%"></td>
+                                <td style="width: 15%"></td>
+                                <td style="width: 15%"></td>
+                                <td style="text-align: right;font-weight: bold; width: 15%">PPH :</td>
+
+                                <td style="text-align: right;font-weight: bold; width: 5%">
+                                    <span id="pph">{{ number_format(($total*0.005), 0, ',', '.') }}</span>
+                                </td>
+                                <!--<td></td>-->
+
+                            </tr>
+                            @endif
+                            @if($purchase->pajak2 == 'Non PPH')
+                            <tr style="display: none" class="PPH row-pph">
+                                <td style="width: 15%"></td>
+                                <td style="width: 30%"></td>
+                                <td style="width: 15%"></td>
+                                <td style="width: 15%"></td>
+                                <td style="text-align: right;font-weight: bold; width: 15%">PPH :</td>
+
+                                <td style="text-align: right;font-weight: bold; width: 5%">
+                                    <span id="pph">0</span>
+                                </td>
+                                <!--<td></td>-->
+
+                            </tr>
+                            @endif
                             <tr>
                                 <td style="width: 15%"></td>
                                 <td style="width: 30%"></td>
@@ -146,7 +228,13 @@
                                 <td style="text-align: right;font-weight: bold; width: 15%">Grand Total :</td>
 
                                 <td style="text-align: right;font-weight: bold; width: 5%">
-                                    <span id="grandTotal">0 </span>
+                                    @if($purchase->pajak == 'PPN' && $purchase->pajak2 == 'PPH')
+                                    <span id="grandTotal">{{ number_format($total + ($total*0.11) + ($total*0.005), 0, ',', '.') }} </span>
+                                    @elseif ($purchase->pajak == 'PPN')
+                                    <span id="grandTotal">{{ number_format($total + ($total*0.11), 0, ',', '.') }} </span>
+                                    @else
+                                    <span id="grandTotal">{{ number_format($total, 0, ',', '.') }} </span>
+                                    @endif
                                 </td>
                                 <!--<td></td>-->
 
@@ -196,22 +284,34 @@ function calcTotal() {
     $("tr.row-purchases").each(function () {
         var $kuantitas = $('.kuantitas', this).val();
         var $harga = $('.harga', this).val();
-        var $total = ($kuantitas * 1) * ($harga * 1)
+        var $total = $kuantitas * $harga
+        var $dpp = ($total * 100) / 110
 
         $('.multTotal', this).text($total.toLocaleString("id-ID"));
-        mult += $total;
+        if ($(".total").text() == "DPP :") {
+            mult += $dpp;
+        } else {
+            mult += $total;
+        }
     });
 
-    $("#total").text(mult.toLocaleString("id-ID"));
-    $("#grandTotal").text(mult.toLocaleString("id-ID"));
-
-    var ppn = mult * 0.11;
-    var grandTotal = mult + parseFloat(ppn)
-    if ($("#select-ppn option:selected").val() == "PPN") {
-        $("#ppn").text(ppn.toLocaleString("id-ID"));
-        $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+    $("#total").text(Math.round(mult).toLocaleString("id-ID"));
+    var ppn =  mult * 0.11;
+    var pph =  mult * 0.005;
+    var grandTotal = mult + parseFloat(ppn) + parseFloat(pph)
+    var grandTotalPPN = mult + parseFloat(ppn) 
+    if ($('#select-ppn option:selected').val() == "PPN" && $('#select-pph option:selected').val() == "PPH") {
+        $("#ppn").text(Math.round(ppn).toLocaleString("id-ID"));
+        $("#pph").text(Math.round(pph).toLocaleString("id-ID"));
+        $("#grandTotal").text(Math.round(grandTotal).toLocaleString("id-ID"));
+    } else if ($('#select-ppn option:selected').val() == "PPN") {
+        $("#ppn").text(Math.round(ppn).toLocaleString("id-ID"));
+        $("#grandTotal").text(Math.round(grandTotalPPN).toLocaleString("id-ID"));
+    } else {
+        $("#grandTotal").text(Math.round(mult).toLocaleString("id-ID"));
     }
 }
+
 /*
 function reverseFormatNumber(val, locale) {
     var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
@@ -221,8 +321,30 @@ function reverseFormatNumber(val, locale) {
     return Number.isNaN(reversedVal) ? 0 : reversedVal;
 }
 */
+var counter = 0;
+
+function deleteRow() {
+    $("#purchases-table").on("click", ".btnDel", function (event) {
+        $(this).closest("tr").remove();
+        counter -= 1
+
+        calcTotal();
+
+        var total = $("#total").text();
+        var ppn = total * 0.11;
+        var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn)
+        var optionValue = $('#select-ppn').find(":selected").text();
+        if (optionValue == "PPN") {
+            $("#ppn").text(ppn.toLocaleString("id-ID"));
+            $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+        }
+    });
+}
 
 $(document).ready(function () {
+    
+    deleteRow();
+
     $(".datepicker").datepicker({
         format: 'yyyy-mm-dd',
         autoclose: true,
@@ -258,17 +380,6 @@ $(document).ready(function () {
         });
     }).change();
 
-    $("#select-ppn").change(function () {
-        $(this).find("option:selected").each(function () {
-            var optionValue = $(this).attr("value") == "PPN";
-            if (optionValue) {
-                $(".row-ppn").show();
-            } else {
-                $(".row-ppn").hide();
-            }
-        });
-    }).change();
-
     $(function () {
         var table = $('#items-table').DataTable({
             pageLength: 300,
@@ -295,8 +406,6 @@ $(document).ready(function () {
                 }
             ]
         });
-
-        var counter = 0;
 
         $('#items-table tbody').on('click', 'tr', function () {
             var data = table.row(this).data();
@@ -345,45 +454,49 @@ $(document).ready(function () {
                 calcTotal();
             }
 
-            $("#purchases-table").on("click", ".btnDel", function (event) {
-                $(this).closest("tr").remove();
-                counter -= 1
-
-                multInputs();
-
-                var total = $("#total").text();
-                var ppn = (total.replace(/\./g, '')) * 0.11;
-                var optionValue = $('#select-ppn').find(":selected").text();
-                var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn)
-                if (optionValue == "PPN") {
-                    $("#ppn").text(ppn.toLocaleString("id-ID"));
-                    $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
-                }
-            });
+            deleteRow();
         }
 
-        $("#purchases-table").on("click", "#btn-delete", function () {
-            $(this).closest("tr").remove();
-            calcTotal();
+        $("#select-ppn").on('change', function () {
+            var total = $("#total").text();
+            var dpp = (parseFloat(total.replace(/\./g, '')) * 100) / 110
+            var ppn = dpp * 0.11;
+            var grandTotal = parseFloat(dpp) + parseFloat(ppn);
+            if ($(this).val() == 'PPN') {
+                $(".row-ppn").show();
+                $('.total').html('DPP :');
+                $(".ppn").show();
+                $(".pph").show();
+                $("#ppn").text(ppn.toLocaleString("id-ID"));
+                $("#total").text(Math.round(dpp).toLocaleString("id-ID"));
+                $("#grandTotal").text(Math.round(grandTotal).toLocaleString("id-ID"));
+            } else {
+                $(".pph").hide();
+                $("#select-pph").val("Non PPH");
+                $(".row-ppn").hide();
+                $(".row-pph").hide();
+                $('.total').html('Total :');
+                $(".ppn").hide();
+                $("#total").text(Math.round(parseFloat((total.replace(/\./g, '') * 110) / 100)).toLocaleString("id-ID"));
+                $("#grandTotal").text(Math.round(parseFloat((total.replace(/\./g, '') * 110) / 100)).toLocaleString("id-ID"));
+            }
         });
 
-        $("#select-ppn").change(function () {
-            $(this).find("option:selected").each(function () {
-                var optionValue = $(this).attr("value") == "PPN";
-                var total = $("#total").text();
-                if (optionValue) {
-                    $(".row-ppn").show();
-                    var ppn = (total.replace(/\./g, '')) * 0.11;
-                    var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn);
-                    $("#ppn").text(ppn.toLocaleString("id-ID"));
-                    $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
-
-                } else {
-                    $(".row-ppn").hide();
-                    $("#grandTotal").text(total);
-                }
-            });
-        }).change();
+        $("#select-pph").on('change', function () {
+            var total = $("#total").text();
+            var ppn = (total.replace(/\./g, '')) * 0.11;
+            var pph = (total.replace(/\./g, '')) * 0.005;
+            var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn) + parseFloat(pph);
+            if ($(this).val() == 'PPH') {
+                $(".row-pph").show();
+                $("#pph").text(Math.round(pph).toLocaleString("id-ID"));
+                $("#ppn").text(Math.round(ppn).toLocaleString("id-ID"));
+                $("#grandTotal").text(Math.round(grandTotal).toLocaleString("id-ID"));
+            } else {
+                $(".row-pph").hide();
+                $("#grandTotal").text(Math.round(parseFloat(total.replace(/\./g, '')) + parseFloat((total.replace(/\./g, '')) * 0.11)).toLocaleString("id-ID"));
+            }
+        });
 
         $('.modal').on('shown.bs.modal', function () {
             table.columns.adjust()

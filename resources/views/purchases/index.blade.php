@@ -15,6 +15,18 @@
                             <input value="{{ $noInvoice }}" class="form-control" type="text" name="invoice" readonly />
                         </div>
                         <div class="form-group col-md-10">
+                            <label for="supplier">Supplier</label>
+                            <select style="min-width:300px" name="supplier_id" multiple id="suppliers"
+                                class="form-control">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-10">
+                            <label for="keterangan">Keterangan</label>
+                            <textarea class="form-control" rows="3" name="keterangan"></textarea>
+                        </div>
+                    </div>
+                    <div class="column" style="background-color:#ffffff;">
+                        <div class="form-group col-md-10">
                             <label for="tanggal">Tanggal</label>
                             <input type="text" class="form-control datepicker" name="tanggal" autocomplete="off">
                             @error('tanggal')
@@ -24,18 +36,17 @@
                             @enderror
                         </div>
                         <div class="form-group col-md-10">
-                            <label for="supplier">Supplier</label>
-                            <select style="min-width:300px" name="supplier_id" multiple id="suppliers"
-                                class="form-control">
-                            </select>
-                        </div>
-                    </div>
-                    <div class="column" style="background-color:#ffffff;">
-                        <div class="form-group col-md-10">
                             <label for="pajak">PPN / Non PPN</label>
                             <select class="form-control" name="pajak" id="select-ppn">
                                 <option value="Non PPN">Non PPN</option>
                                 <option value="PPN">PPN</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-10 PPN ppn">
+                            <label for="pajak2">PPH / Non PPH</label>
+                            <select class="form-control" name="pajak2" id="select-pph">
+                                <option value="Non PPH">Non PPH</option>
+                                <option value="PPH">PPH</option>
                             </select>
                         </div>
                         <div class="form-group col-md-10">
@@ -47,13 +58,9 @@
                                 <option value="Transfer">Transfer</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-10 Kredit box">
+                        <div class="form-group col-md-10 Kredit jatuh-tempo">
                             <label for="jatuh_tempo">Jatuh Tempo</label>
                             <input type="text" class="form-control datepicker" name="jatuh_tempo">
-                        </div>
-                        <div class="form-group col-md-10">
-                            <label for="keterangan">Keterangan</label>
-                            <textarea class="form-control" rows="3" name="keterangan"></textarea>
                         </div>
                     </div>
                 </form>
@@ -76,12 +83,12 @@
                             </tr>
                         </thead>
                         <tfoot>
-                            <tr class="Non-PPN row-non">
+                            <tr>
                                 <td style="width: 15%"></td>
                                 <td style="width: 30%"></td>
                                 <td style="width: 15%"></td>
                                 <td style="width: 15%"></td>
-                                <td style="text-align: right;font-weight: bold; width: 15%">Total :</td>
+                                <td class="total" style="text-align: right;font-weight: bold; width: 15%">Total :</td>
 
                                 <td style="text-align: right;font-weight: bold; width: 5%">
                                     <span id="total">0 </span>
@@ -98,6 +105,19 @@
 
                                 <td style="text-align: right;font-weight: bold; width: 5%">
                                     <span id="ppn">0 </span>
+                                </td>
+                                <!--<td></td>-->
+
+                            </tr>
+                            <tr class="PPH row-pph">
+                                <td style="width: 15%"></td>
+                                <td style="width: 30%"></td>
+                                <td style="width: 15%"></td>
+                                <td style="width: 15%"></td>
+                                <td style="text-align: right;font-weight: bold; width: 15%">PPH :</td>
+
+                                <td style="text-align: right;font-weight: bold; width: 5%">
+                                    <span id="pph">0 </span>
                                 </td>
                                 <!--<td></td>-->
 
@@ -181,21 +201,10 @@
             $(this).find("option:selected").each(function () {
                 var optionValue = $(this).attr("value");
                 if (optionValue) {
-                    $(".box").not("." + optionValue).hide();
+                    $(".jatuh-tempo").not("." + optionValue).hide();
                     $("." + optionValue).show();
                 } else {
-                    $(".box").hide();
-                }
-            });
-        }).change();
-
-        $("#select-ppn").change(function () {
-            $(this).find("option:selected").each(function () {
-                var optionValue = $(this).attr("value") == "PPN";
-                if (optionValue) {
-                    $(".row-ppn").show();
-                } else {
-                    $(".row-ppn").hide();
+                    $(".jatuh-tempo").hide();
                 }
             });
         }).change();
@@ -281,22 +290,36 @@
                         // get the values from this row:
                         var $kuantitas = $('.kuantitas', this).val();
                         var $harga = $('.harga', this).val();
-                        var $total = ($kuantitas * 1) * ($harga * 1)
+                        var $total = $kuantitas * $harga 
+                        var $dpp = ($total * 100) / 110 
 
                         $('.multTotal', this).text($total.toLocaleString("id-ID"));
-                        mult += $total;
-                    });
 
-                    $("#total").text(mult.toLocaleString("id-ID"));
-                    $("#grandTotal").text(mult.toLocaleString("id-ID"));
+                        if ($(".total").text() == "DPP :") {
+                            mult += $dpp;
+                        } else {
+                            mult += $total;
+                        }
+                    });
+                    $("#total").text(Math.round(mult).toLocaleString("id-ID"));
+                    $("#grandTotal").text(Math.round(mult).toLocaleString("id-ID"));
 
                     var ppn =  mult * 0.11;
-                    var grandTotal = mult + parseFloat(ppn)
-                    var optionValue = $('#select-ppn').find(":selected").text();
-                    if (optionValue == "PPN") {
-                        $("#ppn").text(ppn.toLocaleString("id-ID"));
-                        $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
-                    } 
+                    var pph =  mult * 0.005;
+                    var grandTotal = mult + parseFloat(ppn) + parseFloat(pph)
+                    var grandTotalPPN = mult + parseFloat(ppn) 
+                    var grandTotalPPH = mult + parseFloat(pph)
+                    var optionValuePPN = $('#select-ppn').find(":selected").text();
+                    var optionValuePPH = $('#select-pph').find(":selected").text();
+                    
+                    if (optionValuePPN == "PPN" && optionValuePPH == "PPH") {
+                        $("#ppn").text(Math.round(ppn).toLocaleString("id-ID"));
+                        $("#pph").text(Math.round(pph).toLocaleString("id-ID"));
+                        $("#grandTotal").text(Math.round(grandTotal).toLocaleString("id-ID"));
+                    } else if(optionValuePPN == "PPN") {
+                        $("#ppn").text(Math.round(ppn).toLocaleString("id-ID"));
+                        $("#grandTotal").text(Math.round(grandTotalPPN).toLocaleString("id-ID"));
+                    }
                 }
 
                 $("#purchases-table").on("click", ".btnDel", function (event) {
@@ -306,9 +329,9 @@
                     multInputs();
 
                     var total = $("#total").text();
-                    var ppn =  (total.replace(/\./g, '')) * 0.11;
-                    var optionValue = $('#select-ppn').find(":selected").text();
+                    var ppn =  dpp * 0.11;
                     var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn)
+                    var optionValue = $('#select-ppn').find(":selected").text();
                     if (optionValue == "PPN") {
                         $("#ppn").text(ppn.toLocaleString("id-ID"));
                         $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
@@ -318,18 +341,46 @@
 
             $("#select-ppn").change(function () {
                 $(this).find("option:selected").each(function () {
-                    var optionValue = $(this).attr("value") == "PPN";
+                    var optionValuePPN = $(this).attr("value") == "PPN";
                     var total = $("#total").text();
-                    if (optionValue) {
+                    var dpp = (parseFloat(total.replace(/\./g, '')) * 100) / 110
+                    var ppn =  dpp * 0.11;
+                    var grandTotal = parseFloat(dpp) + parseFloat(ppn);
+                    if (optionValuePPN) {
                         $(".row-ppn").show();
-                        var ppn =  (total.replace(/\./g, '')) * 0.11;
-                        var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn);
+                        $('.total').html('DPP :');
+                        $(".ppn").show();
+                        $("#total").text(Math.round(dpp).toLocaleString("id-ID"));
                         $("#ppn").text(ppn.toLocaleString("id-ID"));
-                        $("#grandTotal").text(grandTotal.toLocaleString("id-ID"));
+                        $("#grandTotal").text(Math.round(grandTotal).toLocaleString("id-ID"));
 
                     } else {
                         $(".row-ppn").hide();
-                        $("#grandTotal").text(total);
+                        $('.total').html('Total :');
+                        $(".ppn").hide();
+                        $("#total").text(Math.round(parseFloat((total.replace(/\./g, '') * 110) / 100)).toLocaleString("id-ID"));
+                        $("#grandTotal").text(Math.round(parseFloat((total.replace(/\./g, '') * 110) / 100)).toLocaleString("id-ID"));
+                    }
+                });
+            }).change();
+
+            $("#select-pph").change(function () {
+                $(this).find("option:selected").each(function () {
+                    var optionValuePPH = $(this).attr("value") == "PPH";
+                    var optionValuePPN = $('#select-ppn').find(":selected").text();
+                    var total = $("#total").text();
+                    if (optionValuePPH) {
+                        $(".row-pph").show();
+                        var ppn =  (total.replace(/\./g, '')) * 0.11;
+                        var pph =  (total.replace(/\./g, '')) * 0.005;
+                        var grandTotal = parseFloat(total.replace(/\./g, '')) + parseFloat(ppn) + parseFloat(pph);
+                        $("#pph").text(Math.round(pph).toLocaleString("id-ID"));
+                        $("#ppn").text(Math.round(ppn).toLocaleString("id-ID"));
+                        $("#grandTotal").text(Math.round(grandTotal).toLocaleString("id-ID"));
+
+                    } else {
+                        $(".row-pph").hide();
+                        $("#grandTotal").text(Math.round(parseFloat(total.replace(/\./g, '')) + parseFloat((total.replace(/\./g, '')) * 0.11)).toLocaleString("id-ID"));
                     }
                 });
             }).change();
