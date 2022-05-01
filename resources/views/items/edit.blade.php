@@ -54,7 +54,7 @@
                     <div style="display: none" class="form-group">
                         <label for="stok_gudang">Stok Gudang</label>
                         <input value="{{$item->stock->stok_gudang}}" class="form-control" placeholder="Nama Barang" type="number"
-                            name="stok_gudang" id="stok_gudang" readonly/>
+                            name="stok_gudang" id="stok_gudang" />
                         @if ($errors->has('stok_gudang'))
                         <span class="text-danger">{{ $errors->first('stok_gudang') }}</span>
                         @endif
@@ -62,7 +62,7 @@
                     <div style="display: none" class="form-group">
                         <label for="stok_toko">Stok Toko</label>
                         <input value="{{$item->stock->stok_toko}}" class="form-control" placeholder="Nama Barang" type="number"
-                            name="stok_toko" id="stok_toko" readonly/>
+                            name="stok_toko" id="stok_toko" />
                         @if ($errors->has('stok_toko'))
                         <span class="text-danger">{{ $errors->first('stok_toko') }}</span>
                         @endif
