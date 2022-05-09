@@ -136,7 +136,7 @@
                                 <td style="text-align: right; width: 10%; font-weight: bold;" class="multTotal">
                                     {{ number_format($purchaseDetail->sub_total, 0, ',', '.') }}</td>
                                 @if($purchase->pajak == 'PPN')
-                                <div style="display: none">{{$total += ($purchaseDetail->sub_total * 100) / 110}}</div>
+                                <div style="display: none">{{$total += ($purchaseDetail->sub_total * 100) / 111}}</div>
                                 @else
                                 <div style="display: none">{{$total += $purchaseDetail->sub_total}}</div>
                                 @endif
@@ -285,7 +285,7 @@ function calcTotal() {
         var $kuantitas = $('.kuantitas', this).val();
         var $harga = $('.harga', this).val();
         var $total = $kuantitas * $harga
-        var $dpp = ($total * 100) / 110
+        var $dpp = ($total * 100) / 111
 
         $('.multTotal', this).text($total.toLocaleString("id-ID"));
         if ($(".total").text() == "DPP :") {
@@ -459,7 +459,7 @@ $(document).ready(function () {
 
         $("#select-ppn").on('change', function () {
             var total = $("#total").text();
-            var dpp = (parseFloat(total.replace(/\./g, '')) * 100) / 110
+            var dpp = (parseFloat(total.replace(/\./g, '')) * 100) / 111
             var ppn = dpp * 0.11;
             var grandTotal = parseFloat(dpp) + parseFloat(ppn);
             if ($(this).val() == 'PPN') {
@@ -477,8 +477,8 @@ $(document).ready(function () {
                 $(".row-pph").hide();
                 $('.total').html('Total :');
                 $(".ppn").hide();
-                $("#total").text(Math.round(parseFloat((total.replace(/\./g, '') * 110) / 100)).toLocaleString("id-ID"));
-                $("#grandTotal").text(Math.round(parseFloat((total.replace(/\./g, '') * 110) / 100)).toLocaleString("id-ID"));
+                $("#total").text(Math.round(parseFloat((total.replace(/\./g, '') * 111) / 100)).toLocaleString("id-ID"));
+                $("#grandTotal").text(Math.round(parseFloat((total.replace(/\./g, '') * 111) / 100)).toLocaleString("id-ID"));
             }
         });
 

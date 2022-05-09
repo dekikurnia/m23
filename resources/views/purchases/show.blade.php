@@ -114,7 +114,7 @@
                         <td class="total" style="text-align: right;font-weight: bold; width: 10%">Total :</td>
                         <td style="text-align: right;font-weight: bold; width: 5%">
                             @if($purchase->pajak == 'PPN')
-                            <span id="total">{{ number_format(($total * 100)/110, 0, ',', '.') }}</span>
+                            <span id="total">{{ number_format(($total * 100)/111, 0, ',', '.') }}</span>
                             @else
                             <span id="total">{{ number_format($total, 0, ',', '.') }}</span>
                             @endif

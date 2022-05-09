@@ -132,7 +132,7 @@
                         {{ number_format(($purchaseDetail->kuantitas * $purchaseDetail->harga), 0, ',', '.')}}</td>
                     <div style="display: none">
                         @if($purchase->pajak == 'PPN')
-                        {{$subTotal += ($purchaseDetail->kuantitas  * $purchaseDetail->harga )*100/110}}
+                        {{$subTotal += ($purchaseDetail->kuantitas  * $purchaseDetail->harga )*100/111}}
                         @else
                         {{$subTotal += ($purchaseDetail->kuantitas * $purchaseDetail->harga)}}
                         @endif

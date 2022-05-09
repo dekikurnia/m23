@@ -291,7 +291,7 @@
                         var $kuantitas = $('.kuantitas', this).val();
                         var $harga = $('.harga', this).val();
                         var $total = $kuantitas * $harga 
-                        var $dpp = ($total * 100) / 110 
+                        var $dpp = ($total * 100) / 111 
 
                         $('.multTotal', this).text($total.toLocaleString("id-ID"));
 
@@ -343,7 +343,7 @@
                 $(this).find("option:selected").each(function () {
                     var optionValuePPN = $(this).attr("value") == "PPN";
                     var total = $("#total").text();
-                    var dpp = (parseFloat(total.replace(/\./g, '')) * 100) / 110
+                    var dpp = (parseFloat(total.replace(/\./g, '')) * 100) / 111
                     var ppn =  dpp * 0.11;
                     var grandTotal = parseFloat(dpp) + parseFloat(ppn);
                     if (optionValuePPN) {
@@ -358,8 +358,8 @@
                         $(".row-ppn").hide();
                         $('.total').html('Total :');
                         $(".ppn").hide();
-                        $("#total").text(Math.round(parseFloat((total.replace(/\./g, '') * 110) / 100)).toLocaleString("id-ID"));
-                        $("#grandTotal").text(Math.round(parseFloat((total.replace(/\./g, '') * 110) / 100)).toLocaleString("id-ID"));
+                        $("#total").text(Math.round(parseFloat((total.replace(/\./g, '') * 111) / 100)).toLocaleString("id-ID"));
+                        $("#grandTotal").text(Math.round(parseFloat((total.replace(/\./g, '') * 111) / 100)).toLocaleString("id-ID"));
                     }
                 });
             }).change();
