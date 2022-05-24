@@ -135,16 +135,18 @@ class ItemController extends Controller
         $item->nama = $request->get('nama');
         $item->category_id = $request->get('category_id');
 
+        /*
         $stock->stok_gudang  = $request->get('stok_gudang');
         $stock->stok_toko = $request->get('stok_toko');
 
         $firstStock->stok_gudang  = $request->get('stok_gudang');
         $firstStock->stok_toko = $request->get('stok_toko');
+        */
 
         DB::transaction(function () use ($item, $stock, $firstStock) {
             $item->save();
-            $item->stock()->save($stock);
-            $item->firstStock()->save($firstStock);
+            //$item->stock()->save($stock);
+            //$item->firstStock()->save($firstStock);
         });
         return redirect()->route('items.index')->with('status-edit', 'Ubah barang berhasil');
     }
