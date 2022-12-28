@@ -71,7 +71,7 @@ class MoveItemController extends Controller
                 ->join('stocks', 'items.id', '=', 'stocks.item_id')
                 ->select('items.id', 'providers.id as provider_id', 'providers.nama as nama_provider', 'items.nama', 'categories.nama as nama_kategori', 'stocks.stok_gudang as stok_gudang')
                 ->orderBy('nama_provider', 'asc')
-                ->orderBy('items.nama', 'asc');
+                ->orderBy('items.nama', 'asc')->whereNull('items.deleted_at');
 
             return datatables()->of($data)
                 ->addIndexColumn()

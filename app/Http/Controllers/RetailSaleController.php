@@ -40,7 +40,7 @@ class RetailSaleController extends Controller
                 ->join('stocks', 'items.id', '=', 'stocks.item_id')
                 ->select('items.id', 'providers.id as provider_id', 'providers.nama as nama_provider', 'items.nama', 'items.harga', 'categories.nama as nama_kategori', 'stocks.stok_toko as stok_toko')
                 ->orderBy('nama_provider', 'asc')
-                ->orderBy('items.nama', 'asc');
+                ->orderBy('items.nama', 'asc')->whereNull('items.deleted_at');
 
             return datatables()->of($data)
                 ->editColumn('harga', function ($data) {
