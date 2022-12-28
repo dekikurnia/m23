@@ -16,7 +16,7 @@
                         </div>
                         <div class="form-group col-md-10">
                             <label for="tanggal">Tanggal</label>
-                            <input type="text" class="form-control datepicker" name="tanggal" autocomplete="off">
+                            <input type="text" value="{{ date('Y-m-d') }}" class="form-control" name="tanggal" autocomplete="off" readonly>
                         </div>
                         <div class="form-group col-md-10">
                             <label for="customer">Customer</label>
