@@ -112,8 +112,10 @@
                 </tfoot>
             </table>
             <a href="/sales" class="btn btn-dark">Kembali</a>
+            @hasanyrole('Technician|Admin')
             <a class="btn btn-info text-white" href="{{route('retail-sales.edit',
             [$sale->id])}}">Ubah</a>
+            @endhasanyrole
         </div>
     </div>
 </div>

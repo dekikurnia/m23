@@ -144,9 +144,10 @@
                 </tfoot>
             </table>
             <a href="{{route('sales.index')}}" class="btn btn-dark">Kembali</a>
-            <a class="btn btn-info text-white" href="{{route('wholesales.edit',
+            @hasanyrole('Technician|Admin')
+            <a class="btn btn-info text-white" href="{{route('retail-sales.edit',
             [$sale->id])}}">Ubah</a>
-        </div>
+            @endhasanyrole
     </div>
 </div>
 @endsection
