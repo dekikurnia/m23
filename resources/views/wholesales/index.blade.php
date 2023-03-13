@@ -16,7 +16,11 @@
                         </div>
                         <div class="form-group col-md-10">
                             <label for="tanggal">Tanggal</label>
+                            @hasanyrole('Technician|Admin')
+                            <input type="text" value="{{ date('Y-m-d') }}" class="form-control" name="tanggal" autocomplete="off">
+                            @else
                             <input type="text" value="{{ date('Y-m-d') }}" class="form-control" name="tanggal" autocomplete="off" readonly>
+                            @endhasanyrole
                         </div>
                         <div class="form-group col-md-10">
                             <label for="customer">Customer</label>
